@@ -14,6 +14,7 @@ db = client.webdata
 points = db.pointinfo
 users = db.userdata
 
+#GG
 # WORKS (Insert point into db)
 # point = {"latitude": 30.5343, 
 # "longitude": 56.2314, 
