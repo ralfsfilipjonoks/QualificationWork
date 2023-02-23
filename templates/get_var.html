@@ -1,0 +1,14 @@
+<body data-get-var-url="{{ url_for('get_var') }}"></body>
+<script>
+var get_var_url = $('body').data('get-var-url');
+
+$.ajax({
+    url: get_var_url,
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        var my_var = data.my_var;
+        console.log(my_var);
+    }
+});
+</script>
