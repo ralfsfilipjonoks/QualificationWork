@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 from flask_pymongo import pymongo
 from wtforms import Form, StringField, PasswordField, validators
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,7 +14,6 @@ db = client.webdata
 points = db.pointinfo
 users = db.userdata
 
-#GG
 # WORKS (Insert point into db)
 # point = {"latitude": 30.5343, 
 # "longitude": 56.2314, 
@@ -27,21 +26,6 @@ users = db.userdata
 
 @app.route('/')
 def home():
-    return render_template('home.html')
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        name = request.form['name']
-        password = request.form['password']
-        if users.find_one({'name': name}):
-            return 'Name already taken'
-        users.insert_one({'name': name, 'password': password})
-        return 'User registered successfully'
-    return render_template('register.html')
-
-@app.route('/about')
-def about():
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
         "collection": "pointinfo",
@@ -68,7 +52,25 @@ def about():
     for obj in a['documents']:
         if '_id' in obj:
             count += 1
-    return render_template('about.html', a = a, count = count)
+    return render_template('home.html', a = a, count = count)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        password = request.form['password']
+        repeatpassword = request.form['repeatpassword']
+        if users.find_one({'name': name}):
+            return 'Name already taken'
+        if (password != repeatpassword):
+            return 'Password does not match'
+        users.insert_one({'name': name, 'password': password})
+        return 'User registered successfully'
+    return render_template('register.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/get_data')
 def get_data():

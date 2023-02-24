@@ -1,9 +1,94 @@
 <!DOCTYPE html>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+     crossorigin=""></script>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+{% extends 'header.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
 <html>
 <head>
-    <title>Home Page</title>
+    <title>Homepage</title>
 </head>
 <body>
-    <h1>Welcome to my home page!</h1>
+    <div id="map"></div>
 </body>
+<script src="{{url_for('static', filename='main.js')}}"></script>
+<script>
+var map = L.map('map').setView([56.946285, 24.105078], 7);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    noWrap: true,
+    bounds: [
+    [-90, -180],
+    [90, 180]
+    ],
+}).addTo(map);
+
+let x;
+var charityLayer = L.layerGroup();
+var warningLayer = L.layerGroup();
+var otherLayer = L.layerGroup();
+var all = L.layerGroup();
+let postLatitude;
+let postLongitude;
+var postCount = "{{ count }}";
+fetch('/get_data')
+.then(response => response.json())
+.then(data => {
+    var overlayMaps = {
+        "Charity": charityLayer,
+        "Warning": warningLayer,
+        "Other": otherLayer,
+    };
+    L.control.layers(null, overlayMaps).addTo(map);
+    for (let i = 0; i < postCount; i++) {
+        if (data['documents'][i]['type'] == "Charity") {
+            postLatitude = data['documents'][i]['latitude'];
+            postLongitude = data['documents'][i]['longitude'];
+            x = L.marker([postLatitude, postLongitude]).addTo(map)
+            .bindPopup("ID: "+data['documents'][i]['_id']+
+            "<br> Name: "+data['documents'][i]['name']+
+            "<br> Description: "+data['documents'][i]['description']+
+            "<br> Post date: "+data['documents'][i]['postdate']+
+            "<br> End date: "+data['documents'][i]['removedate']+
+            "<br> Type: "+data['documents'][i]['type']+"")
+            charityLayer.addLayer(x);
+        } 
+        if(data['documents'][i]['type'] == "Warning") {
+            postLatitude = data['documents'][i]['latitude'];
+            postLongitude = data['documents'][i]['longitude'];
+            x = L.marker([postLatitude, postLongitude]).addTo(map)
+            .bindPopup("ID: "+data['documents'][i]['_id']+
+            "<br> Name: "+data['documents'][i]['name']+
+            "<br> Description: "+data['documents'][i]['description']+
+            "<br> Post date: "+data['documents'][i]['postdate']+
+            "<br> End date: "+data['documents'][i]['removedate']+
+            "<br> Type: "+data['documents'][i]['type']+"")
+            warningLayer.addLayer(x);
+        } else {
+            postLatitude = data['documents'][i]['latitude'];
+            postLongitude = data['documents'][i]['longitude'];
+            x = L.marker([postLatitude, postLongitude]).addTo(map)
+            .bindPopup("ID: "+data['documents'][i]['_id']+
+            "<br> Name: "+data['documents'][i]['name']+
+            "<br> Description: "+data['documents'][i]['description']+
+            "<br> Post date: "+data['documents'][i]['postdate']+
+            "<br> End date: "+data['documents'][i]['removedate']+
+            "<br> Type: "+data['documents'][i]['type']+"")
+            otherLayer.addLayer(x);
+        }
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+});
+</script>
 </html>
+{% endblock %}
