@@ -24,7 +24,14 @@
             </div>
         </div>
         <form class="d-flex" role="search">
+          {% if name %}
+            <span class="navbar-text" style="margin-right: 5px;">Welcome,</span>
+            <span class="navbar-text" style="margin-right: 10px;">{{ name }}!</span>
+            <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('logout') }}">Logout</a>
+          {% else %}
+            <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>
             <a href="/register" class="btn btn-success" style="margin-right: 10px;" role="button">Register</a>
+          {% endif %}
         </form>
     </nav>
     <main>

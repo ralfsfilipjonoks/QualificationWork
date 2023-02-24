@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import requests, json
 
 app = Flask(__name__)
+app.secret_key = 'mysecretkey'
 
 #mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority
 
@@ -52,7 +53,17 @@ def home():
     for obj in a['documents']:
         if '_id' in obj:
             count += 1
-    return render_template('home.html', a = a, count = count)
+    if 'name' in session:
+        name = session['name']
+        return render_template('home.html', a = a, count = count, name=name)
+    else:
+        return render_template('home.html', a = a, count = count)
+
+@app.route('/userheadinfo')
+def userheadinfo():
+    if 'name' in session:
+        name = session['name']
+        return name
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -70,7 +81,32 @@ def register():
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    if 'name' in session:
+        name = session['name']
+        return render_template('about.html', name = name)
+    else:
+        return render_template('about.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        id = 0
+        name = request.form['name']
+        password = request.form['password']
+        user = users.find_one({'name': name, 'password': password})
+        if user:
+            session['name'] = user['name']
+            return redirect(url_for('home'))
+        else:
+            error = 'Invalid name or password. Please try again.'
+            return render_template('login.html', error=error)
+    else:
+        return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('name', None)
+    return redirect(url_for('home'))
 
 @app.route('/get_data')
 def get_data():
