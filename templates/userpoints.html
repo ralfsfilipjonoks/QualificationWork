@@ -1,26 +1,33 @@
 <!DOCTYPE html>
+{% extends 'header.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
 <html>
 <head>
-  <title>Results</title>
+  <title>My Events</title>
 </head>
 <body>
-  <table>
+  {% if result %}
+  <table class="table">
     <thead>
       <tr>
-        <th>id</th>
-        <th>latitude</th>
-        <th>longitude</th>
-        <th>name</th>
-        <th>description</th>
-        <th>post date</th>
-        <th>remove date</th>
-        <th>type</th>
+        <th scope="col">id</th>
+        <th scope="col">latitude</th>
+        <th scope="col">longitude</th>
+        <th scope="col">name</th>
+        <th scope="col">description</th>
+        <th scope="col">post date</th>
+        <th scope="col">remove date</th>
+        <th scope="col">type</th>
+        <th scope="col">Options</th>
       </tr>
     </thead>
     <tbody>
       {% for x in result %}
         <tr>
-          <td>{{ x['_id'] }}</td>
+          <td scope="row">{{ x['_id'] }}</td>
           <td>{{ x['latitude'] }}</td>
           <td>{{ x['longitude'] }}</td>
           <td>{{ x['name'] }}</td>
@@ -28,9 +35,18 @@
           <td>{{ x['postdate'] }}</td>
           <td>{{ x['removedate'] }}</td>
           <td>{{ x['type'] }}</td>
+          <td>
+            <form action="/delete_point/{{ x['_id'] }}" method="POST">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+  <p>No events on your account!</p>
+  {% endif %}
 </body>
 </html>
+{% endblock %}

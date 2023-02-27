@@ -20,7 +20,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/about">About</a>
                     </li>
-                    {% if name %}
+                    {% if username %}
                     <li class="nav-item">
                       <a class="nav-link" href="/add_point">Add point</a>
                     </li>
@@ -33,9 +33,9 @@
             </div>
         </div>
         <form class="d-flex" role="search">
-          {% if name %}
+          {% if username %}
             <span class="navbar-text" style="margin-right: 5px;">Welcome,</span>
-            <span class="navbar-text" style="margin-right: 10px;">{{ name }}!</span>
+            <span class="navbar-text" style="margin-right: 10px;">{{ username }}!</span>
             <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('logout') }}">Logout</a>
           {% else %}
             <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>

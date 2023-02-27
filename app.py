@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 from flask_pymongo import pymongo
 from wtforms import Form, StringField, PasswordField, validators
@@ -53,51 +54,55 @@ def home():
     for obj in a['documents']:
         if '_id' in obj:
             count += 1
-    if 'name' in session:
-        name = session['name']
-        return render_template('home.html', a = a, count = count, name=name)
+    if 'username' in session:
+        username = session['username']
+        return render_template('home.html', a = a, count = count, username=username)
     else:
         return render_template('home.html', a = a, count = count)
 
 @app.route('/userheadinfo')
 def userheadinfo():
-    if 'name' in session:
-        name = session['name']
-        return name
+    if 'username' in session:
+        username = session['username']
+        return username
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if 'username' in session:
+        return redirect(url_for('home'))
     if request.method == 'POST':
         name = request.form['name']
+        surname = request.form['surname']
+        dateofbirth = request.form['dateofbirth']
+        username = request.form['username']
         password = request.form['password']
         repeatpassword = request.form['repeatpassword']
-        if users.find_one({'name': name}):
-            return 'Name already taken'
+        if users.find_one({'username': username}):
+            return 'Username already taken'
         if (password != repeatpassword):
-            return 'Password does not match'
-        users.insert_one({'name': name, 'password': password})
+            return 'Passwords does not match'
+        users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': password})
         return 'User registered successfully'
     return render_template('register.html')
 
 @app.route('/about')
 def about():
-    if 'name' in session:
-        name = session['name']
-        return render_template('about.html', name = name)
+    if 'username' in session:
+        username = session['username']
+        return render_template('about.html', username = username)
     else:
         return render_template('about.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'name' in session:
+    if 'username' in session:
         return redirect(url_for('home'))
     if request.method == 'POST':
-        id = 0
-        name = request.form['name']
+        username = request.form['username']
         password = request.form['password']
-        user = users.find_one({'name': name, 'password': password})
+        user = users.find_one({'username': username, 'password': password})
         if user:
-            session['name'] = user['name']
+            session['username'] = user['username']
             return redirect(url_for('home'))
         else:
             error = 'Invalid name or password. Please try again.'
@@ -107,7 +112,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('name', None)
+    session.pop('username', None)
     return redirect(url_for('home'))
 
 @app.route('/get_data')
@@ -142,8 +147,8 @@ def get_data():
 # vajag lietotaju pie punkta
 @app.route('/add_point', methods=['GET','POST'])
 def add_point():
-    if 'name' in session:
-        name = session['name']
+    if 'username' in session:
+        username = session['username']
     if request.method == 'POST':
         pointname = request.form['name']
         latitude = float(request.form['latitude'])
@@ -152,7 +157,7 @@ def add_point():
         postdate = request.form['postdate']
         removedate = request.form.get('removedate')
         pointtype = request.form['type']
-        user = name
+        user = username
 
         points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
         notification = 'Point added sucessfully!'
@@ -161,11 +166,20 @@ def add_point():
 
 @app.route('/user_points', methods=['GET', 'POST'])
 def userspoints():
-        if 'name' in session:
-            name = session['name']
-        result = list(points.find({'author': name}))
-        return render_template('userpoints.html', result = result)
-    
+    if 'username' in session:
+        username = session['username']
+        render_template('userpoints.html', username = username)
+    else:
+        return redirect(url_for('home'))
+    result = list(points.find({'author': username}))
+    return render_template('userpoints.html', result = result, username = username)
+
+@app.route('/delete_point/<point_id>', methods=['POST'])
+def delete_point(point_id):
+    print(point_id)
+    points.delete_one({'_id': ObjectId(point_id)})
+
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run()
