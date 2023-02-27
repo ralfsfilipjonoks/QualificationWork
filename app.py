@@ -89,6 +89,8 @@ def about():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'name' in session:
+        return redirect(url_for('home'))
     if request.method == 'POST':
         id = 0
         name = request.form['name']
@@ -124,6 +126,7 @@ def get_data():
             "postdate": 1,
             "removedate": 1,
             "type": 1,
+            "author": 1
         }
     })
     headers = {
@@ -134,6 +137,35 @@ def get_data():
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
     return jsonify(data)
+
+
+# vajag lietotaju pie punkta
+@app.route('/add_point', methods=['GET','POST'])
+def add_point():
+    if 'name' in session:
+        name = session['name']
+    if request.method == 'POST':
+        pointname = request.form['name']
+        latitude = float(request.form['latitude'])
+        longitude = float(request.form['longitude'])
+        description = request.form['description']
+        postdate = request.form['postdate']
+        removedate = request.form.get('removedate')
+        pointtype = request.form['type']
+        user = name
+
+        points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
+        notification = 'Point added sucessfully!'
+        return render_template('add_point.html', notification=notification)
+    return render_template('add_point.html')
+
+@app.route('/user_points', methods=['GET', 'POST'])
+def userspoints():
+        if 'name' in session:
+            name = session['name']
+        result = list(points.find({'author': name}))
+        return render_template('userpoints.html', result = result)
+    
 
 if __name__ == '__main__':
     app.run()

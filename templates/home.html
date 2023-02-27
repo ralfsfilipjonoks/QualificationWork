@@ -35,7 +35,6 @@ let x;
 var charityLayer = L.layerGroup();
 var warningLayer = L.layerGroup();
 var otherLayer = L.layerGroup();
-var all = L.layerGroup();
 let postLatitude;
 let postLongitude;
 var postCount = "{{ count }}";
@@ -58,7 +57,8 @@ fetch('/get_data')
             "<br> Description: "+data['documents'][i]['description']+
             "<br> Post date: "+data['documents'][i]['postdate']+
             "<br> End date: "+data['documents'][i]['removedate']+
-            "<br> Type: "+data['documents'][i]['type']+"")
+            "<br> Type: "+data['documents'][i]['type']+
+            "<br> Author: "+data['documents'][i]['author']+"")
             charityLayer.addLayer(x);
         } 
         if(data['documents'][i]['type'] == "Warning") {
@@ -70,9 +70,10 @@ fetch('/get_data')
             "<br> Description: "+data['documents'][i]['description']+
             "<br> Post date: "+data['documents'][i]['postdate']+
             "<br> End date: "+data['documents'][i]['removedate']+
-            "<br> Type: "+data['documents'][i]['type']+"")
+            "<br> Type: "+data['documents'][i]['type']+
+            "<br> Author: "+data['documents'][i]['author']+"")
             warningLayer.addLayer(x);
-        } else {
+        } if(data['documents'][i]['type'] == "Other") {
             postLatitude = data['documents'][i]['latitude'];
             postLongitude = data['documents'][i]['longitude'];
             x = L.marker([postLatitude, postLongitude]).addTo(map)
@@ -81,7 +82,8 @@ fetch('/get_data')
             "<br> Description: "+data['documents'][i]['description']+
             "<br> Post date: "+data['documents'][i]['postdate']+
             "<br> End date: "+data['documents'][i]['removedate']+
-            "<br> Type: "+data['documents'][i]['type']+"")
+            "<br> Type: "+data['documents'][i]['type']+
+            "<br> Author: "+data['documents'][i]['author']+"")
             otherLayer.addLayer(x);
         }
     }
