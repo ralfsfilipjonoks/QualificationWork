@@ -39,13 +39,18 @@
             <form action="/delete_point/{{ x['_id'] }}" method="POST">
               <button type="submit" class="btn btn-danger">Delete</button>
             </form>
+            <form action="/edit_point/{{ x['_id'] }}" method="GET">
+              <button type="submit">Edit</button>
+            </form>
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
   {% else %}
-  <p>No events on your account!</p>
+  <div class="alert alert-danger" style="margin: 10px;" role="alert">
+    Nav ierakstu.
+  </div>
   {% endif %}
 </body>
 </html>

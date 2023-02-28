@@ -1,0 +1,34 @@
+{% extends 'header.html' %}
+
+{% block content %}
+  <h1>Edit Point</h1>
+  <form method="post">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{ point.name }}">
+    </div>
+    <div class="form-group">
+        <label for="lat">Latitude:</label>
+        <input type="text" class="form-control" id="latitude" name="latitude" value="{{ point.latitude }}">
+    </div>
+    <div class="form-group">
+        <label for="lng">Longitude:</label>
+        <input type="text" class="form-control" id="longitude" name="longitude" value="{{ point.longitude }}">
+      </div>
+    <div class="form-group">
+      <label for="postdate">Post Date:</label>
+      <input type="text" class="form-control" id="post_date" name="post_date" value="{{ point.postdate }}">
+    </div>
+    <div class="form-group">
+      <label for="removedate">Remove Date:</label>
+      <input type="text" class="form-control" id="remove_date" name="remove_date" value="{{ point.removedate }}">
+    </div>
+    <label for="type">Type:</label>
+    <select id="type" name="type">
+        <option value="Charity">Charity</option>
+        <option value="Warning">Warning</option>
+        <option value="Other">Other</option>
+      </select><br>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+  </form>
+{% endblock %}

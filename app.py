@@ -16,16 +16,6 @@ db = client.webdata
 points = db.pointinfo
 users = db.userdata
 
-# WORKS (Insert point into db)
-# point = {"latitude": 30.5343, 
-# "longitude": 56.2314, 
-# "name": "Random point", 
-# "description":"New post made from VS code!", 
-# "postdate": '2023-02-17T00:00:00.000+00:00', 
-# "removedate":'2023-03-17T00:00:00.000+00:00', 
-# "type": "Warning"}
-# points.insert_one(point)
-
 @app.route('/')
 def home():
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
@@ -143,12 +133,12 @@ def get_data():
     data = json.loads(response.text)
     return jsonify(data)
 
-
-# vajag lietotaju pie punkta
 @app.route('/add_point', methods=['GET','POST'])
 def add_point():
     if 'username' in session:
         username = session['username']
+    else:
+        return redirect(url_for('home'))
     if request.method == 'POST':
         pointname = request.form['name']
         latitude = float(request.form['latitude'])
@@ -176,10 +166,33 @@ def userspoints():
 
 @app.route('/delete_point/<point_id>', methods=['POST'])
 def delete_point(point_id):
-    print(point_id)
-    points.delete_one({'_id': ObjectId(point_id)})
+    if 'username' in session:
+        points.delete_one({'_id': ObjectId(point_id)})
+        return redirect(url_for('home'))
+    else:
+        return redirect(url_for('home'))
 
-    return redirect(url_for('home'))
+@app.route('/edit_point/<point_id>', methods=['GET', 'POST'])
+def edit_point(point_id):
+    point = points.find_one({'_id': ObjectId(point_id)})
+    if 'username' in session:
+        username = session['username']
+        render_template('edit_point.html', point=point, username = username)
+    if request.method == 'POST':
+        points.update_one({'_id': ObjectId(point_id)}, {'$set': {
+            'name': request.form['name'],
+            'latitude': request.form['latitude'],
+            'longitude': request.form['longitude'],
+            'postdate': request.form['post_date'],
+            'removedate': request.form['remove_date'],
+            'type': request.form['type'],
+            'author': username
+        }})
+
+        return redirect(url_for('home'))
+    else:
+        return render_template('edit_point.html', point=point)
+
 
 if __name__ == '__main__':
     app.run()

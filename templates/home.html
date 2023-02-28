@@ -29,9 +29,15 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     [-90, -180],
     [90, 180]
     ],
+    minZoom: 3
 }).addTo(map);
 
 let x;
+var southWest = L.latLng(-90, -180);
+var northEast = L.latLng(90, 180);
+var bounds = L.latLngBounds(southWest, northEast);
+map.setMaxBounds(bounds);
+
 var charityLayer = L.layerGroup();
 var warningLayer = L.layerGroup();
 var otherLayer = L.layerGroup();
@@ -60,6 +66,9 @@ fetch('/get_data')
             "<br> Type: "+data['documents'][i]['type']+
             "<br> Author: "+data['documents'][i]['author']+"")
             charityLayer.addLayer(x);
+            x.on('click', function(e) {
+                map.setView(e.latlng, 16);
+            });
         } 
         if(data['documents'][i]['type'] == "Warning") {
             postLatitude = data['documents'][i]['latitude'];
@@ -73,6 +82,9 @@ fetch('/get_data')
             "<br> Type: "+data['documents'][i]['type']+
             "<br> Author: "+data['documents'][i]['author']+"")
             warningLayer.addLayer(x);
+            x.on('click', function(e) {
+                map.setView(e.latlng, 16);
+            });
         } if(data['documents'][i]['type'] == "Other") {
             postLatitude = data['documents'][i]['latitude'];
             postLongitude = data['documents'][i]['longitude'];
@@ -85,6 +97,9 @@ fetch('/get_data')
             "<br> Type: "+data['documents'][i]['type']+
             "<br> Author: "+data['documents'][i]['author']+"")
             otherLayer.addLayer(x);
+            x.on('click', function(e) {
+                map.setView(e.latlng, 16);
+            });
         }
     }
 })
