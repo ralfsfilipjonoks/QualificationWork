@@ -19,6 +19,7 @@ users = db.userdata
 
 @app.route('/')
 def home():
+    result = list(points.find())
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
         "collection": "pointinfo",
@@ -32,6 +33,8 @@ def home():
             "description": 1,
             "postdate": 1,
             "removedate": 1,
+            "type": 1,
+            "author": 1
         }
     })
     headers = {
@@ -47,7 +50,7 @@ def home():
             count += 1
     if 'username' in session:
         username = session['username']
-        return render_template('home.html', a = a, count = count, username=username)
+        return render_template('home.html', a = a, count = count, username=username, result=result)
     else:
         return render_template('home.html', a = a, count = count)
 

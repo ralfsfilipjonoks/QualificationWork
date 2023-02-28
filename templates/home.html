@@ -17,6 +17,30 @@ crossorigin=""/>
 </head>
 <body>
     <div id="map"></div>
+    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Enable body scrolling</button>
+
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Events</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            {% if result %}
+            {% for x in result %}
+            <div class="card" style="margin-bottom: 10px;">
+                <h5 class="card-header">{{ x['type'] }}</h5>
+                <div class="card-body">
+                    <h5 class="card-title">{{ x['name'] }}</h5>
+                    <p class="card-text">{{ x['description'] }}</p>
+                    <p class="fw-light">{{ x['postdate'] }}</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
 </body>
 <script src="{{url_for('static', filename='main.js')}}"></script>
 <script>
