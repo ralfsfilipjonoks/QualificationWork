@@ -32,6 +32,28 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     minZoom: 3
 }).addTo(map);
 
+// Point custom icons
+var charityIcon = L.icon({
+  iconUrl: "{{ url_for('static', filename='icons/charityicon.png') }}",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
+var warningIcon = L.icon({
+  iconUrl: "{{ url_for('static', filename='icons/warningicon.png') }}",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
+var otherIcon = L.icon({
+  iconUrl: "{{ url_for('static', filename='icons/othericon.png') }}",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
 let x;
 var southWest = L.latLng(-90, -180);
 var northEast = L.latLng(90, 180);
@@ -57,7 +79,7 @@ fetch('/get_data')
         if (data['documents'][i]['type'] == "Charity") {
             postLatitude = data['documents'][i]['latitude'];
             postLongitude = data['documents'][i]['longitude'];
-            x = L.marker([postLatitude, postLongitude]).addTo(map)
+            x = L.marker([postLatitude, postLongitude], {icon: charityIcon}).addTo(map)
             .bindPopup("ID: "+data['documents'][i]['_id']+
             "<br> Name: "+data['documents'][i]['name']+
             "<br> Description: "+data['documents'][i]['description']+
@@ -73,7 +95,7 @@ fetch('/get_data')
         if(data['documents'][i]['type'] == "Warning") {
             postLatitude = data['documents'][i]['latitude'];
             postLongitude = data['documents'][i]['longitude'];
-            x = L.marker([postLatitude, postLongitude]).addTo(map)
+            x = L.marker([postLatitude, postLongitude], {icon: warningIcon}).addTo(map)
             .bindPopup("ID: "+data['documents'][i]['_id']+
             "<br> Name: "+data['documents'][i]['name']+
             "<br> Description: "+data['documents'][i]['description']+
@@ -88,7 +110,7 @@ fetch('/get_data')
         } if(data['documents'][i]['type'] == "Other") {
             postLatitude = data['documents'][i]['latitude'];
             postLongitude = data['documents'][i]['longitude'];
-            x = L.marker([postLatitude, postLongitude]).addTo(map)
+            x = L.marker([postLatitude, postLongitude], {icon: otherIcon}).addTo(map)
             .bindPopup("ID: "+data['documents'][i]['_id']+
             "<br> Name: "+data['documents'][i]['name']+
             "<br> Description: "+data['documents'][i]['description']+

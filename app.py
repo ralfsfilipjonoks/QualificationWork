@@ -4,6 +4,7 @@ from flask_pymongo import pymongo
 from wtforms import Form, StringField, PasswordField, validators
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests, json
+import hashlib
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -67,11 +68,14 @@ def register():
         username = request.form['username']
         password = request.form['password']
         repeatpassword = request.form['repeatpassword']
+        hash_object = hashlib.sha256(password.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
+        print(hash_hex)
         if users.find_one({'username': username}):
             return 'Username already taken'
         if (password != repeatpassword):
             return 'Passwords does not match'
-        users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': password})
+        users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex})
         return 'User registered successfully'
     return render_template('register.html')
 
@@ -81,7 +85,7 @@ def about():
         username = session['username']
         return render_template('about.html', username = username)
     else:
-        return render_template('about.html')
+        return render_template('about.html')    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -90,13 +94,18 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = users.find_one({'username': username, 'password': password})
+        hash_object = hashlib.sha256(password.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
+        user = users.find_one({'username': username})
         if user:
-            session['username'] = user['username']
-            return redirect(url_for('home'))
-        else:
-            error = 'Invalid name or password. Please try again.'
-            return render_template('login.html', error=error)
+            if hash_hex == user['password']:
+                session['username'] = user['username']
+                return redirect(url_for('home'))
+            else:
+                error = 'Invalid name or password. Please try again.'
+                return render_template('login.html', error=error)
+        error = 'Invalid name or password. Please try again.'
+        return render_template('login.html', error=error)
     else:
         return render_template('login.html')
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% extends 'header.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}My events{% endblock %}
 
 {% block content %}
 <html>
@@ -35,12 +35,12 @@
           <td>{{ x['postdate'] }}</td>
           <td>{{ x['removedate'] }}</td>
           <td>{{ x['type'] }}</td>
-          <td>
+          <td style="  display: flex;">
             <form action="/delete_point/{{ x['_id'] }}" method="POST">
-              <button type="submit" class="btn btn-danger">Delete</button>
+              <button style="margin-right: 10px;" type="submit" class="btn btn-danger">Delete</button>
             </form>
             <form action="/edit_point/{{ x['_id'] }}" method="GET">
-              <button type="submit">Edit</button>
+              <button type="submit" class="btn btn-success">Edit</button>
             </form>
           </td>
         </tr>
