@@ -20,15 +20,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/about">About</a>
                     </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/release">Release</a>
+                    </li>
+                    {% if active_page == 'home.html' %}
+                    <li class="nav-item">
+                      <a class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Points</a>
+                    </li>
+                    {% endif %}
                     {% if username %}
                     <li class="nav-item">
                       <a class="nav-link" href="/add_point">Add point</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="/user_points">My points</a>
-                    </li>
-                    <li class="nav-item">
-                      <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Enable body scrolling</button>
                     </li>
                     {% else %}
                     {% endif %}

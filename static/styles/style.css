@@ -1,1 +1,9 @@
-#map { height: 700px; }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    height: calc(100vh - 56px);
+}

@@ -8,7 +8,7 @@ crossorigin=""/>
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
 {% extends 'header.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Eventus{% endblock %}
 
 {% block content %}
 <html>
@@ -32,7 +32,7 @@ crossorigin=""/>
                     <h5 class="card-title">{{ x['name'] }}</h5>
                     <p class="card-text">{{ x['description'] }}</p>
                     <p class="fw-light">{{ x['postdate'] }}</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                    <a onclick="myFunction(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)" id="my-button" href="#" class="btn btn-primary">Event lookup</a>
                 </div>
             </div>
             {% endfor %}
@@ -54,6 +54,11 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     ],
     minZoom: 3
 }).addTo(map);
+
+function myFunction(latitude, longitude) {
+  x = map.setView([latitude, longitude], 13);
+  x.openPopup();
+}
 
 // Point custom icons
 var charityIcon = L.icon({
@@ -89,6 +94,7 @@ var otherLayer = L.layerGroup();
 let postLatitude;
 let postLongitude;
 var postCount = "{{ count }}";
+
 fetch('/get_data')
 .then(response => response.json())
 .then(data => {

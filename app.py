@@ -1,8 +1,6 @@
 from bson import ObjectId
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 from flask_pymongo import pymongo
-from wtforms import Form, StringField, PasswordField, validators
-from werkzeug.security import generate_password_hash, check_password_hash
 import requests, json
 import hashlib
 
@@ -16,6 +14,7 @@ db = client.webdata
 
 points = db.pointinfo
 users = db.userdata
+types = db.pointtypes
 
 @app.route('/')
 def home():
@@ -50,9 +49,9 @@ def home():
             count += 1
     if 'username' in session:
         username = session['username']
-        return render_template('home.html', a = a, count = count, username=username, result=result)
+        return render_template('home.html', a = a, count = count, username=username, result=result, active_page='home.html')
     else:
-        return render_template('home.html', a = a, count = count)
+        return render_template('home.html', a = a, count = count, result=result, active_page='home.html')
 
 @app.route('/userheadinfo')
 def userheadinfo():
@@ -88,7 +87,15 @@ def about():
         username = session['username']
         return render_template('about.html', username = username)
     else:
-        return render_template('about.html')    
+        return render_template('about.html')
+
+@app.route('/release')
+def release():
+    if 'username' in session:
+        username = session['username']
+        return render_template('release.html', username = username)
+    else:
+        return render_template('release.html')    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -147,6 +154,7 @@ def get_data():
 
 @app.route('/add_point', methods=['GET','POST'])
 def add_point():
+    allTypes = types.find()
     if 'username' in session:
         username = session['username']
     else:
@@ -163,8 +171,8 @@ def add_point():
 
         points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
         notification = 'Point added sucessfully!'
-        return render_template('add_point.html', notification=notification)
-    return render_template('add_point.html')
+        return render_template('add_point.html', notification=notification, types = allTypes)
+    return render_template('add_point.html', types = allTypes)
 
 @app.route('/user_points', methods=['GET', 'POST'])
 def userspoints():
@@ -205,6 +213,26 @@ def edit_point(point_id):
     else:
         return render_template('edit_point.html', point=point)
 
+@app.route('/get_point_types',  methods=['GET', 'POST'])
+def get_type():
+    url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
+    payload = json.dumps({
+        "collection": "pointtypes",
+        "database": "webdata",
+        "dataSource": "ProjektsKarte",
+        "projection": {
+            "_id": 1,
+            "type": 1,
+        }
+    })
+    headers = {
+    'Content-Type': 'application/ejson',
+    'Access-Control-Request-Headers': '*',
+    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = json.loads(response.text)
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run()
