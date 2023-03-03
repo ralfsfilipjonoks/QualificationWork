@@ -18,7 +18,7 @@ types = db.pointtypes
 
 @app.route('/')
 def home():
-    result = list(points.find())
+    result = list(points.find().sort('postdate', +1))
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
         "collection": "pointinfo",
@@ -172,7 +172,7 @@ def add_point():
         points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
         notification = 'Point added sucessfully!'
         return render_template('add_point.html', notification=notification, types = allTypes)
-    return render_template('add_point.html', types = allTypes)
+    return render_template('add_point.html', types = allTypes, username = username)
 
 @app.route('/user_points', methods=['GET', 'POST'])
 def userspoints():

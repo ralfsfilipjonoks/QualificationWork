@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+{% extends 'header.html' %}
+
+{% block title %}Add point{% endblock %}
+
+{% block content %}
 <html>
   <head>
     <title>Add a Point</title>
@@ -9,8 +14,18 @@
       var map = L.map('map').setView([37.7749, -122.4194], 8);
       
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+        noWrap: true,
+        bounds: [
+        [-90, -180],
+        [90, 180]
+        ],
+        minZoom: 3
       }).addTo(map);
+      var southWest = L.latLng(-90, -180);
+      var northEast = L.latLng(90, 180);
+      var bounds = L.latLngBounds(southWest, northEast);
+      map.setMaxBounds(bounds);
       
       map.on('click', function(e) {
         var lat = e.latlng.lat;
@@ -28,26 +43,36 @@
     {% endif %}
     <h1>Add a Point</h1>
     <form method="post" action="{{ url_for('add_point') }}">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required><br>
+      <label for="name" class="form-label">Name:</label>
+      <input type="text" id="name" name="name" class="form-control" placeholder="Enter point name" required><br>
 
-      <label for="latitude">Latitude:</label>
-      <input type="number" id="latitude" name="latitude" step="0.00000000000000001" min="-90" max="90" required><br>
+      <div class="row">
+        <div class="col">
+          <label for="latitude" class="form-label">Latitude:</label>
+          <input type="number" id="latitude" class="form-control" placeholder="Enter latitude" name="latitude" step="0.00000000000000001" min="-90" max="90" required><br>
+        </div>
+        <div class="col">
+          <label for="longitude" class="form-label">Longitude:</label>
+          <input type="number" id="longitude" class="form-control" placeholder="Enter longitude" name="longitude" step="0.00000000000000001" min="-180" max="180" required><br>
+        </div>
+      </div>
 
-      <label for="longitude">Longitude:</label>
-      <input type="number" id="longitude" name="longitude" step="0.00000000000000001" min="-180" max="180" required><br>
+      <label for="description" class="form-label">Description:</label>
+      <textarea type="text" id="description" name="description" required class="form-control" placeholder="Enter a description"></textarea>
 
-      <label for="description">Description:</label>
-      <input type="text" id="description" name="description" required><br>
+      <div class="row">
+        <div class="col">
+          <label for="postdate" class="form-label">Post Date:</label>
+          <input type="date" id="postdate" name="postdate" required class="form-control">
+        </div>
+        <div class="col">
+          <label for="removedate" class="form-label">Remove Date:</label>
+          <input type="date" id="removedate" name="removedate" class="form-control">
+        </div>
+      </div>
 
-      <label for="postdate">Post Date:</label>
-      <input type="date" id="postdate" name="postdate" required><br>
-
-      <label for="removedate">Remove Date:</label>
-      <input type="date" id="removedate" name="removedate"><br>
-
-      <label for="type">Type:</label>
-      <select id="type" name="type">
+      <label for="type" class="form-label">Type:</label>
+      <select class="form-select" id="type" name="type" aria-label="Select an option">
       {% if types %}
       {% for x in types %}
         <option value="{{ x['type'] }}">{{ x['type'] }}</option>
@@ -57,8 +82,9 @@
 
       <input type="hidden" id="username" name="username" value="{{ username }}">
 
-      <input type="submit" value="Add Point">
+      <input type="submit" class="btn btn-success" value="Add Point">
       <div id="map" style="height: 500px;"></div>
     </form>
   </body>
 </html>
+{% endblock %}
