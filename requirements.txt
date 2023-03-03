@@ -66,4 +66,3 @@ Werkzeug==2.2.3
 WTForms==3.0.1
 xdg==5
 zipp==1.0.0
-libsystemd0==237-3ubuntu10.56
