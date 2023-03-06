@@ -1,33 +1,13 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-</head>
-<body>
-    <h1>Register</h1>
-    <form method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="surname">Surname:</label>
-        <input type="text" id="surname" name="surname" required><br><br>
-        <label for="dateofbirth">Date of birth:</label>
-        <input type="date" id="dateofbirth" name="dateofbirth" required><br><br>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <label for="repeatpassword">Repeat password:</label>
-        <input type="password" id="repeatpassword" name="repeatpassword" required><br><br>
-        <input type="submit" value="Register">
-    </form>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Register Page</title>
-	<!-- Bootstrap CSS -->
+	<title>Registration</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<style>
+	body {
+        background-color: #f1f1f1;
+    }
+	</style>
 </head>
 <body>
 	<div class="container mt-5">
@@ -64,14 +44,14 @@
                                 <input type="password" class="form-control" id="repeatpassword" name="repeatpassword" required>
 							</div>
 							<button type="submit" value="Register" class="btn btn-primary">Register</button>
+							<p>Or</p>
+							<a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	
-	<!-- jQuery and Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>

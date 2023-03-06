@@ -235,6 +235,15 @@ def get_type():
     data = json.loads(response.text)
     return jsonify(data)
 
+@app.route('/profile/<username>', methods=['GET', 'POST'])
+def profile(username):
+    if 'username' in session:
+        username = session['username']
+        profile = users.find_one({'username': username})
+        return render_template('profile.html', profile=profile, username=username)
+    else:
+        return redirect(url_for('home'))
+
 if __name__ == '__main__':
     app.run(port=8080)
 

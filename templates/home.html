@@ -98,16 +98,15 @@ var otherLayer = L.layerGroup();
 let postLatitude;
 let postLongitude;
 var postCount = "{{ count }}";
-
-fetch('/get_data')
-.then(response => response.json())
-.then(data => {
-    var overlayMaps = {
+var overlayMaps = {
         "Charity": charityLayer,
         "Warning": warningLayer,
         "Other": otherLayer,
     };
-    L.control.layers(null, overlayMaps).addTo(map);
+L.control.layers(null, overlayMaps).addTo(map);
+fetch('/get_data')
+.then(response => response.json())
+.then(data => {
     for (let i = 0; i < postCount; i++) {
         if (data['documents'][i]['type'] == "Charity") {
             postLatitude = data['documents'][i]['latitude'];

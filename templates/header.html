@@ -42,9 +42,15 @@
         </div>
         <form class="d-flex" role="search">
           {% if username %}
-            <span class="navbar-text" style="margin-right: 5px;">Welcome,</span>
-            <span class="navbar-text" style="margin-right: 10px;">{{ username }}!</span>
-            <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('logout') }}">Logout</a>
+          <div class="btn-group" style="margin-right: 30px;">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+              Welcome, {{ username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+              <li><a class="dropdown-item" href="/profile/{{username}}">Profile</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+          </div>
           {% else %}
             <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>
             <a href="/register" class="btn btn-success" style="margin-right: 10px;" role="button">Register</a>
