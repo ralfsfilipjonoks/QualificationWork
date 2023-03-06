@@ -36,7 +36,7 @@ crossorigin=""/>
                     <h5 class="card-title">{{ x['name'] }}</h5>
                     <p class="card-text">{{ x['description'] }}</p>
                     <p class="fw-light">{{ x['postdate'] }}</p>
-                    <a onclick="myFunction(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)" id="my-button" href="#" class="btn btn-primary">Event lookup</a>
+                    <a onclick="myFunction(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)" id="my-button" class="btn btn-primary">Event lookup</a>
                 </div>
             </div>
             {% endfor %}
@@ -119,9 +119,9 @@ fetch('/get_data')
             "<br> Post date: "+data['documents'][i]['postdate']+
             "<br> End date: "+data['documents'][i]['removedate']+
             "<br> Type: "+data['documents'][i]['type']+
-            "<br> Author: "+data['documents'][i]['author']+"")
+            "<br> Author: "+data['documents'][i]['author']+
+            "<br> <button class='btn btn-danger'>Report</button>")
             charityLayer.addLayer(x);
-            charityLayer.checked = true;
             x.on('click', function(e) {
                 map.setView(e.latlng, 16);
             });
@@ -136,7 +136,8 @@ fetch('/get_data')
             "<br> Post date: "+data['documents'][i]['postdate']+
             "<br> End date: "+data['documents'][i]['removedate']+
             "<br> Type: "+data['documents'][i]['type']+
-            "<br> Author: "+data['documents'][i]['author']+"")
+            "<br> Author: "+data['documents'][i]['author']+
+            "<br> <button class='btn btn-danger'>Report</button>")
             warningLayer.addLayer(x);
             x.on('click', function(e) {
                 map.setView(e.latlng, 16);
@@ -151,7 +152,8 @@ fetch('/get_data')
             "<br> Post date: "+data['documents'][i]['postdate']+
             "<br> End date: "+data['documents'][i]['removedate']+
             "<br> Type: "+data['documents'][i]['type']+
-            "<br> Author: "+data['documents'][i]['author']+"")
+            "<br> Author: "+data['documents'][i]['author']+
+            "<br> <button class='btn btn-danger'>Report</button>")
             otherLayer.addLayer(x);
             x.on('click', function(e) {
                 map.setView(e.latlng, 16);

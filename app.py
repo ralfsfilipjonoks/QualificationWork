@@ -78,7 +78,7 @@ def register():
         if (password != repeatpassword):
             return 'Passwords does not match'
         users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex})
-        return 'User registered successfully'
+        return 'User registered successfully <a href="/">Homepage</a> <a href="/login">Login</a>'
     return render_template('register.html')
 
 @app.route('/about')
@@ -195,9 +195,10 @@ def delete_point(point_id):
 @app.route('/edit_point/<point_id>', methods=['GET', 'POST'])
 def edit_point(point_id):
     point = points.find_one({'_id': ObjectId(point_id)})
+    allTypes = types.find()
     if 'username' in session:
         username = session['username']
-        render_template('edit_point.html', point=point, username = username)
+        render_template('edit_point.html', point=point, username = username, types = allTypes)
     if request.method == 'POST':
         points.update_one({'_id': ObjectId(point_id)}, {'$set': {
             'name': request.form['name'],
@@ -211,7 +212,7 @@ def edit_point(point_id):
 
         return redirect(url_for('home'))
     else:
-        return render_template('edit_point.html', point=point)
+        return render_template('edit_point.html', point=point, types = allTypes)
 
 @app.route('/get_point_types',  methods=['GET', 'POST'])
 def get_type():
