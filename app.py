@@ -212,7 +212,7 @@ def edit_point(point_id):
 
         return redirect(url_for('home'))
     else:
-        return render_template('edit_point.html', point=point, types = allTypes)
+        return render_template('edit_point.html', point=point, types = allTypes, username = username,)
 
 @app.route('/get_point_types',  methods=['GET', 'POST'])
 def get_type():
