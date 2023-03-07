@@ -1,11 +1,56 @@
 {% extends 'header.html' %}
 
-{% block title %}Eventus{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-<h2>Profile page</h2>
+<!-- <h2>Profile page</h2>
 <p>{{ profile['name'] }}</p>
 <p>{{ profile['surname'] }}</p>
 <p>{{ profile['dateofbirth'] }}</p>
-<p>{{ profile['username'] }}</p>
+<p>{{ profile['username'] }}</p> -->
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-md-4">
+				<img src="https://via.placeholder.com/150" class="img-fluid rounded-circle" alt="Profile Picture">
+			</div>
+			<div class="col-md-8">
+				<h1 class="display-4">{{ profile['name'] }} {{ profile['surname'] }}</h1>
+				<p class="lead">Date of Birth: {{ profile['dateofbirth'] }}</p>
+				<p class="lead">Username: {{ profile['username'] }}</p>
+				<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Account</button>
+				<a href="#" class="btn btn-secondary disabled">Edit Information</a>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="deleteModalLabel">Confirm Account Deletion</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+			  Are you sure you want to delete your account? This action cannot be undone.
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+			  <a href="/delete-user/{{ username }}" type="button" class="btn btn-danger">Delete Account</a>
+			</div>
+		  </div>
+		</div>
+	  </div>
+</body>
+</html>
 {% endblock %}

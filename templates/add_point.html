@@ -40,7 +40,7 @@
     <div class="container mt-5 text-center">
       <div class="container mx-auto">
         {% if notification %}
-            <p>{{ notification }}</p>
+          <div class='alert alert-success' role='alert'>Point added sucessfully!</div>
         {% endif %}
         <h1>Add a Point</h1>
         <form method="post" action="{{ url_for('add_point') }}">

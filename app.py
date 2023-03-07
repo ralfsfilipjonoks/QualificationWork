@@ -124,34 +124,6 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('home'))
 
-@app.route('/get_data')
-def get_data():
-    url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
-    payload = json.dumps({
-        "collection": "pointinfo",
-        "database": "webdata",
-        "dataSource": "ProjektsKarte",
-        "projection": {
-            "_id": 1,
-            "latitude": 1,
-            "longitude": 1,
-            "name": 1,
-            "description": 1,
-            "postdate": 1,
-            "removedate": 1,
-            "type": 1,
-            "author": 1
-        }
-    })
-    headers = {
-    'Content-Type': 'application/ejson',
-    'Access-Control-Request-Headers': '*',
-    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    data = json.loads(response.text)
-    return jsonify(data)
-
 @app.route('/get_data_count')
 def get_data_count():
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
@@ -184,6 +156,34 @@ def get_data_count():
             count += 1
     return jsonify(count=count)
 
+@app.route('/get_data')
+def get_data():
+    url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
+    payload = json.dumps({
+        "collection": "pointinfo",
+        "database": "webdata",
+        "dataSource": "ProjektsKarte",
+        "projection": {
+            "_id": 1,
+            "latitude": 1,
+            "longitude": 1,
+            "name": 1,
+            "description": 1,
+            "postdate": 1,
+            "removedate": 1,
+            "type": 1,
+            "author": 1
+        }
+    })
+    headers = {
+    'Content-Type': 'application/ejson',
+    'Access-Control-Request-Headers': '*',
+    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = json.loads(response.text)
+    return jsonify(data)
+
 @app.route('/add_point', methods=['GET','POST'])
 def add_point():
     allTypes = types.find()
@@ -203,7 +203,7 @@ def add_point():
 
         points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
         notification = 'Point added sucessfully!'
-        return render_template('add_point.html', notification=notification, types = allTypes)
+        return render_template('add_point.html', notification=notification, types = allTypes, username = username)
     return render_template('add_point.html', types = allTypes, username = username)
 
 @app.route('/user_points', methods=['GET', 'POST'])
@@ -234,6 +234,7 @@ def edit_point(point_id):
     if request.method == 'POST':
         points.update_one({'_id': ObjectId(point_id)}, {'$set': {
             'name': request.form['name'],
+            'description': request.form['description'],
             'latitude': request.form['latitude'],
             'longitude': request.form['longitude'],
             'postdate': request.form['post_date'],
@@ -273,6 +274,22 @@ def profile(username):
         username = session['username']
         profile = users.find_one({'username': username})
         return render_template('profile.html', profile=profile, username=username)
+    else:
+        return redirect(url_for('home'))
+
+@app.route('/delete-user/<username>', methods=['DELETE','GET', 'POST'])
+def delete_user(username):
+    if 'username' in session:
+        # Delete user from users collection
+        result = users.delete_one({'username': username})
+        if result.deleted_count == 0:
+            return {'message': 'User not found'}, 404
+
+        # Delete all points with user's username from points collection
+        points.delete_many({'author': username})
+        session.pop('username', None)
+        return redirect(url_for('home'))
+        
     else:
         return redirect(url_for('home'))
 

@@ -46,17 +46,15 @@ var otherIcon = L.icon({
   popupAnchor: [0, -32]
 });
 
-let x;
 var southWest = L.latLng(-90, -180);
 var northEast = L.latLng(90, 180);
 var bounds = L.latLngBounds(southWest, northEast);
 map.setMaxBounds(bounds);
 
+let postLatitude, postLongitude;
 var charityLayer = L.markerClusterGroup();
 var warningLayer = L.markerClusterGroup();
 var otherLayer = L.markerClusterGroup();
-let postLatitude;
-let postLongitude;
 var overlayMaps = {
         "Charity": charityLayer,
         "Warning": warningLayer,
