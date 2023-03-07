@@ -152,6 +152,38 @@ def get_data():
     data = json.loads(response.text)
     return jsonify(data)
 
+@app.route('/get_data_count')
+def get_data_count():
+    url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
+    payload = json.dumps({
+        "collection": "pointinfo",
+        "database": "webdata",
+        "dataSource": "ProjektsKarte",
+        "projection": {
+            "_id": 1,
+            "latitude": 1,
+            "longitude": 1,
+            "name": 1,
+            "description": 1,
+            "postdate": 1,
+            "removedate": 1,
+            "type": 1,
+            "author": 1
+        }
+    })
+    headers = {
+    'Content-Type': 'application/ejson',
+    'Access-Control-Request-Headers': '*',
+    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = json.loads(response.text)
+    count = 0
+    for obj in data['documents']:
+        if '_id' in obj:
+            count += 1
+    return jsonify(count=count)
+
 @app.route('/add_point', methods=['GET','POST'])
 def add_point():
     allTypes = types.find()
