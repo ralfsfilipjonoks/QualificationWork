@@ -226,8 +226,8 @@ def delete_point(point_id):
 
 @app.route('/edit_point/<point_id>', methods=['GET', 'POST'])
 def edit_point(point_id):
-    point = points.find_one({'_id': ObjectId(point_id)})
     allTypes = types.find()
+    point = points.find_one({'_id': ObjectId(point_id)})
     if 'username' in session:
         username = session['username']
         render_template('edit_point.html', point=point, username = username, types = allTypes)
