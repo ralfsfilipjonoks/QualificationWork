@@ -1,8 +1,7 @@
 from bson import ObjectId
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 from flask_pymongo import pymongo
-import requests, json
-import hashlib
+import requests, json, hashlib
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -351,4 +350,3 @@ def admin_delete_point(point_id):
 
 if __name__ == '__main__':
     app.run(port=8080)
-

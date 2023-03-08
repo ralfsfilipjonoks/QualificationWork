@@ -39,6 +39,27 @@ var warningIcon = L.icon({
   popupAnchor: [0, -32]
 });
 
+var concertIcon = L.icon({
+    iconUrl: "/static/icons/concerticon.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+});
+
+var meetupIcon = L.icon({
+    iconUrl: "/static/icons/meetupicon.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+});
+
+var roadWorkIcon = L.icon({
+    iconUrl: "/static/icons/roadworksicon.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+});
+
 var otherIcon = L.icon({
   iconUrl: "/static/icons/othericon.png",
   iconSize: [32, 32],
@@ -54,13 +75,19 @@ map.setMaxBounds(bounds);
 let postLatitude, postLongitude;
 var charityLayer = L.markerClusterGroup();
 var warningLayer = L.markerClusterGroup();
+var concertLayer = L.markerClusterGroup();
 var otherLayer = L.markerClusterGroup();
+var meetupLayer = L.markerClusterGroup();
+var roadWorkLayer = L.markerClusterGroup();
 var overlayMaps = {
         "Charity": charityLayer,
-        "Warning": warningLayer,
+        "Concert": concertLayer,
+        "Meetup": meetupLayer,
         "Other": otherLayer,
+        "Road work": roadWorkLayer,
+        "Warning": warningLayer,
     };
-L.control.layers(null, overlayMaps).addTo(map);
+var layerControl = L.control.layers(null, overlayMaps).addTo(map);
 
 fetch('/get_data')
 .then(response => response.json())
@@ -99,7 +126,59 @@ fetch('/get_data')
             x.on('click', function(e) {
                 map.setView(e.latlng, 16);
             });
-        } if(data['documents'][i]['type'] == "Other") {
+        }
+        if(data['documents'][i]['type'] == "Concert") {
+            postLatitude = data['documents'][i]['latitude'];
+            postLongitude = data['documents'][i]['longitude'];
+            x = L.marker([postLatitude, postLongitude], {icon: concertIcon})
+            .bindPopup("ID: "+data['documents'][i]['_id']+
+            "<br> Name: "+data['documents'][i]['name']+
+            "<br> Description: "+data['documents'][i]['description']+
+            "<br> Post date: "+data['documents'][i]['postdate']+
+            "<br> End date: "+data['documents'][i]['removedate']+
+            "<br> Type: "+data['documents'][i]['type']+
+            "<br> Author: "+data['documents'][i]['author']+
+            "<br> <button class='btn btn-danger'>Report</button>")
+            concertLayer.addLayer(x);
+            x.on('click', function(e) {
+                map.setView(e.latlng, 16);
+            });
+        }
+        if(data['documents'][i]['type'] == "Meetup") {
+            postLatitude = data['documents'][i]['latitude'];
+            postLongitude = data['documents'][i]['longitude'];
+            x = L.marker([postLatitude, postLongitude], {icon: meetupIcon})
+            .bindPopup("ID: "+data['documents'][i]['_id']+
+            "<br> Name: "+data['documents'][i]['name']+
+            "<br> Description: "+data['documents'][i]['description']+
+            "<br> Post date: "+data['documents'][i]['postdate']+
+            "<br> End date: "+data['documents'][i]['removedate']+
+            "<br> Type: "+data['documents'][i]['type']+
+            "<br> Author: "+data['documents'][i]['author']+
+            "<br> <button class='btn btn-danger'>Report</button>")
+            meetupLayer.addLayer(x);
+            x.on('click', function(e) {
+                map.setView(e.latlng, 16);
+            });
+        }
+        if(data['documents'][i]['type'] == "Road work") {
+            postLatitude = data['documents'][i]['latitude'];
+            postLongitude = data['documents'][i]['longitude'];
+            x = L.marker([postLatitude, postLongitude], {icon: roadWorkIcon})
+            .bindPopup("ID: "+data['documents'][i]['_id']+
+            "<br> Name: "+data['documents'][i]['name']+
+            "<br> Description: "+data['documents'][i]['description']+
+            "<br> Post date: "+data['documents'][i]['postdate']+
+            "<br> End date: "+data['documents'][i]['removedate']+
+            "<br> Type: "+data['documents'][i]['type']+
+            "<br> Author: "+data['documents'][i]['author']+
+            "<br> <button class='btn btn-danger'>Report</button>")
+            roadWorkLayer.addLayer(x);
+            x.on('click', function(e) {
+                map.setView(e.latlng, 16);
+            });
+        }
+        if(data['documents'][i]['type'] == "Other") {
             postLatitude = data['documents'][i]['latitude'];
             postLongitude = data['documents'][i]['longitude'];
             x = L.marker([postLatitude, postLongitude], {icon: otherIcon})
@@ -117,6 +196,10 @@ fetch('/get_data')
             });
         }
     }
+
+    // Push all Layers into map and show them on map load
+    otherLayer.addTo(map);concertLayer.addTo(map);charityLayer.addTo(map);warningLayer.addTo(map);meetupLayer.addTo(map);roadWorkLayer.addTo(map);
+
     console.log("Marker data loaded!");
 })
 .catch(error => {
