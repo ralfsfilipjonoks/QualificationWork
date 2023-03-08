@@ -19,7 +19,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     minZoom: 3
 }).addTo(map);
 
-function myFunction(latitude, longitude) {
+function goToMarker(latitude, longitude) {
   x = map.setView([latitude, longitude], 16);
   x.openPopup();
 }

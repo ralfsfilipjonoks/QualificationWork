@@ -15,6 +15,7 @@ db = client.webdata
 points = db.pointinfo
 users = db.userdata
 types = db.pointtypes
+admin = db.adminuserdata
 
 @app.route('/')
 def home():
@@ -50,6 +51,9 @@ def home():
     if 'username' in session:
         username = session['username']
         return render_template('home.html', a = a, count = count, username=username, result=result, active_page='home.html')
+    if 'admin' in session:
+        admin = session['admin']
+        return render_template('home.html', a = a, count = count, admin=admin, result=result, active_page='home.html')
     else:
         return render_template('home.html', a = a, count = count, result=result, active_page='home.html')
 
@@ -72,13 +76,14 @@ def register():
         repeatpassword = request.form['repeatpassword']
         hash_object = hashlib.sha256(password.encode('utf-8'))
         hash_hex = hash_object.hexdigest()
-        print(hash_hex)
         if users.find_one({'username': username}):
-            return 'Username already taken'
+            notification = 'Username already taken'
+            return render_template('register.html', notification=notification)
         if (password != repeatpassword):
-            return 'Passwords does not match'
+            notification = 'Passwords does not match'
+            return render_template('register.html', notification=notification)
         users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex})
-        return 'User registered successfully <a href="/">Homepage</a> <a href="/login">Login</a>'
+        return render_template('redirect.html')
     return render_template('register.html')
 
 @app.route('/about')
@@ -107,9 +112,18 @@ def login():
         hash_object = hashlib.sha256(password.encode('utf-8'))
         hash_hex = hash_object.hexdigest()
         user = users.find_one({'username': username})
+        administrator = admin.find_one({'username': username})
         if user:
             if hash_hex == user['password']:
                 session['username'] = user['username']
+                return redirect(url_for('home'))
+            else:
+                error = 'Invalid name or password. Please try again.'
+                return render_template('login.html', error=error)
+        error = 'Invalid name or password. Please try again.'
+        if administrator:
+            if password == administrator['password']:
+                session['admin'] = administrator['username']
                 return redirect(url_for('home'))
             else:
                 error = 'Invalid name or password. Please try again.'
@@ -122,6 +136,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('admin', None)
     return redirect(url_for('home'))
 
 @app.route('/get_data_count')
@@ -245,7 +260,7 @@ def edit_point(point_id):
 
         return redirect(url_for('home'))
     else:
-        return render_template('edit_point.html', point=point, types = allTypes, username = username,)
+        return render_template('edit_point.html', point=point, types = allTypes, username = username)
 
 @app.route('/get_point_types',  methods=['GET', 'POST'])
 def get_type():
@@ -290,6 +305,43 @@ def delete_user(username):
         session.pop('username', None)
         return redirect(url_for('home'))
         
+    else:
+        return redirect(url_for('home'))
+
+@app.route('/admin_ui')
+def admin_ui():
+    if 'username' in session:
+        return redirect(url_for('home'))
+    if 'admin' in session:
+        adminse = session['admin']
+        searchadmins = admin.find_one({'username': adminse})
+        if searchadmins:
+            return render_template('admin_ui.html', admin = adminse, active_page='admin_ui.html')
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('home'))
+
+@app.route('/admin_ui/markers')
+def admin_markers():
+    if 'username' in session:
+        return redirect(url_for('home'))
+    if 'admin' in session:
+        adminse = session['admin']
+        searchadmins = admin.find_one({'username': adminse})
+        if searchadmins:
+            allPoints = list(points.find())
+            return render_template('admin_markers.html', admin = adminse, points = allPoints)
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('home'))
+
+@app.route('/admin_ui/markers/delete_point/<point_id>', methods=['POST'])
+def admin_delete_point(point_id):
+    if 'admin' in session:
+        points.delete_one({'_id': ObjectId(point_id)})
+        return redirect(url_for('home'))
+    if 'username' in session:
+        return redirect(url_for('home'))
     else:
         return redirect(url_for('home'))
 

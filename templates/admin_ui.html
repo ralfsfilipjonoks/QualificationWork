@@ -1,0 +1,30 @@
+{% extends 'header.html' %}
+
+{% block title %}My events{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Dashboard</h1>
+  <p>Welcome to the admin panel!</p>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Markers</h5>
+          <p class="card-text">Manage your markers here.</p>
+          <a href="/admin_ui/markers" class="btn btn-primary">View Markers</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <p class="card-text">View and manage your users here.</p>
+          <a href="#" class="btn btn-primary">View Users</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

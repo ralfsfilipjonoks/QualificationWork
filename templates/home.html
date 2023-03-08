@@ -35,7 +35,7 @@ crossorigin=""/>
                     <h5 class="card-title">{{ x['name'] }}</h5>
                     <p class="card-text">{{ x['description'] }}</p>
                     <p class="fw-light">{{ x['postdate'] }}</p>
-                    <a onclick="myFunction(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)" id="my-button" class="btn btn-primary">Event lookup</a>
+                    <a onclick="goToMarker(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)" id="my-button" class="btn btn-primary">Event lookup</a>
                 </div>
             </div>
             {% endfor %}

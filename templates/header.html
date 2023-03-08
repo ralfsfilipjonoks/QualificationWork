@@ -8,7 +8,13 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary navbar bg-dark" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Eventus</a>
+          {% if username %}
+          <a class="navbar-brand" href="/">Eventus</a>
+          {% elif admin and active_page == 'admin_ui.html'%}
+          <a class="navbar-brand" href="#">Admin Panel</a>
+          {% else %}
+          <a class="navbar-brand" href="/">Eventus</a>
+          {% endif %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -37,6 +43,12 @@
                     </li>
                     {% else %}
                     {% endif %}
+                    {% if admin %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="/admin_ui">Admin panel</a>
+                    </li>
+                    {% else %}
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -52,9 +64,18 @@
               <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
           </div>
+          {% elif admin %}
+          <div class="btn-group" style="margin-right: 30px;">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+              Welcome, {{ admin }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+          </div>
           {% else %}
-            <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>
-            <a href="/register" class="btn btn-success" style="margin-right: 10px;" role="button">Register</a>
+          <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>
+          <a href="/register" class="btn btn-success" style="margin-right: 10px;" role="button">Register</a>
           {% endif %}
         </form>
     </nav>

@@ -1,0 +1,50 @@
+{% extends 'header.html' %}
+
+{% block title %}My events{% endblock %}
+
+{% block content %}
+{% if points %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">latitude</th>
+            <th scope="col">longitude</th>
+            <th scope="col">name</th>
+            <th scope="col">description</th>
+            <th scope="col">post date</th>
+            <th scope="col">remove date</th>
+            <th scope="col">type</th>
+            <th scope="col">author</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for x in points %}
+            <tr>
+              <td scope="row">{{ x['_id'] }}</td>
+              <td>{{ x['latitude'] }}</td>
+              <td>{{ x['longitude'] }}</td>
+              <td>{{ x['name'] }}</td>
+              <td>{{ x['description'] }}</td>
+              <td>{{ x['postdate'] }}</td>
+              <td>{{ x['removedate'] }}</td>
+              <td>{{ x['type'] }}</td>
+              <td>{{ x['author'] }}</td>
+              <td>
+                <form action="/admin_ui/markers/delete_point/{{ x['_id'] }}" method="POST">
+                  <button style="margin-right: 10px;" type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+  <div class="alert alert-danger" style="margin: 10px;" role="alert">
+    No points on this user.
+  </div>
+  {% endif %}
+{% endblock %}
