@@ -135,8 +135,12 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    session.pop('admin', None)
+    if 'username' in session:
+        session.pop('username', None)
+        return redirect(url_for('home'))
+    if 'admin' in session:
+        session.pop('admin', None)
+        return redirect(url_for('home'))
     return redirect(url_for('home'))
 
 @app.route('/get_data_count')
