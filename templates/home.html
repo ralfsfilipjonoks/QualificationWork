@@ -30,7 +30,7 @@ crossorigin=""/>
             {% if result %}
             {% for x in result %}
             <div class="card" style="margin-bottom: 10px;">
-                <h5 class="card-header">{{ x['type'] }}</h5>
+                <h5 class="card-header" id="{{ x['type'] }}" >{{ x['type'] }}</h5>
                 <div class="card-body">
                     <h5 class="card-title">{{ x['name'] }}</h5>
                     <p class="card-text">{{ x['description'] }}</p>

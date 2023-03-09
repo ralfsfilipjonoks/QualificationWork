@@ -9,7 +9,7 @@ fetch('/get_data_count')
 });
 var map = L.map('map').setView([56.946285, 24.105078], 7);
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+var baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     noWrap: true,
     bounds: [
@@ -21,7 +21,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 function goToMarker(latitude, longitude) {
   x = map.setView([latitude, longitude], 16);
-  x.openPopup();
 }
 
 // Point custom icons

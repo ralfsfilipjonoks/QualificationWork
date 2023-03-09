@@ -33,20 +33,14 @@
             <input type="date" class="form-control" id="remove_date" name="remove_date" value="{{ point.removedate }}">
           </div>
         </div>
-        <!-- <label for="type" class="form-label">Type:</label>
+        <label for="type" class="form-label">Type:</label>
         <select class="form-select" id="type" name="type" aria-label="Select an option">
+          <option value="{{ point.type }}">{{ point.type }} (Selected)</option>
           {% if types %}
           {% for x in types %}
             <option value="{{ x['type'] }}">{{ x['type'] }}</option>
           {% endfor %}
           {% endif %}
-        </select><br> -->
-
-        <label for="type">Type:</label>
-        <select class="form-select" id="type" name="type">
-          <option value="Charity">Charity</option>
-          <option value="Warning">Warning</option>
-          <option value="Other">Other</option>
         </select><br>
         <button type="submit" class="btn btn-primary">Save Changes</button>
       </form>

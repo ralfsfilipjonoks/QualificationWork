@@ -27,7 +27,7 @@
 				<p class="lead">Date of Birth: {{ profile['dateofbirth'] }}</p>
 				<p class="lead">Username: {{ profile['username'] }}</p>
 				<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Account</button>
-				<a href="#" class="btn btn-secondary disabled">Edit Information</a>
+				<a href="/profile/edit/{{ username }}" class="btn btn-secondary">Edit Information</a>
 			</div>
 		</div>
 	</div>
