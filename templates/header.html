@@ -2,87 +2,137 @@
 <html>
   <head>
     <title>{% block title %}My Website{% endblock %}</title>
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"></script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary navbar bg-dark" data-bs-theme="dark">
-        <div class="container-fluid">
-          {% if username %}
-          <a class="navbar-brand" href="/">Eventus</a>
-          {% elif admin and active_page == 'admin_ui.html'%}
-          <a class="navbar-brand" href="#">Admin Panel</a>
-          {% else %}
-          <a class="navbar-brand" href="/">Eventus</a>
-          {% endif %}
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="/about">About</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link disabled" href="/release">Release</a>
-                    </li>
-                    {% if active_page == 'home.html' %}
-                    <li class="nav-item">
-                      <a class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Points</a>
-                    </li>
-                    {% endif %}
-                    {% if username %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="/add_point">Add point</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="/user_points">My points</a>
-                    </li>
-                    {% else %}
-                    {% endif %}
-                    {% if admin %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="/admin_ui">Admin panel</a>
-                    </li>
-                    {% else %}
-                    {% endif %}
-                </ul>
-            </div>
+    <nav
+      class="navbar navbar-expand-lg bg-body-tertiary navbar bg-dark"
+      data-bs-theme="dark">
+      <div class="container-fluid">
+        {% if username %}
+        <a class="navbar-brand" href="/">Eventus</a>
+        {% elif admin and active_page == 'admin_ui.html'%}
+        <a class="navbar-brand" href="#">Admin Panel</a>
+        {% else %}
+        <a class="navbar-brand" href="/">Eventus</a>
+        {% endif %}
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="/about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="/release">Release</a>
+            </li>
+            {% if active_page == 'home.html' %}
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasScrolling"
+                aria-controls="offcanvasScrolling"
+                >Points</a
+              >
+            </li>
+            {% endif %} {% if username %}
+            <li class="nav-item">
+              <a class="nav-link" href="/add_point">Add point</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user_points">My points</a>
+            </li>
+            {% else %} {% endif %} {% if admin %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin_ui">Admin panel</a>
+            </li>
+            {% else %} {% endif %}
+          </ul>
         </div>
-        <form class="d-flex" role="search">
-          {% if username %}
-          <div class="btn-group" style="margin-right: 30px;">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-              Welcome, {{ username }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-              <li><a class="dropdown-item" href="/profile/{{username}}">Profile</a></li>
-              <li><a class="dropdown-item disabled" href="/settigs/{{username}}">Settings</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
-          </div>
-          {% elif admin %}
-          <div class="btn-group" style="margin-right: 30px;">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-              Welcome, {{ admin }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
-          </div>
-          {% else %}
-          <a class="btn btn-success" style="margin-right: 10px;" href="{{ url_for('login') }}">Login</a>
-          <a href="/register" class="btn btn-success" style="margin-right: 10px;" role="button">Register</a>
-          {% endif %}
-        </form>
+      </div>
+      <form class="d-flex" role="search">
+        {% if username %}
+        <div class="btn-group" style="margin-right: 30px">
+          <button
+            type="button"
+            class="btn btn-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            data-bs-display="static"
+            aria-expanded="false">
+            Welcome, {{ username }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+            <li>
+              <a class="dropdown-item" href="/profile/{{username}}">Profile</a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="/settigs/{{username}}"
+                >Settings</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+          </ul>
+        </div>
+        {% elif admin %}
+        <div class="btn-group" style="margin-right: 30px">
+          <button
+            type="button"
+            class="btn btn-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            data-bs-display="static"
+            aria-expanded="false">
+            Welcome, {{ admin }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+            <li>
+              <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+          </ul>
+        </div>
+        {% else %}
+        <a
+          class="btn btn-success"
+          style="margin-right: 10px"
+          href="{{ url_for('login') }}"
+          >Login</a
+        >
+        <a
+          href="/register"
+          class="btn btn-success"
+          style="margin-right: 10px"
+          role="button"
+          >Register</a
+        >
+        {% endif %}
+      </form>
     </nav>
-    <main>
-      {% block content %}{% endblock %}
-    </main>
+    <main>{% block content %}{% endblock %}</main>
   </body>
 </html>

@@ -400,7 +400,7 @@ def admin_spec_user_markers():
         return redirect(url_for('home'))
 
 
-@app.route('/admin_ui/markers/delete_point/<point_id>', methods=['POST'])
+@app.route('/admin_ui/markers/delete_point/<point_id>', methods=['DELETE','GET','POST'])
 def admin_delete_point(point_id):
     if 'admin' in session:
         points.delete_one({'_id': ObjectId(point_id)})

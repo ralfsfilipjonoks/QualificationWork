@@ -1,38 +1,38 @@
 <!DOCTYPE html>
-{% extends 'header.html' %}
-
-{% block title %}Add point{% endblock %}
-
-{% block content %}
+{% extends 'header.html' %} {% block title %}Add point{% endblock %} {% block
+content %}
 <html>
   <head>
     <title>Add a Point</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
     <script>
-    function initMap() {
-      var map = L.map('map').setView([37.7749, -122.4194], 8);
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-        noWrap: true,
-        bounds: [
-        [-90, -180],
-        [90, 180]
-        ],
-        minZoom: 3
-      }).addTo(map);
-      var southWest = L.latLng(-90, -180);
-      var northEast = L.latLng(90, 180);
-      var bounds = L.latLngBounds(southWest, northEast);
-      map.setMaxBounds(bounds);
-      
-      map.on('click', function(e) {
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lng;
-      });
+      function initMap() {
+        var map = L.map("map").setView([37.7749, -122.4194], 8);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+          noWrap: true,
+          bounds: [
+            [-90, -180],
+            [90, 180],
+          ],
+          minZoom: 3,
+        }).addTo(map);
+        var southWest = L.latLng(-90, -180);
+        var northEast = L.latLng(90, 180);
+        var bounds = L.latLngBounds(southWest, northEast);
+        map.setMaxBounds(bounds);
+
+        map.on("click", function (e) {
+          var lat = e.latlng.lat;
+          var lng = e.latlng.lng;
+          document.getElementById("latitude").value = lat;
+          document.getElementById("longitude").value = lng;
+        });
       }
     </script>
   </head>
@@ -40,52 +40,103 @@
     <div class="container mt-5 text-center">
       <div class="container mx-auto">
         {% if notification %}
-          <div class='alert alert-success' role='alert'>Point added sucessfully!</div>
+        <div class="alert alert-success" role="alert">
+          Point added sucessfully!
+        </div>
         {% endif %}
         <h1>Add a Point</h1>
         <form method="post" action="{{ url_for('add_point') }}">
           <label for="name" class="form-label">Name:</label>
-          <input type="text" id="name" name="name" class="form-control" placeholder="Enter point name" required><br>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-control"
+            placeholder="Enter point name"
+            required /><br />
 
           <div class="row">
             <div class="col">
               <label for="latitude" class="form-label">Latitude:</label>
-              <input type="number" id="latitude" class="form-control" placeholder="Enter latitude" name="latitude" step="0.00000000000000001" min="-90" max="90" required><br>
+              <input
+                type="number"
+                id="latitude"
+                class="form-control"
+                placeholder="Enter latitude"
+                name="latitude"
+                step="0.00000000000000001"
+                min="-90"
+                max="90"
+                required /><br />
             </div>
             <div class="col">
               <label for="longitude" class="form-label">Longitude:</label>
-              <input type="number" id="longitude" class="form-control" placeholder="Enter longitude" name="longitude" step="0.00000000000000001" min="-180" max="180" required><br>
+              <input
+                type="number"
+                id="longitude"
+                class="form-control"
+                placeholder="Enter longitude"
+                name="longitude"
+                step="0.00000000000000001"
+                min="-180"
+                max="180"
+                required /><br />
             </div>
           </div>
 
           <label for="description" class="form-label">Description:</label>
-          <textarea type="text" id="description" name="description" required class="form-control" placeholder="Enter a description"></textarea>
+          <textarea
+            type="text"
+            id="description"
+            name="description"
+            required
+            class="form-control"
+            placeholder="Enter a description"></textarea>
 
           <div class="row">
             <div class="col">
               <label for="postdate" class="form-label">Post Date:</label>
-              <input type="date" id="postdate" name="postdate" required class="form-control">
+              <input
+                type="date"
+                id="postdate"
+                name="postdate"
+                required
+                class="form-control" />
             </div>
             <div class="col">
               <label for="removedate" class="form-label">Remove Date:</label>
-              <input type="date" id="removedate" name="removedate" class="form-control">
+              <input
+                type="date"
+                id="removedate"
+                name="removedate"
+                class="form-control" />
             </div>
           </div>
 
           <label for="type" class="form-label">Type:</label>
-          <select class="form-select" id="type" name="type" aria-label="Select an option">
-          {% if types %}
-          {% for x in types %}
+          <select
+            class="form-select"
+            id="type"
+            name="type"
+            aria-label="Select an option">
+            {% if types %} {% for x in types %}
             <option value="{{ x['type'] }}">{{ x['type'] }}</option>
-          {% endfor %}
-          {% endif %}
-          </select><br>
+            {% endfor %} {% endif %}</select
+          ><br />
 
-          <input type="hidden" id="username" name="username" value="{{ username }}">
+          <input
+            type="hidden"
+            id="username"
+            name="username"
+            value="{{ username }}" />
 
-          <input type="submit" style="width: 100%;" class="btn btn-success" value="Add Point">
+          <input
+            type="submit"
+            style="width: 100%"
+            class="btn btn-success"
+            value="Add Point" />
           <p>Press on map to get latitude and longitude.</p>
-          <div id="map" style="width: 100%;height: 500px;"></div>
+          <div id="map" style="width: 100%; height: 500px"></div>
         </form>
       </div>
     </div>
