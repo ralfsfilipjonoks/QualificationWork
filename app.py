@@ -2,6 +2,7 @@ from bson import ObjectId
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 from flask_pymongo import pymongo
 import requests, json, hashlib
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -18,6 +19,13 @@ admin = db.adminuserdata
 
 @app.route('/')
 def home():
+    today = datetime.utcnow()
+    today = today.strftime("%Y-%m-%d")
+    query = {"removedate": {"$lt": today}}
+    documents_to_delete = points.find(query)
+    for doc in documents_to_delete:
+        points.delete_one({"_id": doc["_id"]})
+    allTypes = types.find()
     result = list(points.find().sort('postdate', +1))
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
@@ -49,12 +57,12 @@ def home():
             count += 1
     if 'username' in session:
         username = session['username']
-        return render_template('home.html', a = a, count = count, username=username, result=result, active_page='home.html')
+        return render_template('home.html', a = a, count = count, username=username, result=result, active_page='home.html', allTypes=allTypes)
     if 'admin' in session:
         admin = session['admin']
-        return render_template('home.html', a = a, count = count, admin=admin, result=result, active_page='home.html')
+        return render_template('home.html', a = a, count = count, admin=admin, result=result, active_page='home.html', allTypes=allTypes)
     else:
-        return render_template('home.html', a = a, count = count, result=result, active_page='home.html')
+        return render_template('home.html', a = a, count = count, result=result, active_page='home.html', allTypes=allTypes)
 
 @app.route('/userheadinfo')
 def userheadinfo():
@@ -204,6 +212,8 @@ def get_data():
 
 @app.route('/add_point', methods=['GET','POST'])
 def add_point():
+    today = datetime.utcnow()
+    today = today.strftime("%Y-%m-%d")
     allTypes = types.find()
     if 'username' in session:
         username = session['username']
@@ -218,10 +228,13 @@ def add_point():
         removedate = request.form.get('removedate')
         pointtype = request.form['type']
         user = username
-
-        points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
-        notification = 'Point added sucessfully!'
-        return render_template('add_point.html', notification=notification, types = allTypes, username = username)
+        if today > removedate:
+            notification = 'Bad remove date!'
+            return render_template('add_point.html', notification=notification, types = allTypes, username = username)
+        else:
+            points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
+            notification = 'Point added sucessfully!'
+            return render_template('add_point.html', notification=notification, types = allTypes, username = username)
     return render_template('add_point.html', types = allTypes, username = username)
 
 @app.route('/user_points', methods=['GET', 'POST'])
@@ -244,13 +257,19 @@ def delete_point(point_id):
 
 @app.route('/edit_point/<point_id>', methods=['GET', 'POST'])
 def edit_point(point_id):
+    today = datetime.utcnow()
+    today = today.strftime("%Y-%m-%d")
     allTypes = types.find()
     point = points.find_one({'_id': ObjectId(point_id)})
     if 'username' in session:
         username = session['username']
         # return render_template('edit_point.html', point=point, username = username, types = allTypes)
         if request.method == 'POST':
-            points.update_one({'_id': ObjectId(point_id)}, {'$set': {
+            if today > request.form['remove_date']:
+                notification = 'Bad remove date!'
+                return render_template('edit_point.html', notification=notification, point=point, username = username, types = allTypes)
+            else:
+                points.update_one({'_id': ObjectId(point_id)}, {'$set': {
                 'name': request.form['name'],
                 'description': request.form['description'],
                 'latitude': request.form['latitude'],

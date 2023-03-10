@@ -1,49 +1,136 @@
-{% extends 'header.html' %}
+{% extends 'header.html' %}{% block content %}
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
+<script>
+  function initMap() {
+    var map = L.map("map").setView([56.946285, 24.105078], 7);
 
-{% block contents %}
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      noWrap: true,
+      bounds: [
+        [-90, -180],
+        [90, 180],
+      ],
+      minZoom: 3,
+    }).addTo(map);
+    var southWest = L.latLng(-90, -180);
+    var northEast = L.latLng(90, 180);
+    var bounds = L.latLngBounds(southWest, northEast);
+    map.setMaxBounds(bounds);
+
+    map.on("click", function (e) {
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+      document.getElementById("latitude").value = lat;
+      document.getElementById("longitude").value = lng;
+    });
+  }
+</script>
+<body onload="initMap()">
   <div class="container mt-5 text-center">
     <div class="container mx-auto">
       <h1>Edit Point</h1>
+      {% if notification %}
+      <div class="alert alert-danger" role="alert">
+        Remove date can't be before today!
+      </div>
+      {% endif %}
       <form method="post">
         <div class="form-group">
           <label for="name">Name:</label>
-          <input type="text" class="form-control" id="name" name="name" value="{{ point.name }}">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            value="{{ point.name }}" />
         </div>
         <div class="row">
           <div class="col">
             <label for="latitude" class="form-label">Latitude:</label>
-            <input type="number" id="latitude" class="form-control" placeholder="Enter latitude" value="{{ point.latitude }}" name="latitude" step="0.00000000000000001" min="-90" max="90" required><br>
+            <input
+              type="number"
+              id="latitude"
+              class="form-control"
+              placeholder="Enter latitude"
+              value="{{ point.latitude }}"
+              name="latitude"
+              step="0.00000000000000001"
+              min="-90"
+              max="90"
+              required /><br />
           </div>
           <div class="col">
             <label for="longitude" class="form-label">Longitude:</label>
-            <input type="number" id="longitude" class="form-control" placeholder="Enter longitude" value="{{ point.longitude }}" name="longitude" step="0.00000000000000001" min="-180" max="180" required><br>
+            <input
+              type="number"
+              id="longitude"
+              class="form-control"
+              placeholder="Enter longitude"
+              value="{{ point.longitude }}"
+              name="longitude"
+              step="0.00000000000000001"
+              min="-180"
+              max="180"
+              required /><br />
           </div>
         </div>
         <div class="form-group">
           <label for="description" class="form-label">Description:</label>
-          <input type="text" id="description" name="description" value="{{ point.description }}" required class="form-control" placeholder="Enter a description"></input>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            value="{{ point.description }}"
+            required
+            class="form-control"
+            placeholder="Enter a description" />
         </div>
         <div class="row">
           <div class="col">
             <label for="postdate">Post Date:</label>
-            <input type="date" class="form-control" id="post_date" name="post_date" value="{{ point.postdate }}">
+            <input
+              type="date"
+              class="form-control"
+              id="post_date"
+              name="post_date"
+              value="{{ point.postdate }}" />
           </div>
           <div class="col">
             <label for="removedate">Remove Date:</label>
-            <input type="date" class="form-control" id="remove_date" name="remove_date" value="{{ point.removedate }}">
+            <input
+              type="date"
+              class="form-control"
+              id="remove_date"
+              name="remove_date"
+              value="{{ point.removedate }}" />
           </div>
         </div>
         <label for="type" class="form-label">Type:</label>
-        <select class="form-select" id="type" name="type" aria-label="Select an option">
+        <select
+          class="form-select"
+          id="type"
+          name="type"
+          aria-label="Select an option">
           <option value="{{ point.type }}">{{ point.type }} (Selected)</option>
-          {% if types %}
-          {% for x in types %}
-            <option value="{{ x['type'] }}">{{ x['type'] }}</option>
-          {% endfor %}
-          {% endif %}
-        </select><br>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+          {% if types %} {% for x in types %}
+          <option value="{{ x['type'] }}">{{ x['type'] }}</option>
+          {% endfor %} {% endif %}</select
+        ><br />
+        <p>Press on map to get latitude and longitude.</p>
+        <div id="map" style="width: 100%; height: 500px"></div>
+        <button
+          style="width: 100%; margin-top: 20px; margin-bottom: 20px"
+          type="submit"
+          class="btn btn-primary">
+          Save Changes
+        </button>
       </form>
     </div>
   </div>
+</body>
 {% endblock %}

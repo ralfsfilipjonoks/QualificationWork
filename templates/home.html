@@ -1,50 +1,79 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-     crossorigin=""></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.Default.css" />
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+  integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+  crossorigin="" />
+<script
+  src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+  integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+  crossorigin=""></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.css" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.Default.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/leaflet.markercluster.js"></script>
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
-{% extends 'header.html' %}
-
-{% block title %}Eventus{% endblock %}
-
-{% block content %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static',filename='styles/style.css') }}" />
+{% extends 'header.html' %} {% block title %}Eventus{% endblock %} {% block
+content %}
 <html>
-<head>
+  <head>
     <title>Homepage</title>
-</head>
-<body>
+  </head>
+  <body>
     <div id="map"></div>
 
-    <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Events</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <div
+      class="offcanvas offcanvas-start"
+      data-bs-scroll="true"
+      data-bs-backdrop="false"
+      tabindex="-1"
+      id="offcanvasScrolling"
+      aria-labelledby="offcanvasScrollingLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Events</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"></button>
+      </div>
+      <!-- Type filter for the future (Need JS code to work!) -->
+      <!-- <form>
+        {% if allTypes %} {% for x in allTypes %}
+        <label for="{{ x['type'] }}">
+          <input
+            type="checkbox"
+            name="{{ x['type'] }}"
+            value="{{ x['type'] }}"
+            class="check" /> </label
+        >{{ x['type'] }} {% endfor %} {% endif %}
+      </form> -->
+      <div class="offcanvas-body">
+        {% if result %} {% for x in result %}
+        <div id="{{ x['type'] }}" class="card" style="margin-bottom: 10px">
+          <h5 class="card-header" id="{{ x['type'] }}">{{ x['type'] }}</h5>
+          <div class="card-body">
+            <h5 class="card-title">{{ x['name'] }}</h5>
+            <p class="card-text">{{ x['description'] }}</p>
+            <p class="fw-light">{{ x['postdate'] }}</p>
+            <a
+              onclick="goToMarker(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)"
+              id="my-button"
+              class="btn btn-primary"
+              >Event lookup</a
+            >
+          </div>
         </div>
-        <div class="offcanvas-body">
-            {% if result %}
-            {% for x in result %}
-            <div class="card" style="margin-bottom: 10px;">
-                <h5 class="card-header" id="{{ x['type'] }}" >{{ x['type'] }}</h5>
-                <div class="card-body">
-                    <h5 class="card-title">{{ x['name'] }}</h5>
-                    <p class="card-text">{{ x['description'] }}</p>
-                    <p class="fw-light">{{ x['postdate'] }}</p>
-                    <a onclick="goToMarker(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)" id="my-button" class="btn btn-primary">Event lookup</a>
-                </div>
-            </div>
-            {% endfor %}
-            {% else %}
-            {% endif %}
-        </div>
+        {% endfor %} {% else %} {% endif %}
+      </div>
     </div>
-</body>
-<script src="{{url_for('static', filename='main.js')}}"></script>
-</script>
+  </body>
+  <script src="{{url_for('static', filename='main.js')}}"></script>
 </html>
 {% endblock %}

@@ -10,7 +10,7 @@ content %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
     <script>
       function initMap() {
-        var map = L.map("map").setView([37.7749, -122.4194], 8);
+        var map = L.map("map").setView([56.946285, 24.105078], 7);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution:
@@ -39,11 +39,15 @@ content %}
   <body onload="initMap()">
     <div class="container mt-5 text-center">
       <div class="container mx-auto">
-        {% if notification %}
+        {% if notification %} {%if notification == 'Bad remove date!'%}
+        <div class="alert alert-danger" role="alert">
+          Remove date can't be before today!
+        </div>
+        {% endif %} {% if notification == 'Point added sucessfully!'%}
         <div class="alert alert-success" role="alert">
           Point added sucessfully!
         </div>
-        {% endif %}
+        {%endif%}{% endif %}
         <h1>Add a Point</h1>
         <form method="post" action="{{ url_for('add_point') }}">
           <label for="name" class="form-label">Name:</label>

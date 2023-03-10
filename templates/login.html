@@ -14,7 +14,7 @@
     <style>
       /* Styles for the page container */
       body {
-        background-color: #f1f1f1;
+        background: linear-gradient(to bottom, #1e90ff, #00ffff);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -70,7 +70,7 @@
   </head>
   <body>
     <div class="container">
-      <h2>Sign in</h2>
+      <h1 style="margin-bottom: 40px">Sign in</h1>
       {% if error %}
       <div class="alert alert-danger" role="alert">{{ error }}</div>
       {% endif %}

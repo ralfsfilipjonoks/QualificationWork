@@ -8,6 +8,7 @@ fetch("/get_data_count")
   .catch((error) => {
     console.error("Error:", error);
   });
+
 var map = L.map("map").setView([56.946285, 24.105078], 7);
 
 var baseLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
