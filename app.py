@@ -255,7 +255,7 @@ def userspoints():
     result = list(points.find({'author': username}))
     return render_template('userpoints.html', result = result, username = username)
 
-@app.route('/delete_point/<point_id>', methods=['POST'])
+@app.route('/delete_point/<point_id>', methods=['GET','POST'])
 def delete_point(point_id):
     if 'username' in session:
         points.delete_one({'_id': ObjectId(point_id)})

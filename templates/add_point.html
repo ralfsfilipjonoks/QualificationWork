@@ -43,6 +43,50 @@ content %}
             document.getElementById("longitude").value = lng;
           }
         });
+        const badWords = [
+          "cunt",
+          "fuck",
+          "kys",
+          "retard",
+          "nigg",
+          "nigger",
+          "nigga",
+          "fuck",
+          "fucker",
+          "niger",
+          "N1gger",
+          "nigge",
+          "niggers",
+          "kysretard",
+          "kill your self",
+          "idiot",
+        ];
+
+        const inputField = document.getElementById("name");
+        const submitButton = document.getElementById("finish");
+        const textarea = document.getElementById("description");
+        const alertBox = document.getElementById("alertBox");
+
+        const checkForBadWords = function () {
+          const inputValue = inputField.value.toLowerCase();
+          const textareaValue = textarea.value.toLowerCase();
+          let hasBadWords = false;
+
+          for (let i = 0; i < badWords.length; i++) {
+            const badWord = badWords[i];
+            const regex = new RegExp("\\b" + badWord + "\\b", "gi");
+            if (regex.test(inputValue) || regex.test(textareaValue)) {
+              hasBadWords = true;
+              break;
+            }
+          }
+
+          submitButton.disabled = hasBadWords;
+          alertBox.style.display = hasBadWords ? "block" : "none";
+        };
+
+        inputField.addEventListener("input", checkForBadWords);
+        textarea.addEventListener("input", checkForBadWords);
       }
     </script>
   </head>
@@ -54,6 +98,13 @@ content %}
         {% endif %} {% if notification == 'Point added sucessfully!' %}
         <div class="alert alert-success" role="alert">{{ notification }}</div>
         {% endif %}
+        <div
+          class="alert alert-danger mt-3"
+          role="alert"
+          id="alertBox"
+          style="display: none">
+          Your input contains inappropriate content.
+        </div>
         <h1>Add a Point</h1>
         <form method="post" action="{{ url_for('add_point') }}">
           <label for="name" class="form-label">Name:</label>
@@ -141,6 +192,7 @@ content %}
           <p>Press on map to get latitude and longitude.</p>
           <div id="map" style="width: 100%; height: 500px"></div>
           <input
+            id="finish"
             type="submit"
             style="width: 100%; margin-top: 20px; margin-bottom: 20px"
             class="btn btn-success"

@@ -4,6 +4,7 @@ fetch("/get_data_count")
   .then((data) => {
     postCount = data.count;
     console.log(postCount);
+    return fetch("/get_data");
   })
   .catch((error) => {
     console.error("Error:", error);

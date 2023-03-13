@@ -38,6 +38,50 @@
         document.getElementById("longitude").value = lng;
       }
     });
+    const badWords = [
+      "cunt",
+      "fuck",
+      "kys",
+      "retard",
+      "nigg",
+      "nigger",
+      "nigga",
+      "fuck",
+      "fucker",
+      "niger",
+      "N1gger",
+      "nigge",
+      "niggers",
+      "kysretard",
+      "kill your self",
+      "idiot",
+    ];
+
+    const inputField = document.getElementById("name");
+    const submitButton = document.getElementById("finish");
+    const textarea = document.getElementById("description");
+    const alertBox = document.getElementById("alertBox");
+
+    const checkForBadWords = function () {
+      const inputValue = inputField.value.toLowerCase();
+      const textareaValue = textarea.value.toLowerCase();
+      let hasBadWords = false;
+
+      for (let i = 0; i < badWords.length; i++) {
+        const badWord = badWords[i];
+        const regex = new RegExp("\\b" + badWord + "\\b", "gi");
+        if (regex.test(inputValue) || regex.test(textareaValue)) {
+          hasBadWords = true;
+          break;
+        }
+      }
+
+      submitButton.disabled = hasBadWords;
+      alertBox.style.display = hasBadWords ? "block" : "none";
+    };
+
+    inputField.addEventListener("input", checkForBadWords);
+    textarea.addEventListener("input", checkForBadWords);
   }
 </script>
 <body onload="initMap()">
@@ -49,6 +93,13 @@
         Remove date can't be before today!
       </div>
       {% endif %}
+      <div
+        class="alert alert-danger mt-3"
+        role="alert"
+        id="alertBox"
+        style="display: none">
+        Your input contains inappropriate content.
+      </div>
       <form method="post">
         <div class="form-group">
           <label for="name">Name:</label>
@@ -136,6 +187,7 @@
         <button
           style="width: 100%; margin-top: 20px; margin-bottom: 20px"
           type="submit"
+          id="finish"
           class="btn btn-primary">
           Save Changes
         </button>
