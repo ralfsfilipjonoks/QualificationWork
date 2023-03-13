@@ -21,12 +21,22 @@
     var northEast = L.latLng(90, 180);
     var bounds = L.latLngBounds(southWest, northEast);
     map.setMaxBounds(bounds);
+    var markers = [];
 
     map.on("click", function (e) {
       var lat = e.latlng.lat;
       var lng = e.latlng.lng;
-      document.getElementById("latitude").value = lat;
-      document.getElementById("longitude").value = lng;
+      if (markers.length > 0) {
+        // if markers exist, remove the last one from the map and array
+        var lastMarker = markers.pop();
+        map.removeLayer(lastMarker);
+      } else {
+        // if no markers exist, create a new marker and add it to the map and array
+        var newMarker = L.marker(e.latlng).addTo(map);
+        markers.push(newMarker);
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+      }
     });
   }
 </script>

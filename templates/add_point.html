@@ -26,12 +26,22 @@ content %}
         var northEast = L.latLng(90, 180);
         var bounds = L.latLngBounds(southWest, northEast);
         map.setMaxBounds(bounds);
+        var markers = [];
 
         map.on("click", function (e) {
           var lat = e.latlng.lat;
           var lng = e.latlng.lng;
-          document.getElementById("latitude").value = lat;
-          document.getElementById("longitude").value = lng;
+          if (markers.length > 0) {
+            // if markers exist, remove the last one from the map and array
+            var lastMarker = markers.pop();
+            map.removeLayer(lastMarker);
+          } else {
+            // if no markers exist, create a new marker and add it to the map and array
+            var newMarker = L.marker(e.latlng).addTo(map);
+            markers.push(newMarker);
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lng;
+          }
         });
       }
     </script>
@@ -39,15 +49,11 @@ content %}
   <body onload="initMap()">
     <div class="container mt-5 text-center">
       <div class="container mx-auto">
-        {% if notification %} {%if notification == 'Bad remove date!'%}
-        <div class="alert alert-danger" role="alert">
-          Remove date can't be before today!
-        </div>
-        {% endif %} {% if notification == 'Point added sucessfully!'%}
-        <div class="alert alert-success" role="alert">
-          Point added sucessfully!
-        </div>
-        {%endif%}{% endif %}
+        {% if notification and notification != 'Point added sucessfully!'%}
+        <div class="alert alert-danger" role="alert">{{ notification }}</div>
+        {% endif %} {% if notification == 'Point added sucessfully!' %}
+        <div class="alert alert-success" role="alert">{{ notification }}</div>
+        {% endif %}
         <h1>Add a Point</h1>
         <form method="post" action="{{ url_for('add_point') }}">
           <label for="name" class="form-label">Name:</label>
@@ -59,7 +65,7 @@ content %}
             placeholder="Enter point name"
             required /><br />
 
-          <div class="row">
+          <div class="row" style="display: none">
             <div class="col">
               <label for="latitude" class="form-label">Latitude:</label>
               <input
@@ -70,8 +76,7 @@ content %}
                 name="latitude"
                 step="0.00000000000000001"
                 min="-90"
-                max="90"
-                required /><br />
+                max="90" /><br />
             </div>
             <div class="col">
               <label for="longitude" class="form-label">Longitude:</label>
@@ -83,8 +88,7 @@ content %}
                 name="longitude"
                 step="0.00000000000000001"
                 min="-180"
-                max="180"
-                required /><br />
+                max="180" /><br />
             </div>
           </div>
 
@@ -134,13 +138,13 @@ content %}
             name="username"
             value="{{ username }}" />
 
-          <input
-            type="submit"
-            style="width: 100%"
-            class="btn btn-success"
-            value="Add Point" />
           <p>Press on map to get latitude and longitude.</p>
           <div id="map" style="width: 100%; height: 500px"></div>
+          <input
+            type="submit"
+            style="width: 100%; margin-top: 20px; margin-bottom: 20px"
+            class="btn btn-success"
+            value="Add Point" />
         </form>
       </div>
     </div>

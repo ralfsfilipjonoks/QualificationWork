@@ -217,12 +217,15 @@ def add_point():
     allTypes = types.find()
     if 'username' in session:
         username = session['username']
+        postsByUser = points.count_documents({"author": username})
+        if postsByUser >= 10:
+            return render_template('add_point_limit.html', username = username)
     else:
         return redirect(url_for('home'))
     if request.method == 'POST':
         pointname = request.form['name']
-        latitude = float(request.form['latitude'])
-        longitude = float(request.form['longitude'])
+        latitude = str(request.form['latitude'])
+        longitude = str(request.form['longitude'])
         description = request.form['description']
         postdate = request.form['postdate']
         removedate = request.form.get('removedate')
@@ -231,7 +234,12 @@ def add_point():
         if today > removedate:
             notification = 'Bad remove date!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = username)
+        if str(latitude) == '' or str(longitude) == '':
+            notification = 'Put a point in the map!'
+            return render_template('add_point.html', notification=notification, types = allTypes, username = username)
         else:
+            latitude = float(request.form['latitude'])
+            longitude = float(request.form['longitude'])
             points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
             notification = 'Point added sucessfully!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = username)

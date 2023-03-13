@@ -1,0 +1,27 @@
+{% extends 'header.html' %} {% block title %}Add point{% endblock %} {% block
+content %}
+<body>
+  <div class="container mt-5">
+    <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">Marker Input Limit Reached</h4>
+      <p>
+        You have reached the maximum number of markers (10) you can input for
+        your account.
+      </p>
+      <hr />
+      <p class="mb-0">Please choose one of the following options:</p>
+      <div class="d-flex justify-content-between">
+        <a class="btn btn-danger" type="button" href="/user_points">
+          Delete Some Markers
+        </a>
+        <button
+          class="btn btn-primary disabled"
+          type="button"
+          onclick="upgradeAccount()">
+          Upgrade to Premium
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock %}
