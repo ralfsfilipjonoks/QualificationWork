@@ -4,6 +4,12 @@ content %}
 <html>
   <head>
     <title>User Marker Table</title>
+    <style>
+      .table-hover th:hover {
+        cursor: pointer;
+        background-color: #f5f5f5;
+      }
+    </style>
   </head>
   <body>
     <div class="container mt-5">
@@ -20,15 +26,16 @@ content %}
             name="username"
             placeholder="Enter username" />
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="usersubmit" class="btn btn-primary" disabled>
+          Submit
+        </button>
       </form>
-
       <hr />
 
       <!-- Table to display markers -->
       {% if allUserPoints %}
       <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped table-hover" id="myTable">
           <thead>
             <tr>
               <th scope="col">id</th>
@@ -36,8 +43,8 @@ content %}
               <th scope="col">longitude</th>
               <th scope="col">name</th>
               <th scope="col">description</th>
-              <th scope="col">post date</th>
-              <th scope="col">remove date</th>
+              <th scope="col" onclick="toggleDate()">post date</th>
+              <th scope="col" onclick="toggleRemoveDate()">remove date</th>
               <th scope="col">type</th>
               <th scope="col">author</th>
               <th scope="col">Delete</th>
@@ -126,6 +133,81 @@ content %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      const inputField = document.getElementById("username");
+      const submitButton = document.getElementById("usersubmit");
+
+      inputField.addEventListener("input", function () {
+        if (inputField.value.trim() !== "") {
+          submitButton.disabled = false;
+        } else {
+          submitButton.disabled = true;
+        }
+      });
+      var toggle = false;
+
+      function toggleDate() {
+        toggle = !toggle;
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("myTable");
+        switching = true;
+        while (switching) {
+          switching = false;
+          rows = table.rows;
+          for (i = 1; i < rows.length - 1; i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("td")[5];
+            y = rows[i + 1].getElementsByTagName("td")[5];
+            if (toggle) {
+              if (x.innerHTML < y.innerHTML) {
+                shouldSwitch = true;
+                break;
+              }
+            } else {
+              if (x.innerHTML > y.innerHTML) {
+                shouldSwitch = true;
+                break;
+              }
+            }
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+          }
+        }
+      }
+      var toggle = false;
+      function toggleRemoveDate() {
+        toggle = !toggle;
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("myTable");
+        switching = true;
+        while (switching) {
+          switching = false;
+          rows = table.rows;
+          for (i = 1; i < rows.length - 1; i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("td")[6];
+            y = rows[i + 1].getElementsByTagName("td")[6];
+            if (toggle) {
+              if (x.innerHTML < y.innerHTML) {
+                shouldSwitch = true;
+                break;
+              }
+            } else {
+              if (x.innerHTML > y.innerHTML) {
+                shouldSwitch = true;
+                break;
+              }
+            }
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+          }
+        }
+      }
+    </script>
   </body>
 </html>
 {% endblock %}
