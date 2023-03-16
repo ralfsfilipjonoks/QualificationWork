@@ -1,14 +1,17 @@
 let postCount;
-fetch("/get_data_count")
-  .then((response) => response.json())
-  .then((data) => {
-    postCount = data.count;
-    console.log(postCount);
-    return fetch("/get_data");
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+async function getDataCount() {
+  fetch("/get_data_count")
+    .then((response) => response.json())
+    .then((data) => {
+      postCount = data.count;
+      console.log(postCount);
+      // fetch("/get_data");
+      getData();
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
 
 var map = L.map("map").setView([56.946285, 24.105078], 7);
 
@@ -92,184 +95,239 @@ var overlayMaps = {
 };
 var layerControl = L.control.layers(null, overlayMaps).addTo(map);
 
-fetch("/get_data")
-  .then((response) => response.json())
-  .then((data) => {
-    for (let i = 0; i < postCount; i++) {
-      if (data["documents"][i]["type"] == "Charity") {
-        postLatitude = data["documents"][i]["latitude"];
-        postLongitude = data["documents"][i]["longitude"];
-        x = L.marker([postLatitude, postLongitude], {
-          icon: charityIcon,
-        }).bindPopup(
-          "ID: " +
-            data["documents"][i]["_id"] +
-            "<br> Name: " +
-            data["documents"][i]["name"] +
-            "<br> Description: " +
-            data["documents"][i]["description"] +
-            "<br> Post date: " +
-            data["documents"][i]["postdate"] +
-            "<br> End date: " +
-            data["documents"][i]["removedate"] +
-            "<br> Type: " +
-            data["documents"][i]["type"] +
-            "<br> Author: " +
-            data["documents"][i]["author"] +
-            "<br> <button class='btn btn-danger'>Report</button>"
-        );
-        charityLayer.addLayer(x);
-        x.on("click", function (e) {
-          map.setView(e.latlng, 16);
-        });
+async function getData() {
+  await fetch("/get_data")
+    .then((response) => response.json())
+    .then((data) => {
+      for (let i = 0; i < postCount; i++) {
+        if (data["documents"][i]["type"] == "Charity") {
+          postLatitude = data["documents"][i]["latitude"];
+          postLongitude = data["documents"][i]["longitude"];
+          x = L.marker([postLatitude, postLongitude], {
+            icon: charityIcon,
+          }).bindPopup(
+            "ID: " +
+              data["documents"][i]["_id"] +
+              "<br> Name: " +
+              data["documents"][i]["name"] +
+              "<br> Description: " +
+              data["documents"][i]["description"] +
+              "<br> Post date: " +
+              data["documents"][i]["postdate"] +
+              "<br> End date: " +
+              data["documents"][i]["removedate"] +
+              "<br> Type: " +
+              data["documents"][i]["type"] +
+              "<br> Author: " +
+              data["documents"][i]["author"] +
+              "<br> <button class='btn btn-danger'>Report</button>"
+          );
+          charityLayer.addLayer(x);
+          x.on("click", function (e) {
+            map.setView(e.latlng, 16);
+          });
+        }
+        if (data["documents"][i]["type"] == "Warning") {
+          postLatitude = data["documents"][i]["latitude"];
+          postLongitude = data["documents"][i]["longitude"];
+          x = L.marker([postLatitude, postLongitude], {
+            icon: warningIcon,
+          }).bindPopup(
+            "ID: " +
+              data["documents"][i]["_id"] +
+              "<br> Name: " +
+              data["documents"][i]["name"] +
+              "<br> Description: " +
+              data["documents"][i]["description"] +
+              "<br> Post date: " +
+              data["documents"][i]["postdate"] +
+              "<br> End date: " +
+              data["documents"][i]["removedate"] +
+              "<br> Type: " +
+              data["documents"][i]["type"] +
+              "<br> Author: " +
+              data["documents"][i]["author"] +
+              "<br> <button class='btn btn-danger'>Report</button>"
+          );
+          warningLayer.addLayer(x);
+          x.on("click", function (e) {
+            map.setView(e.latlng, 16);
+          });
+        }
+        if (data["documents"][i]["type"] == "Concert") {
+          postLatitude = data["documents"][i]["latitude"];
+          postLongitude = data["documents"][i]["longitude"];
+          x = L.marker([postLatitude, postLongitude], {
+            icon: concertIcon,
+          }).bindPopup(
+            "ID: " +
+              data["documents"][i]["_id"] +
+              "<br> Name: " +
+              data["documents"][i]["name"] +
+              "<br> Description: " +
+              data["documents"][i]["description"] +
+              "<br> Post date: " +
+              data["documents"][i]["postdate"] +
+              "<br> End date: " +
+              data["documents"][i]["removedate"] +
+              "<br> Type: " +
+              data["documents"][i]["type"] +
+              "<br> Author: " +
+              data["documents"][i]["author"] +
+              "<br> <button class='btn btn-danger'>Report</button>"
+          );
+          concertLayer.addLayer(x);
+          x.on("click", function (e) {
+            map.setView(e.latlng, 16);
+          });
+        }
+        if (data["documents"][i]["type"] == "Meetup") {
+          postLatitude = data["documents"][i]["latitude"];
+          postLongitude = data["documents"][i]["longitude"];
+          x = L.marker([postLatitude, postLongitude], {
+            icon: meetupIcon,
+          }).bindPopup(
+            "ID: " +
+              data["documents"][i]["_id"] +
+              "<br> Name: " +
+              data["documents"][i]["name"] +
+              "<br> Description: " +
+              data["documents"][i]["description"] +
+              "<br> Post date: " +
+              data["documents"][i]["postdate"] +
+              "<br> End date: " +
+              data["documents"][i]["removedate"] +
+              "<br> Type: " +
+              data["documents"][i]["type"] +
+              "<br> Author: " +
+              data["documents"][i]["author"] +
+              "<br> <button class='btn btn-danger'>Report</button>"
+          );
+          meetupLayer.addLayer(x);
+          x.on("click", function (e) {
+            map.setView(e.latlng, 16);
+          });
+        }
+        if (data["documents"][i]["type"] == "Road work") {
+          postLatitude = data["documents"][i]["latitude"];
+          postLongitude = data["documents"][i]["longitude"];
+          x = L.marker([postLatitude, postLongitude], {
+            icon: roadWorkIcon,
+          }).bindPopup(
+            "ID: " +
+              data["documents"][i]["_id"] +
+              "<br> Name: " +
+              data["documents"][i]["name"] +
+              "<br> Description: " +
+              data["documents"][i]["description"] +
+              "<br> Post date: " +
+              data["documents"][i]["postdate"] +
+              "<br> End date: " +
+              data["documents"][i]["removedate"] +
+              "<br> Type: " +
+              data["documents"][i]["type"] +
+              "<br> Author: " +
+              data["documents"][i]["author"] +
+              "<br> <button class='btn btn-danger'>Report</button>"
+          );
+          roadWorkLayer.addLayer(x);
+          x.on("click", function (e) {
+            map.setView(e.latlng, 16);
+          });
+        }
+        if (data["documents"][i]["type"] == "Other") {
+          postLatitude = data["documents"][i]["latitude"];
+          postLongitude = data["documents"][i]["longitude"];
+          x = L.marker([postLatitude, postLongitude], {
+            icon: otherIcon,
+          }).bindPopup(
+            "ID: " +
+              data["documents"][i]["_id"] +
+              "<br> Name: " +
+              data["documents"][i]["name"] +
+              "<br> Description: " +
+              data["documents"][i]["description"] +
+              "<br> Post date: " +
+              data["documents"][i]["postdate"] +
+              "<br> End date: " +
+              data["documents"][i]["removedate"] +
+              "<br> Type: " +
+              data["documents"][i]["type"] +
+              "<br> Author: " +
+              data["documents"][i]["author"] +
+              "<br> <button class='btn btn-danger'>Report</button>"
+          );
+          otherLayer.addLayer(x);
+          x.on("click", function (e) {
+            map.setView(e.latlng, 16);
+          });
+        }
       }
-      if (data["documents"][i]["type"] == "Warning") {
-        postLatitude = data["documents"][i]["latitude"];
-        postLongitude = data["documents"][i]["longitude"];
-        x = L.marker([postLatitude, postLongitude], {
-          icon: warningIcon,
-        }).bindPopup(
-          "ID: " +
-            data["documents"][i]["_id"] +
-            "<br> Name: " +
-            data["documents"][i]["name"] +
-            "<br> Description: " +
-            data["documents"][i]["description"] +
-            "<br> Post date: " +
-            data["documents"][i]["postdate"] +
-            "<br> End date: " +
-            data["documents"][i]["removedate"] +
-            "<br> Type: " +
-            data["documents"][i]["type"] +
-            "<br> Author: " +
-            data["documents"][i]["author"] +
-            "<br> <button class='btn btn-danger'>Report</button>"
-        );
-        warningLayer.addLayer(x);
-        x.on("click", function (e) {
-          map.setView(e.latlng, 16);
-        });
+      // async function getTypes() {
+      //   await fetch("/get_point_types")
+      //     .then((response) => response.json())
+      //     .then((data) => {
+      //       for (let i = 0; i < 6; i++) {
+      //         console.log(data["documents"][i]["type"]);
+      //       }
+      //       // console.log("type loaded");
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error:", error);
+      //     });
+      // }
+      async function getUserSettings() {
+        await fetch("/user_settings_data")
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            if (data.error) {
+              otherLayer.addTo(map);
+              concertLayer.addTo(map);
+              charityLayer.addTo(map);
+              warningLayer.addTo(map);
+              meetupLayer.addTo(map);
+              roadWorkLayer.addTo(map);
+            } else {
+              for (let i = 0; i < 6; i++) {
+                if (data[i] == "Charity") {
+                  charityLayer.addTo(map);
+                }
+                if (data[i] == "Meetup") {
+                  meetupLayer.addTo(map);
+                }
+                if (data[i] == "Warning") {
+                  warningLayer.addTo(map);
+                }
+                if (data[i] == "Other") {
+                  otherLayer.addTo(map);
+                }
+                if (data[i] == "Concert") {
+                  concertLayer.addTo(map);
+                }
+                if (data[i] == "Road work") {
+                  roadWorkLayer.addTo(map);
+                }
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
       }
-      if (data["documents"][i]["type"] == "Concert") {
-        postLatitude = data["documents"][i]["latitude"];
-        postLongitude = data["documents"][i]["longitude"];
-        x = L.marker([postLatitude, postLongitude], {
-          icon: concertIcon,
-        }).bindPopup(
-          "ID: " +
-            data["documents"][i]["_id"] +
-            "<br> Name: " +
-            data["documents"][i]["name"] +
-            "<br> Description: " +
-            data["documents"][i]["description"] +
-            "<br> Post date: " +
-            data["documents"][i]["postdate"] +
-            "<br> End date: " +
-            data["documents"][i]["removedate"] +
-            "<br> Type: " +
-            data["documents"][i]["type"] +
-            "<br> Author: " +
-            data["documents"][i]["author"] +
-            "<br> <button class='btn btn-danger'>Report</button>"
-        );
-        concertLayer.addLayer(x);
-        x.on("click", function (e) {
-          map.setView(e.latlng, 16);
-        });
-      }
-      if (data["documents"][i]["type"] == "Meetup") {
-        postLatitude = data["documents"][i]["latitude"];
-        postLongitude = data["documents"][i]["longitude"];
-        x = L.marker([postLatitude, postLongitude], {
-          icon: meetupIcon,
-        }).bindPopup(
-          "ID: " +
-            data["documents"][i]["_id"] +
-            "<br> Name: " +
-            data["documents"][i]["name"] +
-            "<br> Description: " +
-            data["documents"][i]["description"] +
-            "<br> Post date: " +
-            data["documents"][i]["postdate"] +
-            "<br> End date: " +
-            data["documents"][i]["removedate"] +
-            "<br> Type: " +
-            data["documents"][i]["type"] +
-            "<br> Author: " +
-            data["documents"][i]["author"] +
-            "<br> <button class='btn btn-danger'>Report</button>"
-        );
-        meetupLayer.addLayer(x);
-        x.on("click", function (e) {
-          map.setView(e.latlng, 16);
-        });
-      }
-      if (data["documents"][i]["type"] == "Road work") {
-        postLatitude = data["documents"][i]["latitude"];
-        postLongitude = data["documents"][i]["longitude"];
-        x = L.marker([postLatitude, postLongitude], {
-          icon: roadWorkIcon,
-        }).bindPopup(
-          "ID: " +
-            data["documents"][i]["_id"] +
-            "<br> Name: " +
-            data["documents"][i]["name"] +
-            "<br> Description: " +
-            data["documents"][i]["description"] +
-            "<br> Post date: " +
-            data["documents"][i]["postdate"] +
-            "<br> End date: " +
-            data["documents"][i]["removedate"] +
-            "<br> Type: " +
-            data["documents"][i]["type"] +
-            "<br> Author: " +
-            data["documents"][i]["author"] +
-            "<br> <button class='btn btn-danger'>Report</button>"
-        );
-        roadWorkLayer.addLayer(x);
-        x.on("click", function (e) {
-          map.setView(e.latlng, 16);
-        });
-      }
-      if (data["documents"][i]["type"] == "Other") {
-        postLatitude = data["documents"][i]["latitude"];
-        postLongitude = data["documents"][i]["longitude"];
-        x = L.marker([postLatitude, postLongitude], {
-          icon: otherIcon,
-        }).bindPopup(
-          "ID: " +
-            data["documents"][i]["_id"] +
-            "<br> Name: " +
-            data["documents"][i]["name"] +
-            "<br> Description: " +
-            data["documents"][i]["description"] +
-            "<br> Post date: " +
-            data["documents"][i]["postdate"] +
-            "<br> End date: " +
-            data["documents"][i]["removedate"] +
-            "<br> Type: " +
-            data["documents"][i]["type"] +
-            "<br> Author: " +
-            data["documents"][i]["author"] +
-            "<br> <button class='btn btn-danger'>Report</button>"
-        );
-        otherLayer.addLayer(x);
-        x.on("click", function (e) {
-          map.setView(e.latlng, 16);
-        });
-      }
-    }
+      // getTypes();
+      getUserSettings();
+      // Push all Layers into map and show them on map load
+      // otherLayer.addTo(map);
+      // concertLayer.addTo(map);
+      // charityLayer.addTo(map);
+      // warningLayer.addTo(map);
+      // meetupLayer.addTo(map);
+      // roadWorkLayer.addTo(map);
 
-    // Push all Layers into map and show them on map load
-    otherLayer.addTo(map);
-    concertLayer.addTo(map);
-    charityLayer.addTo(map);
-    warningLayer.addTo(map);
-    meetupLayer.addTo(map);
-    roadWorkLayer.addTo(map);
-
-    console.log("Marker data loaded!");
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+      console.log("Marker data loaded!");
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}

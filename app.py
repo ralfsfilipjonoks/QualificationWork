@@ -85,13 +85,14 @@ def register():
         repeatpassword = request.form['repeatpassword']
         hash_object = hashlib.sha256(password.encode('utf-8'))
         hash_hex = hash_object.hexdigest()
-        if users.find_one({'username': username}):
+        if users.find_one({'username': username}) or admin.find_one({'username': username}):
             notification = 'Username already taken'
             return render_template('register.html', notification=notification)
         if (password != repeatpassword):
             notification = 'Passwords does not match'
             return render_template('register.html', notification=notification)
         users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex})
+        usettings.insert_one({'username': username, 'settings': {'posts': []}})
         return render_template('redirect.html')
     return render_template('register.html')
 
@@ -259,19 +260,28 @@ def userspoints():
 
 @app.route('/user_settings', methods=['GET', 'POST'])
 def usersettings():
+    allTypes = types.find()
     if 'username' in session:
         username = session['username']
         settings = usettings.find_one({"username": username})
-        if not settings:
+        if settings == None:
             usettings.insert_one({'username': username, 'settings': {'posts': []}})
 
         if request.method == 'POST':
             posts = request.form.getlist('post')
             usettings.update_one({'username': username}, {'$set': {'settings.posts': posts}})
-        return render_template('user_settings.html',  username = username, settings=settings)
+        return render_template('user_settings.html',  username = username, settings=settings, allTypes=allTypes)
     else:
         return redirect(url_for('home'))
 
+@app.route('/user_settings_data')
+def user_settings_data():
+    if 'username' in session:
+        username = session['username']
+        data = usettings.find_one({"username": username})
+        return list(data["settings"]["posts"])
+    else:
+        return jsonify({"error": "No user settings"})
 
 @app.route('/delete_point/<point_id>', methods=['GET','POST'])
 def delete_point(point_id):
@@ -368,6 +378,7 @@ def delete_user(username):
 
         # Delete all points with user's username from points collection
         points.delete_many({'author': username})
+        usettings.delete_one({'username': username})
         session.pop('username', None)
         return redirect(url_for('home'))
         
