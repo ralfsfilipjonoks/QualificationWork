@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 from flask_pymongo import pymongo
 import requests, json, hashlib
 from datetime import datetime
+import json
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -16,6 +17,7 @@ points = db.pointinfo
 users = db.userdata
 types = db.pointtypes
 admin = db.adminuserdata
+usettings = db.usersettings
 
 @app.route('/')
 def home():
@@ -254,6 +256,22 @@ def userspoints():
         return redirect(url_for('home'))
     result = list(points.find({'author': username}))
     return render_template('userpoints.html', result = result, username = username)
+
+@app.route('/user_settings', methods=['GET', 'POST'])
+def usersettings():
+    if 'username' in session:
+        username = session['username']
+        settings = usettings.find_one({"username": username})
+        if not settings:
+            usettings.insert_one({'username': username, 'settings': {'posts': []}})
+
+        if request.method == 'POST':
+            posts = request.form.getlist('post')
+            usettings.update_one({'username': username}, {'$set': {'settings.posts': posts}})
+        return render_template('user_settings.html',  username = username, settings=settings)
+    else:
+        return redirect(url_for('home'))
+
 
 @app.route('/delete_point/<point_id>', methods=['GET','POST'])
 def delete_point(point_id):
