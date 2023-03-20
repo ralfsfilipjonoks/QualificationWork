@@ -1,11 +1,12 @@
+// Need in for cycle when putting markers on the map
 let postCount;
+// Puts in variable post count in db
 async function getDataCount() {
   fetch("/get_data_count")
     .then((response) => response.json())
     .then((data) => {
       postCount = data.count;
       console.log(postCount);
-      // fetch("/get_data");
       getData();
     })
     .catch((error) => {
@@ -13,6 +14,7 @@ async function getDataCount() {
     });
 }
 
+// Map creation and options for it
 var map = L.map("map").setView([56.946285, 24.105078], 7);
 
 var baseLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -26,6 +28,7 @@ var baseLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   minZoom: 3,
 }).addTo(map);
 
+// Go to specific marker when button is pressed
 function goToMarker(latitude, longitude) {
   x = map.setView([latitude, longitude], 16);
 }
@@ -73,11 +76,13 @@ var otherIcon = L.icon({
   popupAnchor: [0, -32],
 });
 
+// Sets map range to user
 var southWest = L.latLng(-90, -180);
 var northEast = L.latLng(90, 180);
 var bounds = L.latLngBounds(southWest, northEast);
 map.setMaxBounds(bounds);
 
+// Each layer cluster group
 let postLatitude, postLongitude;
 var charityLayer = L.markerClusterGroup();
 var warningLayer = L.markerClusterGroup();
@@ -95,6 +100,7 @@ var overlayMaps = {
 };
 var layerControl = L.control.layers(null, overlayMaps).addTo(map);
 
+// Fetch data about points and put them on map with all information
 async function getData() {
   await fetch("/get_data")
     .then((response) => response.json())
@@ -314,16 +320,7 @@ async function getData() {
             console.error("Error:", error);
           });
       }
-      // getTypes();
       getUserSettings();
-      // Push all Layers into map and show them on map load
-      // otherLayer.addTo(map);
-      // concertLayer.addTo(map);
-      // charityLayer.addTo(map);
-      // warningLayer.addTo(map);
-      // meetupLayer.addTo(map);
-      // roadWorkLayer.addTo(map);
-
       console.log("Marker data loaded!");
     })
     .catch((error) => {

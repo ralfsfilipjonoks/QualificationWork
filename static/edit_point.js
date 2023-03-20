@@ -32,48 +32,69 @@ function initMap() {
       document.getElementById("longitude").value = lng;
     }
   });
-  const badWords = [
-    "cunt",
-    "fuck",
-    "kys",
-    "retard",
-    "nigg",
-    "nigger",
-    "nigga",
-    "fuck",
-    "fucker",
-    "niger",
-    "N1gger",
-    "nigge",
-    "niggers",
-    "kysretard",
-    "kill your self",
-    "idiot",
-  ];
 
-  const inputField = document.getElementById("name");
-  const submitButton = document.getElementById("finish");
-  const textarea = document.getElementById("description");
-  const alertBox = document.getElementById("alertBox");
+  const postDateInput = document.getElementById("post_date");
+  const removeDateInput = document.getElementById("remove_date");
+  const postTextInput = document.getElementById("name");
+  const postDescInput = document.getElementById("description");
+  const submitButton = document.getElementById("add-point");
+  const notificationDiv = document.getElementById("notification");
 
-  const checkForBadWords = function () {
-    const inputValue = inputField.value.toLowerCase();
-    const textareaValue = textarea.value.toLowerCase();
-    let hasBadWords = false;
+  function checkInputs() {
+    const postDate = new Date(postDateInput.value);
+    const removeDate = new Date(removeDateInput.value);
+    const postText = postTextInput.value.toLowerCase();
+    const postDesc = postDescInput.value.toLowerCase();
+    let notification = "";
 
-    for (let i = 0; i < badWords.length; i++) {
-      const badWord = badWords[i];
-      const regex = new RegExp("\\b" + badWord + "\\b", "gi");
-      if (regex.test(inputValue) || regex.test(textareaValue)) {
-        hasBadWords = true;
+    // Check if post date is before remove date
+    if (postDate > removeDate) {
+      notification = "Post date must be before remove date.";
+    }
+
+    // Check for bad words in post text
+    const badWords = [
+      "cunt",
+      "fuck",
+      "kys",
+      "retard",
+      "nigg",
+      "nigger",
+      "nigga",
+      "fuck",
+      "fucker",
+      "niger",
+      "N1gger",
+      "nigge",
+      "niggers",
+      "kysretard",
+      "kill your self",
+      "idiot",
+      "Nigers",
+    ];
+    for (const word of badWords) {
+      if (postText.includes(word)) {
+        notification = "Name contains a bad word.";
+        break;
+      }
+      if (postDesc.includes(word)) {
+        notification = "Description contains a bad word.";
         break;
       }
     }
 
-    submitButton.disabled = hasBadWords;
-    alertBox.style.display = hasBadWords ? "block" : "none";
-  };
-
-  inputField.addEventListener("input", checkForBadWords);
-  textarea.addEventListener("input", checkForBadWords);
+    // Show or hide notification
+    if (notification) {
+      notificationDiv.textContent = notification;
+      notificationDiv.style.display = "block";
+      submitButton.disabled = true;
+    } else {
+      notificationDiv.style.display = "none";
+      submitButton.disabled = false;
+    }
+  }
+  postDateInput.addEventListener("input", checkInputs);
+  removeDateInput.addEventListener("input", checkInputs);
+  postDescInput.addEventListener("input", checkInputs);
+  postTextInput.addEventListener("input", checkInputs);
 }
