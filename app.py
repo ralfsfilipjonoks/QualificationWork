@@ -58,24 +58,22 @@ def home():
     for obj in a['documents']:
         if '_id' in obj:
             count += 1
-    if 'username' in session:
-        username = session['username']
-        return render_template('home.html', a = a, count = count, username=username, result=result, active_page='home.html', allTypes=allTypes)
-    if 'admin' in session:
-        admin = session['admin']
-        return render_template('home.html', a = a, count = count, admin=admin, result=result, active_page='home.html', allTypes=allTypes)
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        return render_template('home.html', a = a, count = count, username = user_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        return render_template('home.html', a = a, count = count, admin = admin_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
     else:
         return render_template('home.html', a = a, count = count, result=result, active_page='home.html', allTypes=allTypes)
 
-@app.route('/userheadinfo')
-def userheadinfo():
-    if 'username' in session:
-        username = session['username']
-        return username
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if 'username' in session:
+    if 'user_session' in session:
+        return redirect(url_for('home'))
+    if 'admin_session' in session:
         return redirect(url_for('home'))
     if request.method == 'POST':
         name = request.form['name']
@@ -99,26 +97,35 @@ def register():
 
 @app.route('/about')
 def about():
-    if 'username' in session:
-        username = session['username']
-        return render_template('about.html', username = username)
-    if 'admin' in session:
-        adminse = session['admin']
-        return render_template('about.html', admin = adminse)
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        return render_template('about.html', username = user_session_username['username'])
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        return render_template('about.html', admin = admin_session_username['username'])
     else:
         return render_template('about.html')
 
 @app.route('/release')
 def release():
-    if 'username' in session:
-        username = session['username']
-        return render_template('release.html', username = username)
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        return render_template('release.html', username = user_session_username['username'])
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        return render_template('release.html', admin = admin_session_username['username'])
     else:
         return render_template('release.html')    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'username' in session:
+    if 'user_session' in session:
+        return redirect(url_for('home'))
+    if 'admin_session' in session:
         return redirect(url_for('home'))
     if request.method == 'POST':
         username = request.form['username']
@@ -129,7 +136,7 @@ def login():
         administrator = admin.find_one({'username': username})
         if user:
             if hash_hex == user['password']:
-                session['username'] = user['username']
+                session['user_session'] = str(user['_id'])
                 return redirect(url_for('home'))
             else:
                 error = 'Invalid name or password. Please try again.'
@@ -137,7 +144,7 @@ def login():
         error = 'Invalid name or password. Please try again.'
         if administrator:
             if password == administrator['password']:
-                session['admin'] = administrator['username']
+                session['admin_session'] = str(administrator['_id'])
                 return redirect(url_for('home'))
             else:
                 error = 'Invalid name or password. Please try again.'
@@ -149,11 +156,11 @@ def login():
 
 @app.route('/logout')
 def logout():
-    if 'username' in session:
-        session.pop('username', None)
+    if 'user_session' in session:
+        session.pop('user_session', None)
         return redirect(url_for('home'))
-    if 'admin' in session:
-        session.pop('admin', None)
+    if 'admin_session' in session:
+        session.pop('admin_session', None)
         return redirect(url_for('home'))
     return redirect(url_for('home'))
 
@@ -222,11 +229,14 @@ def add_point():
     today = datetime.utcnow()
     today = today.strftime("%Y-%m-%d")
     allTypes = types.find()
-    if 'username' in session:
-        username = session['username']
-        postsByUser = points.count_documents({"author": username})
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        postsByUser = points.count_documents({"author": user_session_username['username']})
         if postsByUser >= 10:
-            return render_template('add_point_limit.html', username = username)
+            return render_template('add_point_limit.html', username = user_session_username['username'])
     else:
         return redirect(url_for('home'))
     if request.method == 'POST':
@@ -237,59 +247,70 @@ def add_point():
         postdate = request.form['postdate']
         removedate = request.form.get('removedate')
         pointtype = request.form['type']
-        user = username
+        user = user_session_username['username']
         if today > removedate:
             notification = 'Bad remove date!'
-            return render_template('add_point.html', notification=notification, types = allTypes, username = username)
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if str(latitude) == '' or str(longitude) == '':
             notification = 'Put a point in the map!'
-            return render_template('add_point.html', notification=notification, types = allTypes, username = username)
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         else:
             latitude = float(request.form['latitude'])
             longitude = float(request.form['longitude'])
             points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
             notification = 'Point added sucessfully!'
-            return render_template('add_point.html', notification=notification, types = allTypes, username = username)
-    return render_template('add_point.html', types = allTypes, username = username)
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+    return render_template('add_point.html', types = allTypes, username = user_session_username['username'])
 
 @app.route('/user_points', methods=['GET', 'POST'])
 def userspoints():
-    if 'username' in session:
-        username = session['username']
-        render_template('userpoints.html', username = username)
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        render_template('userpoints.html', username = user_session_username['username'])
     else:
         return redirect(url_for('home'))
-    result = list(points.find({'author': username}))
-    return render_template('userpoints.html', result = result, username = username)
+    result = list(points.find({'author': user_session_username['username']}))
+    return render_template('userpoints.html', result = result, username = user_session_username['username'])
 
 @app.route('/user_settings', methods=['GET', 'POST'])
 def usersettings():
     allTypes = types.find()
-    if 'username' in session:
-        username = session['username']
-        settings = usettings.find_one({"username": username})
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        settings = usettings.find_one({"username": user_session_username["username"]})
         if settings == None:
-            usettings.insert_one({'username': username, 'settings': {'posts': []}})
+            usettings.insert_one({'username': user_session_username["username"], 'settings': {'posts': []}})
 
         if request.method == 'POST':
             posts = request.form.getlist('post')
-            usettings.update_one({'username': username}, {'$set': {'settings.posts': posts}})
-        return render_template('user_settings.html',  username = username, settings=settings, allTypes=allTypes)
+            usettings.update_one({'username': user_session_username["username"]}, {'$set': {'settings.posts': posts}})
+        return render_template('user_settings.html',  username = user_session_username["username"], settings=settings, allTypes=allTypes)
     else:
         return redirect(url_for('home'))
 
 @app.route('/user_settings_data')
 def user_settings_data():
-    if 'username' in session:
-        username = session['username']
-        data = usettings.find_one({"username": username})
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        data = usettings.find_one({"username": user_session_username["username"]})
         return list(data["settings"]["posts"])
     else:
         return jsonify({"error": "No user settings"})
 
 @app.route('/delete_point/<point_id>', methods=['GET','POST'])
 def delete_point(point_id):
-    if 'username' in session:
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
         points.delete_one({'_id': ObjectId(point_id)})
         return redirect(url_for('home'))
     else:
@@ -297,17 +318,19 @@ def delete_point(point_id):
 
 @app.route('/edit_point/<point_id>', methods=['GET', 'POST'])
 def edit_point(point_id):
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
     today = datetime.utcnow()
     today = today.strftime("%Y-%m-%d")
     allTypes = types.find()
     point = points.find_one({'_id': ObjectId(point_id)})
-    if 'username' in session:
-        username = session['username']
-        # return render_template('edit_point.html', point=point, username = username, types = allTypes)
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         if request.method == 'POST':
             if today > request.form['remove_date']:
                 notification = 'Bad remove date!'
-                return render_template('edit_point.html', notification=notification, point=point, username = username, types = allTypes)
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
             else:
                 points.update_one({'_id': ObjectId(point_id)}, {'$set': {
                 'name': request.form['name'],
@@ -317,13 +340,13 @@ def edit_point(point_id):
                 'postdate': request.form['post_date'],
                 'removedate': request.form['remove_date'],
                 'type': request.form['type'],
-                'author': username
+                'author': user_session_username['username']
             }})
             return redirect(url_for('home'))
         else:
-            return render_template('edit_point.html', point=point, username = username, types = allTypes)
+            return render_template('edit_point.html', point=point, username = user_session_username['username'], types = allTypes)
     else:
-        return render_template('edit_point.html', point=point, types = allTypes, username = username)
+        return render_template('edit_point.html', point=point, types = allTypes, username = user_session_username['username'])
 
 @app.route('/get_point_types',  methods=['GET', 'POST'])
 def get_type():
@@ -348,43 +371,53 @@ def get_type():
 
 @app.route('/profile/<username>', methods=['GET', 'POST'])
 def profile(username):
-    if 'username' in session:
-        username = session['username']
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         profile = users.find_one({'username': username})
-        return render_template('profile.html', profile=profile, username=username)
+        return render_template('profile.html', profile=profile, username=user_session_username["username"])
     else:
         return redirect(url_for('home'))
     
 @app.route('/profile/edit/<username>', methods=['GET', 'POST'])
 def profile_edit(username):
-    if 'username' in session:
-        username = session['username']
-        profile = users.find_one({'username': username})
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        profile = users.find_one({'username': user_session_username["username"]})
         if request.method == 'POST':
-            users.update_one({'username': username}, {'$set': {
+            users.update_one({'username': user_session_username["username"]}, {'$set': {
                 'name': request.form['name'],
                 'surname': request.form['surname'],
                 'dateofbirth': request.form['dob'],
             }})
             notification = "success"
-            return render_template('profile_edit.html', profile=profile, username=username, notification=notification)
-        return render_template('profile_edit.html', profile=profile, username=username)
+            return render_template('profile_edit.html', profile=profile, username=user_session_username["username"], notification=notification)
+        return render_template('profile_edit.html', profile=profile, username=user_session_username["username"])
     else:
         return redirect(url_for('home'))
 
 @app.route('/delete-user/<username>', methods=['DELETE','GET', 'POST'])
 def delete_user(username):
-    if 'username' in session:
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         # Delete user from users collection
-        result = users.delete_one({'username': username})
+        result = users.delete_one({'username': user_session_username["username"]})
         if result.deleted_count == 0:
             return {'message': 'User not found'}, 404
 
         # Delete all points with user's username from points collection
-        points.delete_many({'author': username})
-        usettings.delete_one({'username': username})
-        point_report.delete_many({'reporter': username})
-        session.pop('username', None)
+        points.delete_many({'author': user_session_username["username"]})
+        usettings.delete_one({'username': user_session_username["username"]})
+        point_report.delete_many({'reporter': user_session_username["username"]})
+        session.pop('user_session', None)
         return redirect(url_for('home'))
         
     else:
@@ -392,50 +425,50 @@ def delete_user(username):
 
 @app.route('/admin_ui')
 def admin_ui():
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
-        adminse = session['admin']
-        searchadmins = admin.find_one({'username': adminse})
-        if searchadmins:
-            return render_template('admin_ui.html', admin = adminse, active_page='admin_ui.html')
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        if admin_session_username:
+            return render_template('admin_ui.html', admin = admin_session_username["username"], active_page='admin_ui.html')
         else:
             return redirect(url_for('home'))
     return redirect(url_for('home'))
 
 @app.route('/admin_ui/markers')
 def admin_markers():
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
-        adminse = session['admin']
-        searchadmins = admin.find_one({'username': adminse})
-        if searchadmins:
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        if admin_session_username:
             allPoints = list(points.find())
-            return render_template('admin_markers.html', admin = adminse, points = allPoints)
+            return render_template('admin_markers.html', admin = admin_session_username["username"], points = allPoints)
         else:
             return redirect(url_for('home'))
     return redirect(url_for('home'))
 
 @app.route('/admin_ui/users')
 def admin_users():
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
-        adminse = session['admin']
-        searchadmins = admin.find_one({'username': adminse})
-        if searchadmins:
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        if admin_session_username:
             allUsers = list(users.find())
-            return render_template('admin_users.html', admin = adminse, users = allUsers)
+            return render_template('admin_users.html', admin = admin_session_username["username"], users = allUsers)
         else:
             return redirect(url_for('home'))
     return redirect(url_for('home'))
 
 @app.route('/admin_ui/users/delete_user/<user_id>', methods=['DELETE','GET','POST'])
 def admin_user_delete(user_id):
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
+    if 'admin_session' in session:
         author = users.find_one({'_id': ObjectId(user_id)})
         users.delete_one({'_id': ObjectId(user_id)})
         points.delete_many({'author': author['username']})
@@ -446,80 +479,84 @@ def admin_user_delete(user_id):
 
 @app.route('/admin_ui/spec_users/markers', methods=['GET','POST'])
 def admin_spec_user_markers():
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
-        adminse = session['admin']
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
         if request.method == 'POST':
             username = request.form['username']
             checkusername = users.find_one({'username': username})
             if checkusername:
                 allUserPoints = list(points.find({'author': checkusername['username']}))
-                return render_template('admin_spec_user_markers.html', admin = adminse, allUserPoints = allUserPoints)
-        return render_template('admin_spec_user_markers.html', admin = adminse)
+                return render_template('admin_spec_user_markers.html', admin = admin_session_username["username"], allUserPoints = allUserPoints)
+        return render_template('admin_spec_user_markers.html', admin = admin_session_username["username"])
     else:
         return redirect(url_for('home'))
 
 
 @app.route('/admin_ui/markers/delete_point/<point_id>', methods=['DELETE','GET','POST'])
 def admin_delete_point(point_id):
-    if 'admin' in session:
+    if 'admin_session' in session:
         all_reports = point_report.find({"marker": point_id})
         points.delete_one({'_id': ObjectId(point_id)})
         if(all_reports):
             print("DELETE ALL")
             point_report.delete_many({"marker": point_id})
         return redirect(url_for('home'))
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
     else:
         return redirect(url_for('home'))
 
 @app.route('/report_marker/<marker_id>', methods=['GET','POST'])
 def report_marker(marker_id):
-    if 'username' in session:
-        username = session['username']
-        report_duplicate = point_report.find_one({"marker": marker_id, "reporter": username})
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        report_duplicate = point_report.find_one({"marker": marker_id, "reporter": user_session_username["username"]})
         if report_duplicate:
-            return render_template('report_marker_exists.html', marker_id = marker_id, username = username)
+            return render_template('report_marker_exists.html', marker_id = marker_id, username = user_session_username["username"])
         if request.method == 'POST':
             report_reason = request.form['report_reason']
             report_description = request.form['report_description']
-            point_report.insert_one({"reporter": username, "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
+            point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
             return redirect(url_for('home'))
-        return render_template('report_marker.html', marker_id = marker_id, username = username)
+        return render_template('report_marker.html', marker_id = marker_id, username = user_session_username["username"])
     else:
         # Option for simple unregistered user to report marker
         return redirect(url_for('home'))
 
 @app.route('/admin_ui/report_markers/delete_report/<report_id>', methods=['GET','POST'])
 def admin_report_delete_markers(report_id):
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
-        adminse = session['admin']
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
         point_report.find_one_and_delete({"_id": ObjectId(report_id)})
-        return render_template('admin_report_markers.html', admin = adminse)
+        return render_template('admin_report_markers.html', admin = admin_session_username["username"])
     else:
         return redirect(url_for('home'))
 
 @app.route('/admin_ui/report_markers', methods=['GET','POST'])
 def admin_report_markers():
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))
-    if 'admin' in session:
-        adminse = session['admin']
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
         reports = list(point_report.find())
-        return render_template('admin_report_markers.html', admin = adminse, reports = reports)
+        return render_template('admin_report_markers.html', admin = admin_session_username["username"], reports = reports)
     else:
         return redirect(url_for('home'))
 
 
 @app.route('/delete-reported-user/<marker_id>', methods=['DELETE','GET', 'POST'])
 def delete_user_by_marker(marker_id):
-    if 'username' in session:
+    if 'user_session' in session:
         return redirect(url_for('home'))     
-    else:
+    if 'admin_session' in session:
         # Delete user from users collection
         reported_user = points.find_one({"_id": ObjectId(marker_id)})
         # print(reported_user['author'])
