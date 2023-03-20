@@ -120,7 +120,9 @@ async function getData() {
               data["documents"][i]["type"] +
               "<br> Author: " +
               data["documents"][i]["author"] +
-              "<br> <button class='btn btn-danger'>Report</button>"
+              "<br><form action='/report_marker/" +
+              data["documents"][i]["_id"] +
+              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
           );
           charityLayer.addLayer(x);
           x.on("click", function (e) {
@@ -147,7 +149,9 @@ async function getData() {
               data["documents"][i]["type"] +
               "<br> Author: " +
               data["documents"][i]["author"] +
-              "<br> <button class='btn btn-danger'>Report</button>"
+              "<br><form action='/report_marker/" +
+              data["documents"][i]["_id"] +
+              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
           );
           warningLayer.addLayer(x);
           x.on("click", function (e) {
@@ -174,7 +178,9 @@ async function getData() {
               data["documents"][i]["type"] +
               "<br> Author: " +
               data["documents"][i]["author"] +
-              "<br> <button class='btn btn-danger'>Report</button>"
+              "<br><form action='/report_marker/" +
+              data["documents"][i]["_id"] +
+              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
           );
           concertLayer.addLayer(x);
           x.on("click", function (e) {
@@ -201,7 +207,9 @@ async function getData() {
               data["documents"][i]["type"] +
               "<br> Author: " +
               data["documents"][i]["author"] +
-              "<br> <button class='btn btn-danger'>Report</button>"
+              "<br><form action='/report_marker/" +
+              data["documents"][i]["_id"] +
+              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
           );
           meetupLayer.addLayer(x);
           x.on("click", function (e) {
@@ -228,7 +236,9 @@ async function getData() {
               data["documents"][i]["type"] +
               "<br> Author: " +
               data["documents"][i]["author"] +
-              "<br> <button class='btn btn-danger'>Report</button>"
+              "<br><form action='/report_marker/" +
+              data["documents"][i]["_id"] +
+              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
           );
           roadWorkLayer.addLayer(x);
           x.on("click", function (e) {
@@ -255,7 +265,9 @@ async function getData() {
               data["documents"][i]["type"] +
               "<br> Author: " +
               data["documents"][i]["author"] +
-              "<br> <button class='btn btn-danger'>Report</button>"
+              "<br><form action='/report_marker/" +
+              data["documents"][i]["_id"] +
+              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
           );
           otherLayer.addLayer(x);
           x.on("click", function (e) {
@@ -263,19 +275,6 @@ async function getData() {
           });
         }
       }
-      // async function getTypes() {
-      //   await fetch("/get_point_types")
-      //     .then((response) => response.json())
-      //     .then((data) => {
-      //       for (let i = 0; i < 6; i++) {
-      //         console.log(data["documents"][i]["type"]);
-      //       }
-      //       // console.log("type loaded");
-      //     })
-      //     .catch((error) => {
-      //       console.error("Error:", error);
-      //     });
-      // }
       async function getUserSettings() {
         await fetch("/user_settings_data")
           .then((response) => response.json())

@@ -1,0 +1,104 @@
+{% extends 'header.html' %} {% block title %}My events{% endblock %} {% block
+content %}
+<div class="container-fluid mt-3">
+  <h1>All Reports</h1>
+  <hr />
+
+  <!-- Container 1 -->
+  <div class="card mb-3">
+    <div class="card-header bg-primary text-white">
+      <h2>Marker reports</h2>
+    </div>
+    <div class="table-responsive">
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Reporter</th>
+              <th>Marker_ID</th>
+              <th>Report reason</th>
+              <th>Report description</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for x in reports %}
+            <tr>
+              <td>{{ x['_id'] }}</td>
+              <td>{{ x['reporter'] }}</td>
+              <td>{{ x['marker'] }}</td>
+              <td>{{ x['report_reason'] }}</td>
+              <td>{{ x['report_description'] }}</td>
+              <td>
+                <a
+                  class="btn btn-danger"
+                  data-toggle="modal"
+                  data-target="#deleteModal-{{ x['marker'] }}"
+                  >Remove marker</a
+                >
+                <a
+                  href="/admin_ui/report_markers/delete_report/{{ x['_id'] }}"
+                  class="btn btn-success"
+                  >Delete report</a
+                >
+                <a
+                  href="/delete-reported-user/{{ x['marker'] }}"
+                  class="btn btn-danger"
+                  >Remove user</a
+                >
+                <div
+                  class="modal fade"
+                  id="deleteModal-{{ x['marker'] }}"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="deleteModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">
+                          Confirm Marker Deletion
+                        </h5>
+                        <button
+                          type="button"
+                          class="close"
+                          data-dismiss="modal"
+                          aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Delete marker with id of: {{ x['marker'] }}
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-dismiss="modal">
+                          Cancel
+                        </button>
+                        <a
+                          href="/admin_ui/markers/delete_point/{{ x['marker'] }}"
+                          type="button"
+                          class="btn btn-danger"
+                          >Remove Marker</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}

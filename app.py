@@ -18,6 +18,7 @@ users = db.userdata
 types = db.pointtypes
 admin = db.adminuserdata
 usettings = db.usersettings
+point_report = db.pointreports
 
 @app.route('/')
 def home():
@@ -101,6 +102,9 @@ def about():
     if 'username' in session:
         username = session['username']
         return render_template('about.html', username = username)
+    if 'admin' in session:
+        adminse = session['admin']
+        return render_template('about.html', admin = adminse)
     else:
         return render_template('about.html')
 
@@ -379,6 +383,7 @@ def delete_user(username):
         # Delete all points with user's username from points collection
         points.delete_many({'author': username})
         usettings.delete_one({'username': username})
+        point_report.delete_many({'reporter': username})
         session.pop('username', None)
         return redirect(url_for('home'))
         
@@ -459,11 +464,74 @@ def admin_spec_user_markers():
 @app.route('/admin_ui/markers/delete_point/<point_id>', methods=['DELETE','GET','POST'])
 def admin_delete_point(point_id):
     if 'admin' in session:
+        all_reports = point_report.find({"marker": point_id})
         points.delete_one({'_id': ObjectId(point_id)})
+        if(all_reports):
+            print("DELETE ALL")
+            point_report.delete_many({"marker": point_id})
         return redirect(url_for('home'))
     if 'username' in session:
         return redirect(url_for('home'))
     else:
+        return redirect(url_for('home'))
+
+@app.route('/report_marker/<marker_id>', methods=['GET','POST'])
+def report_marker(marker_id):
+    if 'username' in session:
+        username = session['username']
+        report_duplicate = point_report.find_one({"marker": marker_id, "reporter": username})
+        if report_duplicate:
+            return render_template('report_marker_exists.html', marker_id = marker_id, username = username)
+        if request.method == 'POST':
+            report_reason = request.form['report_reason']
+            report_description = request.form['report_description']
+            point_report.insert_one({"reporter": username, "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
+            return redirect(url_for('home'))
+        return render_template('report_marker.html', marker_id = marker_id, username = username)
+    else:
+        # Option for simple unregistered user to report marker
+        return redirect(url_for('home'))
+
+@app.route('/admin_ui/report_markers/delete_report/<report_id>', methods=['GET','POST'])
+def admin_report_delete_markers(report_id):
+    if 'username' in session:
+        return redirect(url_for('home'))
+    if 'admin' in session:
+        adminse = session['admin']
+        point_report.find_one_and_delete({"_id": ObjectId(report_id)})
+        return render_template('admin_report_markers.html', admin = adminse)
+    else:
+        return redirect(url_for('home'))
+
+@app.route('/admin_ui/report_markers', methods=['GET','POST'])
+def admin_report_markers():
+    if 'username' in session:
+        return redirect(url_for('home'))
+    if 'admin' in session:
+        adminse = session['admin']
+        reports = list(point_report.find())
+        return render_template('admin_report_markers.html', admin = adminse, reports = reports)
+    else:
+        return redirect(url_for('home'))
+
+
+@app.route('/delete-reported-user/<marker_id>', methods=['DELETE','GET', 'POST'])
+def delete_user_by_marker(marker_id):
+    if 'username' in session:
+        return redirect(url_for('home'))     
+    else:
+        # Delete user from users collection
+        reported_user = points.find_one({"_id": ObjectId(marker_id)})
+        # print(reported_user['author'])
+        result = users.delete_one({'username': reported_user['author']})
+        if result.deleted_count == 0:
+            return {'message': 'User not found'}, 404
+
+        # Delete all points with user's username from points collection
+        points.delete_many({'author': reported_user['author']})
+        usettings.delete_one({'username': reported_user['author']})
+        point_report.delete_many({'reporter': reported_user['author']})
+        session.pop('username', None)
         return redirect(url_for('home'))
 
 if __name__ == '__main__':

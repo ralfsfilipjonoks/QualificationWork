@@ -1,0 +1,35 @@
+{% extends 'header.html' %} {% block title %}Profile{% endblock %} {% block
+content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Report Page</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Report marker with id of: {{ marker_id }}</h1>
+      <form method="POST">
+        <div class="form-group">
+          <label for="report-reason">Reason for Report:</label>
+          <select class="form-control" id="report-reason" name="report_reason">
+            <option value="spam">Spam</option>
+            <option value="inappropriate">Inappropriate content</option>
+            <option value="offensive">Offensive language</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="report-description">Description (Optional):</label>
+          <textarea
+            class="form-control"
+            id="report-description"
+            name="report_description"
+            rows="3"
+            placeholder="Enter description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </body>
+</html>
+{% endblock %}
