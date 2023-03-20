@@ -1,7 +1,18 @@
-{% extends 'header.html' %} {% block title %}My events{% endblock %} {% block
-content %} {% if users %}
+{% extends 'header.html' %} {% block title %}Admin page users table{% endblock
+%} {% block content %} {% if users %}
+<style>
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .table-hover th:hover {
+    cursor: pointer;
+    background-color: #f5f5f5;
+  }
+</style>
 <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table table-striped table-hover" id="myTable">
     <thead>
       <tr>
         <th scope="col">id</th>
@@ -41,4 +52,42 @@ content %} {% if users %}
 <div class="alert alert-danger" style="margin: 10px" role="alert">
   No users.
 </div>
-{% endif %} {% endblock %}
+{% endif %}
+<script>
+  // Get the table and its headers
+  const table = document.getElementById("myTable");
+  const headers = table.querySelectorAll("th");
+
+  // Add click event listener to each header
+  headers.forEach((header, index) => {
+    header.addEventListener("click", () => {
+      // Get the table rows
+      const rows = table.querySelectorAll("tbody tr");
+      // Create an array from the rows and sort it by the clicked header
+      const sortedRows = Array.from(rows).sort((a, b) => {
+        const aText = a
+          .querySelector(`td:nth-child(${index + 1})`)
+          .textContent.trim();
+        const bText = b
+          .querySelector(`td:nth-child(${index + 1})`)
+          .textContent.trim();
+        return aText.localeCompare(bText);
+      });
+      // Reverse the sorted array if the header is already sorted in ascending order
+      if (header.classList.contains("asc")) {
+        sortedRows.reverse();
+        header.classList.remove("asc");
+        header.classList.add("desc");
+      } else {
+        header.classList.remove("desc");
+        header.classList.add("asc");
+      }
+      // Replace the old rows with the sorted rows
+      rows.forEach((row) => row.remove());
+      sortedRows.forEach((row) =>
+        table.querySelector("tbody").appendChild(row)
+      );
+    });
+  });
+</script>
+{% endblock %}

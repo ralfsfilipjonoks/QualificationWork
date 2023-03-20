@@ -1,5 +1,5 @@
-{% extends 'header.html' %} {% block title %}My markers{% endblock %} {% block
-content %}
+{% extends 'header.html' %} {% block title %}User settings{% endblock %} {%
+block content %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -19,7 +19,7 @@ content %}
       <h1 style="text-align: center">User settings</h1>
       <form method="POST">
         <div class="container mt-5">
-          <div class="alert alert-warning">
+          <div class="alert alert-dark">
             <h4>Marker popups</h4>
             <p>Choose markers to see them first on the map!</p>
             {% if allTypes %} {% for x in allTypes %}
@@ -31,6 +31,18 @@ content %}
             </div>
             {% endfor %} {% endif %}
             <button type="submit" class="btn btn-primary">Save settings</button>
+          </div>
+          <div class="alert alert-primary">
+            <h4>Upgrade to Premium</h4>
+            <p>
+              With our premium plan, you'll get access to exclusive features
+              that will take your experience to the next level.
+            </p>
+            <ul>
+              <li>Unlimited numbers of posts</li>
+              <li>Priority points</li>
+            </ul>
+            <a href="#" class="btn btn-primary disabled">Upgrade Now</a>
           </div>
           <div class="alert alert-warning">
             <h4>Edit Account</h4>

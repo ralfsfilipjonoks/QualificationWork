@@ -3,7 +3,6 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 from flask_pymongo import pymongo
 import requests, json, hashlib
 from datetime import datetime
-import json
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -570,6 +569,6 @@ def delete_user_by_marker(marker_id):
         point_report.delete_many({'reporter': reported_user['author']})
         session.pop('username', None)
         return redirect(url_for('home'))
-
+    
 if __name__ == '__main__':
     app.run(port=8080)
