@@ -28,7 +28,7 @@ def home():
     for doc in documents_to_delete:
         points.delete_one({"_id": doc["_id"]})
     allTypes = types.find()
-    result = list(points.find().sort('postdate', +1))
+    # result = list(points.find())
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
         "collection": "pointinfo",
@@ -53,6 +53,8 @@ def home():
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     all_posts = json.loads(response.text)
+    current_date = datetime.now().date()
+    filtered_markers = [marker for marker in all_posts['documents'] if marker["postdate"] <= str(current_date)]
     count = 0
     for obj in all_posts['documents']:
         if '_id' in obj:
@@ -60,13 +62,13 @@ def home():
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('home.html', count = count, username = user_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, username = user_session_username['username'], result=filtered_markers, active_page='home.html', allTypes=allTypes)
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
         admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
-        return render_template('home.html', count = count, admin = admin_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, admin = admin_session_username['username'], result=filtered_markers, active_page='home.html', allTypes=allTypes)
     else:
-        return render_template('home.html', count = count, result=result, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, result=filtered_markers, active_page='home.html', allTypes=allTypes)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

@@ -1,49 +1,35 @@
 <!DOCTYPE html>
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-  integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-  crossorigin="" />
-<script
-  src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-  integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-  crossorigin=""></script>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.css" />
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.Default.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/leaflet.markercluster.js"></script>
-<link
-  rel="stylesheet"
-  type="text/css"
-  href="{{ url_for('static',filename='styles/style.css') }}" />
-<style>
-  #map-container {
-    position: relative;
-  }
-  #map {
-    height: 100vh;
-  }
-  #navbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    width: 100%;
-  }
-</style>
+
 <html>
   <head>
-    <title>Homepage</title>
+    <title>Eventus</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin="" />
+    <script
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.Default.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/leaflet.markercluster.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='styles/style.css') }}" />
   </head>
   <body onload="getDataCount()">
-    <div id="map-container">
-      {% extends 'header.html' %} {% block title %}Eventus{% endblock %} {%
-      block content %}
-      <div id="map"></div>
-    </div>
+    {% extends 'header.html' %} {% block title %}Eventus{% endblock %} {% block
+    content %}
     <div
       class="offcanvas offcanvas-start"
       data-bs-scroll="true"
@@ -89,6 +75,7 @@
         {% endfor %} {% else %} {% endif %}
       </div>
     </div>
+    <div id="map" class="map"></div>
   </body>
   <script src="{{url_for('static', filename='main.js')}}"></script>
 </html>
