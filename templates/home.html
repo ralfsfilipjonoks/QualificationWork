@@ -19,14 +19,31 @@
   rel="stylesheet"
   type="text/css"
   href="{{ url_for('static',filename='styles/style.css') }}" />
-{% extends 'header.html' %} {% block title %}Eventus{% endblock %} {% block
-content %}
+<style>
+  #map-container {
+    position: relative;
+  }
+  #map {
+    height: 100vh;
+  }
+  #navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+</style>
 <html>
   <head>
     <title>Homepage</title>
   </head>
   <body onload="getDataCount()">
-    <div id="map"></div>
+    <div id="map-container">
+      {% extends 'header.html' %} {% block title %}Eventus{% endblock %} {%
+      block content %}
+      <div id="map"></div>
+    </div>
     <div
       class="offcanvas offcanvas-start"
       data-bs-scroll="true"

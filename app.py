@@ -52,21 +52,21 @@ def home():
     'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
     }
     response = requests.request("POST", url, headers=headers, data=payload)
-    a = json.loads(response.text)
+    all_posts = json.loads(response.text)
     count = 0
-    for obj in a['documents']:
+    for obj in all_posts['documents']:
         if '_id' in obj:
             count += 1
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('home.html', a = a, count = count, username = user_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, username = user_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
         admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
-        return render_template('home.html', a = a, count = count, admin = admin_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, admin = admin_session_username['username'], result=result, active_page='home.html', allTypes=allTypes)
     else:
-        return render_template('home.html', a = a, count = count, result=result, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, result=result, active_page='home.html', allTypes=allTypes)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -189,8 +189,11 @@ def get_data_count():
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
+    current_date = datetime.now().date()
+    filtered_markers = [marker for marker in data['documents'] if marker["postdate"] <= str(current_date)]
+    data = filtered_markers
     count = 0
-    for obj in data['documents']:
+    for obj in data:
         if '_id' in obj:
             count += 1
     return jsonify(count=count)
@@ -221,6 +224,9 @@ def get_data():
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
+    current_date = datetime.now().date()
+    filtered_markers = [marker for marker in data['documents'] if marker["postdate"] <= str(current_date)]
+    data = filtered_markers
     return jsonify(data)
 
 @app.route('/add_point', methods=['GET','POST'])

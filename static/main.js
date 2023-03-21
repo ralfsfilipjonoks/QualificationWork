@@ -6,7 +6,6 @@ async function getDataCount() {
     .then((response) => response.json())
     .then((data) => {
       postCount = data.count;
-      console.log(postCount);
       getData();
     })
     .catch((error) => {
@@ -106,186 +105,197 @@ async function getData() {
     .then((response) => response.json())
     .then((data) => {
       for (let i = 0; i < postCount; i++) {
-        if (data["documents"][i]["type"] == "Charity") {
-          postLatitude = data["documents"][i]["latitude"];
-          postLongitude = data["documents"][i]["longitude"];
-          x = L.marker([postLatitude, postLongitude], {
-            icon: charityIcon,
-          }).bindPopup(
-            "ID: " +
-              data["documents"][i]["_id"] +
-              "<br> Name: " +
-              data["documents"][i]["name"] +
-              "<br> Description: " +
-              data["documents"][i]["description"] +
-              "<br> Post date: " +
-              data["documents"][i]["postdate"] +
-              "<br> End date: " +
-              data["documents"][i]["removedate"] +
-              "<br> Type: " +
-              data["documents"][i]["type"] +
-              "<br> Author: " +
-              data["documents"][i]["author"] +
-              "<br><form action='/report_marker/" +
-              data["documents"][i]["_id"] +
-              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
-          );
-          charityLayer.addLayer(x);
-          x.on("click", function (e) {
-            map.setView(e.latlng, 16);
-          });
-        }
-        if (data["documents"][i]["type"] == "Warning") {
-          postLatitude = data["documents"][i]["latitude"];
-          postLongitude = data["documents"][i]["longitude"];
-          x = L.marker([postLatitude, postLongitude], {
-            icon: warningIcon,
-          }).bindPopup(
-            "ID: " +
-              data["documents"][i]["_id"] +
-              "<br> Name: " +
-              data["documents"][i]["name"] +
-              "<br> Description: " +
-              data["documents"][i]["description"] +
-              "<br> Post date: " +
-              data["documents"][i]["postdate"] +
-              "<br> End date: " +
-              data["documents"][i]["removedate"] +
-              "<br> Type: " +
-              data["documents"][i]["type"] +
-              "<br> Author: " +
-              data["documents"][i]["author"] +
-              "<br><form action='/report_marker/" +
-              data["documents"][i]["_id"] +
-              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
-          );
-          warningLayer.addLayer(x);
-          x.on("click", function (e) {
-            map.setView(e.latlng, 16);
-          });
-        }
-        if (data["documents"][i]["type"] == "Concert") {
-          postLatitude = data["documents"][i]["latitude"];
-          postLongitude = data["documents"][i]["longitude"];
-          x = L.marker([postLatitude, postLongitude], {
-            icon: concertIcon,
-          }).bindPopup(
-            "ID: " +
-              data["documents"][i]["_id"] +
-              "<br> Name: " +
-              data["documents"][i]["name"] +
-              "<br> Description: " +
-              data["documents"][i]["description"] +
-              "<br> Post date: " +
-              data["documents"][i]["postdate"] +
-              "<br> End date: " +
-              data["documents"][i]["removedate"] +
-              "<br> Type: " +
-              data["documents"][i]["type"] +
-              "<br> Author: " +
-              data["documents"][i]["author"] +
-              "<br><form action='/report_marker/" +
-              data["documents"][i]["_id"] +
-              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
-          );
-          concertLayer.addLayer(x);
-          x.on("click", function (e) {
-            map.setView(e.latlng, 16);
-          });
-        }
-        if (data["documents"][i]["type"] == "Meetup") {
-          postLatitude = data["documents"][i]["latitude"];
-          postLongitude = data["documents"][i]["longitude"];
-          x = L.marker([postLatitude, postLongitude], {
-            icon: meetupIcon,
-          }).bindPopup(
-            "ID: " +
-              data["documents"][i]["_id"] +
-              "<br> Name: " +
-              data["documents"][i]["name"] +
-              "<br> Description: " +
-              data["documents"][i]["description"] +
-              "<br> Post date: " +
-              data["documents"][i]["postdate"] +
-              "<br> End date: " +
-              data["documents"][i]["removedate"] +
-              "<br> Type: " +
-              data["documents"][i]["type"] +
-              "<br> Author: " +
-              data["documents"][i]["author"] +
-              "<br><form action='/report_marker/" +
-              data["documents"][i]["_id"] +
-              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
-          );
-          meetupLayer.addLayer(x);
-          x.on("click", function (e) {
-            map.setView(e.latlng, 16);
-          });
-        }
-        if (data["documents"][i]["type"] == "Road work") {
-          postLatitude = data["documents"][i]["latitude"];
-          postLongitude = data["documents"][i]["longitude"];
-          x = L.marker([postLatitude, postLongitude], {
-            icon: roadWorkIcon,
-          }).bindPopup(
-            "ID: " +
-              data["documents"][i]["_id"] +
-              "<br> Name: " +
-              data["documents"][i]["name"] +
-              "<br> Description: " +
-              data["documents"][i]["description"] +
-              "<br> Post date: " +
-              data["documents"][i]["postdate"] +
-              "<br> End date: " +
-              data["documents"][i]["removedate"] +
-              "<br> Type: " +
-              data["documents"][i]["type"] +
-              "<br> Author: " +
-              data["documents"][i]["author"] +
-              "<br><form action='/report_marker/" +
-              data["documents"][i]["_id"] +
-              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
-          );
-          roadWorkLayer.addLayer(x);
-          x.on("click", function (e) {
-            map.setView(e.latlng, 16);
-          });
-        }
-        if (data["documents"][i]["type"] == "Other") {
-          postLatitude = data["documents"][i]["latitude"];
-          postLongitude = data["documents"][i]["longitude"];
-          x = L.marker([postLatitude, postLongitude], {
-            icon: otherIcon,
-          }).bindPopup(
-            "ID: " +
-              data["documents"][i]["_id"] +
-              "<br> Name: " +
-              data["documents"][i]["name"] +
-              "<br> Description: " +
-              data["documents"][i]["description"] +
-              "<br> Post date: " +
-              data["documents"][i]["postdate"] +
-              "<br> End date: " +
-              data["documents"][i]["removedate"] +
-              "<br> Type: " +
-              data["documents"][i]["type"] +
-              "<br> Author: " +
-              data["documents"][i]["author"] +
-              "<br><form action='/report_marker/" +
-              data["documents"][i]["_id"] +
-              "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
-          );
-          otherLayer.addLayer(x);
-          x.on("click", function (e) {
-            map.setView(e.latlng, 16);
-          });
+        switch (data[i]["type"]) {
+          case "Charity": {
+            postLatitude = data[i]["latitude"];
+            postLongitude = data[i]["longitude"];
+            x = L.marker([postLatitude, postLongitude], {
+              icon: charityIcon,
+            }).bindPopup(
+              "ID: " +
+                data[i]["_id"] +
+                "<br> Name: " +
+                data[i]["name"] +
+                "<br> Description: " +
+                data[i]["description"] +
+                "<br> Post date: " +
+                data[i]["postdate"] +
+                "<br> End date: " +
+                data[i]["removedate"] +
+                "<br> Type: " +
+                data[i]["type"] +
+                "<br> Author: " +
+                data[i]["author"] +
+                "<br><form action='/report_marker/" +
+                data[i]["_id"] +
+                "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
+            );
+            charityLayer.addLayer(x);
+            x.on("click", function (e) {
+              map.setView(e.latlng, 16);
+            });
+            break;
+          }
+
+          case "Warning": {
+            postLatitude = data[i]["latitude"];
+            postLongitude = data[i]["longitude"];
+            x = L.marker([postLatitude, postLongitude], {
+              icon: warningIcon,
+            }).bindPopup(
+              "ID: " +
+                data[i]["_id"] +
+                "<br> Name: " +
+                data[i]["name"] +
+                "<br> Description: " +
+                data[i]["description"] +
+                "<br> Post date: " +
+                data[i]["postdate"] +
+                "<br> End date: " +
+                data[i]["removedate"] +
+                "<br> Type: " +
+                data[i]["type"] +
+                "<br> Author: " +
+                data[i]["author"] +
+                "<br><form action='/report_marker/" +
+                data[i]["_id"] +
+                "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
+            );
+            warningLayer.addLayer(x);
+            x.on("click", function (e) {
+              map.setView(e.latlng, 16);
+            });
+            break;
+          }
+
+          case "Concert": {
+            postLatitude = data[i]["latitude"];
+            postLongitude = data[i]["longitude"];
+            x = L.marker([postLatitude, postLongitude], {
+              icon: concertIcon,
+            }).bindPopup(
+              "ID: " +
+                data[i]["_id"] +
+                "<br> Name: " +
+                data[i]["name"] +
+                "<br> Description: " +
+                data[i]["description"] +
+                "<br> Post date: " +
+                data[i]["postdate"] +
+                "<br> End date: " +
+                data[i]["removedate"] +
+                "<br> Type: " +
+                data[i]["type"] +
+                "<br> Author: " +
+                data[i]["author"] +
+                "<br><form action='/report_marker/" +
+                data[i]["_id"] +
+                "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
+            );
+            concertLayer.addLayer(x);
+            x.on("click", function (e) {
+              map.setView(e.latlng, 16);
+            });
+            break;
+          }
+
+          case "Meetup": {
+            postLatitude = data[i]["latitude"];
+            postLongitude = data[i]["longitude"];
+            x = L.marker([postLatitude, postLongitude], {
+              icon: meetupIcon,
+            }).bindPopup(
+              "ID: " +
+                data[i]["_id"] +
+                "<br> Name: " +
+                data[i]["name"] +
+                "<br> Description: " +
+                data[i]["description"] +
+                "<br> Post date: " +
+                data[i]["postdate"] +
+                "<br> End date: " +
+                data[i]["removedate"] +
+                "<br> Type: " +
+                data[i]["type"] +
+                "<br> Author: " +
+                data[i]["author"] +
+                "<br><form action='/report_marker/" +
+                data[i]["_id"] +
+                "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
+            );
+            meetupLayer.addLayer(x);
+            x.on("click", function (e) {
+              map.setView(e.latlng, 16);
+            });
+            break;
+          }
+
+          case "Road work": {
+            postLatitude = data[i]["latitude"];
+            postLongitude = data[i]["longitude"];
+            x = L.marker([postLatitude, postLongitude], {
+              icon: roadWorkIcon,
+            }).bindPopup(
+              "ID: " +
+                data[i]["_id"] +
+                "<br> Name: " +
+                data[i]["name"] +
+                "<br> Description: " +
+                data[i]["description"] +
+                "<br> Post date: " +
+                data[i]["postdate"] +
+                "<br> End date: " +
+                data[i]["removedate"] +
+                "<br> Type: " +
+                data[i]["type"] +
+                "<br> Author: " +
+                data[i]["author"] +
+                "<br><form action='/report_marker/" +
+                data[i]["_id"] +
+                "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
+            );
+            roadWorkLayer.addLayer(x);
+            x.on("click", function (e) {
+              map.setView(e.latlng, 16);
+            });
+            break;
+          }
+          case "Other": {
+            postLatitude = data[i]["latitude"];
+            postLongitude = data[i]["longitude"];
+            x = L.marker([postLatitude, postLongitude], {
+              icon: otherIcon,
+            }).bindPopup(
+              "ID: " +
+                data[i]["_id"] +
+                "<br> Name: " +
+                data[i]["name"] +
+                "<br> Description: " +
+                data[i]["description"] +
+                "<br> Post date: " +
+                data[i]["postdate"] +
+                "<br> End date: " +
+                data[i]["removedate"] +
+                "<br> Type: " +
+                data[i]["type"] +
+                "<br> Author: " +
+                data[i]["author"] +
+                "<br><form action='/report_marker/" +
+                data[i]["_id"] +
+                "'> <button type='submit' class='btn btn-danger'>Report marker</button></form>"
+            );
+            otherLayer.addLayer(x);
+            x.on("click", function (e) {
+              map.setView(e.latlng, 16);
+            });
+            break;
+          }
         }
       }
       async function getUserSettings() {
         await fetch("/user_settings_data")
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
             if (data.error) {
               otherLayer.addTo(map);
               concertLayer.addTo(map);
@@ -321,7 +331,6 @@ async function getData() {
           });
       }
       getUserSettings();
-      console.log("Marker data loaded!");
     })
     .catch((error) => {
       console.error("Error:", error);
