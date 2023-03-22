@@ -73,6 +73,19 @@
           </div>
         </div>
         {% endfor %} {% else %} {% endif %}
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">
+          Upcoming events
+        </h5>
+        {% if upcoming %} {% for x in upcoming %}
+        <div id="{{ x['type'] }}" class="card" style="margin-bottom: 10px">
+          <h5 class="card-header" id="{{ x['type'] }}">{{ x['type'] }}</h5>
+          <div class="card-body">
+            <h5 class="card-title">{{ x['name'] }}</h5>
+            <p class="card-text">{{ x['description'] }}</p>
+            <p class="fw-light">{{ x['postdate'] }}</p>
+          </div>
+        </div>
+        {% endfor %} {% else %} {% endif %}
       </div>
     </div>
     <div id="map" class="map"></div>

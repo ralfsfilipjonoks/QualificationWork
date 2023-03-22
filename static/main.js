@@ -101,9 +101,6 @@ var overlayMaps = {
 var layerControl = L.control.layers(null, overlayMaps).addTo(map);
 layerControl.setPosition("bottomright", true);
 
-var zoomControl = L.control.zoom().setPosition("bottomleft");
-map.addControl(zoomControl);
-
 // zoomControl.setPosition("bottomleft", true);
 
 // Fetch data about points and put them on map with all information

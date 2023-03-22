@@ -16,6 +16,12 @@ function initMap() {
   var bounds = L.latLngBounds(southWest, northEast);
   map.setMaxBounds(bounds);
   var markers = [];
+  var latitudeInput = document.getElementById("latitude");
+  var longitudeInput = document.getElementById("longitude");
+  var latitude = parseFloat(latitudeInput.value);
+  var longitude = parseFloat(longitudeInput.value);
+  var marker = L.marker([latitude, longitude]).addTo(map);
+  markers.push(marker);
 
   map.on("click", function (e) {
     var lat = e.latlng.lat;

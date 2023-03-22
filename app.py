@@ -28,7 +28,6 @@ def home():
     for doc in documents_to_delete:
         points.delete_one({"_id": doc["_id"]})
     allTypes = types.find()
-    # result = list(points.find())
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
         "collection": "pointinfo",
@@ -55,6 +54,7 @@ def home():
     all_posts = json.loads(response.text)
     current_date = datetime.now().date()
     filtered_markers = [marker for marker in all_posts['documents'] if marker["postdate"] <= str(current_date)]
+    upcoming_markers = [marker for marker in all_posts['documents'] if marker["postdate"] > str(current_date)]
     count = 0
     for obj in all_posts['documents']:
         if '_id' in obj:
@@ -62,13 +62,13 @@ def home():
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('home.html', count = count, username = user_session_username['username'], result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, username = user_session_username['username'], upcoming = upcoming_markers,result=filtered_markers, active_page='home.html', allTypes=allTypes)
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
         admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
-        return render_template('home.html', count = count, admin = admin_session_username['username'], result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, admin = admin_session_username['username'], upcoming = upcoming_markers ,  result=filtered_markers, active_page='home.html', allTypes=allTypes)
     else:
-        return render_template('home.html', count = count, result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -236,6 +236,7 @@ def add_point():
     today = datetime.utcnow()
     today = today.strftime("%Y-%m-%d")
     allTypes = types.find()
+    all_points = points.find()
     if 'admin_session' in session:
         return redirect(url_for('home'))
     if 'user_session' in session:
@@ -248,13 +249,17 @@ def add_point():
         return redirect(url_for('home'))
     if request.method == 'POST':
         pointname = request.form['name']
-        latitude = str(request.form['latitude'])
-        longitude = str(request.form['longitude'])
+        latitude = float(request.form['latitude'])
+        longitude = float(request.form['longitude'])
         description = request.form['description']
         postdate = request.form['postdate']
         removedate = request.form.get('removedate')
         pointtype = request.form['type']
         user = user_session_username['username']
+        coordinates_check = points.find_one({'latitude': latitude, 'longitude': longitude})
+        if coordinates_check:
+            notification = "Can't create post with same latitude and longitude!"
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if today > removedate:
             notification = 'Bad remove date!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
