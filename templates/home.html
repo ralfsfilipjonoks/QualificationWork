@@ -73,7 +73,10 @@
           </div>
         </div>
         {% endfor %} {% else %} {% endif %}
-        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">
+        <h5
+          class="offcanvas-title"
+          id="offcanvasScrollingLabel"
+          style="margin-top: 20px; margin-bottom: 20px">
           Upcoming events
         </h5>
         {% if upcoming %} {% for x in upcoming %}
@@ -88,7 +91,7 @@
         {% endfor %} {% else %} {% endif %}
       </div>
     </div>
-    <div id="map" class="map"></div>
+    <div id="map"></div>
   </body>
   <script src="{{url_for('static', filename='main.js')}}"></script>
 </html>

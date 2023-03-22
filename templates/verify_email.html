@@ -1,0 +1,19 @@
+<!-- templates/verify_email.html -->
+{% extends 'header.html' %} {% block content %}
+<h1>Enter your verification code</h1>
+{% if message %}
+<div class="alert alert-danger" role="alert">{{ message }}</div>
+{% endif %}
+<form method="POST" action="{{ url_for('check_verification_code') }}">
+  <div class="form-group">
+    <label for="verification_code">Verification code:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="verification_code"
+      name="verification_code"
+      required />
+  </div>
+  <button type="submit" class="btn btn-primary">Verify</button>
+</form>
+{% endblock %}

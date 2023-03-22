@@ -8,15 +8,33 @@ block content %}
   <body>
     <div class="container">
       <h1>Report marker with id of: {{ marker_id }}</h1>
+      <div
+        class="alert alert-danger"
+        role="alert"
+        id="notification"
+        style="display: none"></div>
       <form method="POST">
         <div class="form-group">
           <label for="report-reason">Reason for Report:</label>
-          <select class="form-control" id="report-reason" name="report_reason">
+          <select
+            class="form-control"
+            id="report-reason"
+            name="report_reason"
+            onchange="toggleOtherInput()">
             <option value="spam">Spam</option>
             <option value="inappropriate">Inappropriate content</option>
             <option value="offensive">Offensive language</option>
             <option value="other">Other</option>
           </select>
+        </div>
+        <div class="form-group" id="other-reason-input" style="display: none">
+          <label for="other-reason">Please specify:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="other-reason"
+            name="other-reason"
+            required />
         </div>
         <div class="form-group">
           <label for="report-description">Description (Optional):</label>
@@ -27,9 +45,12 @@ block content %}
             rows="3"
             placeholder="Enter description"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary" id="submit_report">
+          Submit
+        </button>
       </form>
     </div>
   </body>
 </html>
+<script src="{{url_for('static', filename='report_marker.js')}}"></script>
 {% endblock %}

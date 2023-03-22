@@ -100,8 +100,7 @@ var overlayMaps = {
 // map tools
 var layerControl = L.control.layers(null, overlayMaps).addTo(map);
 layerControl.setPosition("bottomright", true);
-
-// zoomControl.setPosition("bottomleft", true);
+//"Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}')
 
 // Fetch data about points and put them on map with all information
 async function getData() {

@@ -1,11 +1,20 @@
 from bson import ObjectId
-from flask import Flask, render_template, redirect, url_for, request, jsonify, session
+from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash
 from flask_pymongo import pymongo
-import requests, json, hashlib
+import requests, json, hashlib, secrets
 from datetime import datetime
+# from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
+
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# app.config['MAIL_PORT'] = 465
+# app.config['MAIL_USE_SSL'] = True
+# app.config['MAIL_USERNAME'] = 'qualificationwork121@gmail.com'
+# app.config['MAIL_PASSWORD'] = 'Nu1RdaudZ.19' #BadCredentials
+
+# mail = Mail(app)
 
 #mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority
 
@@ -18,6 +27,57 @@ types = db.pointtypes
 admin = db.adminuserdata
 usettings = db.usersettings
 point_report = db.pointreports
+
+# @app.route('/email_verification')
+# def email_verification():
+#     if 'user_session' in session:
+#         user_session_id = session['user_session']
+#         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+#         return render_template('email_verification.html', username = user_session_username['username'])
+#     else:
+#         return redirect(url_for('home'))   
+
+
+# @app.route('/verify-email', methods=['GET', 'POST'])
+# def verify_email():
+#     if 'user_session' in session:
+#         user_session_id = session['user_session']
+#         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+#         return render_template('verify_email.html', username = user_session_username['username'])
+#     else:
+#         return redirect(url_for('home'))   
+
+# @app.route('/send-verification-code', methods=['POST'])
+# def send_verification_code():
+#     email = request.form['email']
+    
+#     # Generate a verification code and store it in a session cookie
+#     verification_code = secrets.token_hex(3).upper()
+#     session['verification_code'] = verification_code
+#     session['email'] = email
+    
+#     # Send email with the verification code
+#     message = Message('Email verification code', recipients=[email])
+#     message.body = f'Your verification code is {verification_code}'
+#     mail.send(message)
+    
+#     flash('Verification code sent to your email address')
+#     return redirect(url_for('verify_email'))
+
+# @app.route('/check-verification-code', methods=['POST'])
+# def check_verification_code():
+#     verification_code = session.get('verification_code')
+#     email = session.get('email')
+#     entered_code = request.form['verification_code']
+#     if entered_code == verification_code:
+#         flash('Email verified successfully')
+#         # Clear the session data
+#         session.pop('verification_code', None)
+#         session.pop('email', None)
+#         return redirect(url_for('home'))
+#     else:
+#         flash('Verification code does not match')
+#         return redirect(url_for('verify_email'))
 
 @app.route('/')
 def home():
@@ -532,8 +592,13 @@ def report_marker(marker_id):
         if request.method == 'POST':
             report_reason = request.form['report_reason']
             report_description = request.form['report_description']
-            point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
-            return redirect(url_for('home'))
+            if report_reason == "other":
+                report_reason_from_user = request.form['other-reason']
+                point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason_from_user, "report_description": report_description})
+                return render_template('report_marker_exists.html', username = user_session_username["username"])
+            else:
+                point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
+                return redirect(url_for('home'))
         return render_template('report_marker.html', marker_id = marker_id, username = user_session_username["username"])
     else:
         # Option for simple unregistered user to report marker
@@ -547,7 +612,8 @@ def admin_report_delete_markers(report_id):
         admin_session_id = session['admin_session']
         admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
         point_report.find_one_and_delete({"_id": ObjectId(report_id)})
-        return render_template('admin_report_markers.html', admin = admin_session_username["username"])
+        reports = list(point_report.find())
+        return render_template('admin_report_markers.html', admin = admin_session_username["username"], reports = reports)
     else:
         return redirect(url_for('home'))
 
