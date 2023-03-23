@@ -3,18 +3,19 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 from flask_pymongo import pymongo
 import requests, json, hashlib, secrets
 from datetime import datetime
-# from flask_mail import Mail, Message
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
 
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-# app.config['MAIL_PORT'] = 465
-# app.config['MAIL_USE_SSL'] = True
-# app.config['MAIL_USERNAME'] = 'qualificationwork121@gmail.com'
-# app.config['MAIL_PASSWORD'] = 'Nu1RdaudZ.19' #BadCredentials
+app.config['MAIL_SERVER'] = 'smtp.inbox.lv'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'qualification-work-121@inbox.lv'
+app.config['MAIL_PASSWORD'] = 'Nu1RdaudZ.19' #BadCredentials
+# app.config['MAIL_DEFAULT_SENDER'] = 'qualificationwork121@gmail.com'
 
-# mail = Mail(app)
+mail = Mail(app)
 
 #mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority
 
@@ -28,56 +29,56 @@ admin = db.adminuserdata
 usettings = db.usersettings
 point_report = db.pointreports
 
-# @app.route('/email_verification')
-# def email_verification():
-#     if 'user_session' in session:
-#         user_session_id = session['user_session']
-#         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-#         return render_template('email_verification.html', username = user_session_username['username'])
-#     else:
-#         return redirect(url_for('home'))   
+@app.route('/email_verification')
+def email_verification():
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        return render_template('email_verification.html', username = user_session_username['username'])
+    else:
+        return redirect(url_for('home'))   
 
 
-# @app.route('/verify-email', methods=['GET', 'POST'])
-# def verify_email():
-#     if 'user_session' in session:
-#         user_session_id = session['user_session']
-#         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-#         return render_template('verify_email.html', username = user_session_username['username'])
-#     else:
-#         return redirect(url_for('home'))   
+@app.route('/verify-email', methods=['GET', 'POST'])
+def verify_email():
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        return render_template('verify_email.html', username = user_session_username['username'])
+    else:
+        return redirect(url_for('home'))   
 
-# @app.route('/send-verification-code', methods=['POST'])
-# def send_verification_code():
-#     email = request.form['email']
+@app.route('/send-verification-code', methods=['POST'])
+def send_verification_code():
+    email = request.form['email']
     
-#     # Generate a verification code and store it in a session cookie
-#     verification_code = secrets.token_hex(3).upper()
-#     session['verification_code'] = verification_code
-#     session['email'] = email
+    # Generate a verification code and store it in a session cookie
+    verification_code = secrets.token_hex(3).upper()
+    session['verification_code'] = verification_code
+    session['email'] = email
     
-#     # Send email with the verification code
-#     message = Message('Email verification code', recipients=[email])
-#     message.body = f'Your verification code is {verification_code}'
-#     mail.send(message)
+    # Send email with the verification code
+    message = Message('Email verification code', recipients=[email])
+    message.body = f'Your verification code is {verification_code}'
+    mail.send(message)
     
-#     flash('Verification code sent to your email address')
-#     return redirect(url_for('verify_email'))
+    flash('Verification code sent to your email address')
+    return redirect(url_for('verify_email'))
 
-# @app.route('/check-verification-code', methods=['POST'])
-# def check_verification_code():
-#     verification_code = session.get('verification_code')
-#     email = session.get('email')
-#     entered_code = request.form['verification_code']
-#     if entered_code == verification_code:
-#         flash('Email verified successfully')
-#         # Clear the session data
-#         session.pop('verification_code', None)
-#         session.pop('email', None)
-#         return redirect(url_for('home'))
-#     else:
-#         flash('Verification code does not match')
-#         return redirect(url_for('verify_email'))
+@app.route('/check-verification-code', methods=['POST'])
+def check_verification_code():
+    verification_code = session.get('verification_code')
+    email = session.get('email')
+    entered_code = request.form['verification_code']
+    if entered_code == verification_code:
+        flash('Email verified successfully')
+        # Clear the session data
+        session.pop('verification_code', None)
+        session.pop('email', None)
+        return redirect(url_for('home'))
+    else:
+        flash('Verification code does not match')
+        return redirect(url_for('verify_email'))
 
 @app.route('/')
 def home():
