@@ -7,3 +7,6 @@ Qualification work
 Flask - back-end
 Bootstrap - front-end
 LeafletJS - front-end map
+
+# Saite uz mājaslapu
+https://qualification-work-3.onrender.com
