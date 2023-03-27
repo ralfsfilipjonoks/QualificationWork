@@ -10,3 +10,5 @@ LeafletJS - front-end map
 
 # Saite uz mājaslapu
 https://qualification-work-3.onrender.com
+
+Ilgi lādejas, bet ielādēsies
