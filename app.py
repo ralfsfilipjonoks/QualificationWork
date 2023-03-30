@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 from flask_pymongo import pymongo
 import requests, json, hashlib, secrets
 from datetime import datetime
-from flask_mail import Mail, Message
+# from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -61,9 +61,9 @@ def send_verification_code():
     session['email'] = email
     
     # Send email with the verification code
-    message = Message('Email verification code', recipients=[email])
-    message.body = f'Your verification code is {verification_code}'
-    mail.send(message)
+    # message = Message('Email verification code', recipients=[email])
+    # message.body = f'Your verification code is {verification_code}'
+    # mail.send(message)
     
     flash('Verification code sent to your email address')
     return redirect(url_for('verify_email'))
