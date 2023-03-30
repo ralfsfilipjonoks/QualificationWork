@@ -8,15 +8,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
 
-app.config['MAIL_SERVER'] = 'smtp.inbox.lv'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = 'qualification-work-121@inbox.lv'
-app.config['MAIL_PASSWORD'] = 'Nu1RdaudZ.19' #BadCredentials
-# app.config['MAIL_DEFAULT_SENDER'] = 'qualificationwork121@gmail.com'
-
-mail = Mail(app)
-
 # Set session lifetime to 30 minutes
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800
 
