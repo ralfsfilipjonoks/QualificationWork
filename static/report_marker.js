@@ -19,7 +19,6 @@ function checkInputs() {
   const descriptionInputText = descriptionInput.value.toLowerCase();
   let notification = "";
 
-  // Check for bad words in post text
   const badWords = [
     "cunt",
     "fuck",
@@ -38,6 +37,8 @@ function checkInputs() {
     "kill your self",
     "idiot",
     "Nigers",
+    "gejs",
+    "pimpis",
   ];
   for (const word of badWords) {
     if (otherPopupInputText.includes(word)) {

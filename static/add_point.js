@@ -55,6 +55,8 @@ function initMap() {
       "kill your self",
       "idiot",
       "Nigers",
+      "gejs",
+      "pimpis",
     ];
     for (const word of badWords) {
       if (postText.includes(word)) {

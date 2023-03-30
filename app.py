@@ -17,6 +17,9 @@ app.config['MAIL_PASSWORD'] = 'Nu1RdaudZ.19' #BadCredentials
 
 mail = Mail(app)
 
+# Set session lifetime to 30 minutes
+app.config['PERMANENT_SESSION_LIFETIME'] = 1800
+
 #mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority
 
 client = pymongo.MongoClient("mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority")
@@ -650,5 +653,43 @@ def delete_user_by_marker(marker_id):
         session.pop('username', None)
         return redirect(url_for('home'))
     
+@app.route('/login_map')
+def login_map():
+    # Check if a user session token exists
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        # If a session token exists, return a response with the token
+        return {'token': user_session_username['username']}
+    else:
+        # If no session token exists, return a response indicating the user is not logged in
+        return {'message': 'User is not logged in'}
+    
+@app.route('/get_session_info')
+def get_session_info():
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        return jsonify({
+            'logged_in': 'user_session' in session,
+            'session_id': session.get("user_session", ""),
+            'username': user_session_username["username"],
+            'type': "user"
+        })
+    if 'admin_session' in session:
+        admin_session_id = session['admin_session']
+        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        return jsonify({
+            'logged_in': 'admin_session' in session,
+            'session_id': session.get("admin_session", ""),
+            'username': admin_session_username["username"],
+            'type': "admin"
+        })
+    else:
+        return jsonify({
+            'logged_in': 'user_session' in session,
+            'session_id': session.get("user_session", ""),
+            'type': "visitor"
+        }) 
 if __name__ == '__main__':
     app.run(port=8080)

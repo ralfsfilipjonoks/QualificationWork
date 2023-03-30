@@ -58,7 +58,6 @@ function initMap() {
       notification = "Post date must be before remove date.";
     }
 
-    // Check for bad words in post text
     const badWords = [
       "cunt",
       "fuck",
@@ -77,6 +76,8 @@ function initMap() {
       "kill your self",
       "idiot",
       "Nigers",
+      "gejs",
+      "pimpis",
     ];
     for (const word of badWords) {
       if (postText.includes(word)) {

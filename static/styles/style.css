@@ -1,4 +1,29 @@
+html,
+body,
 #map {
-  padding-top: 70px;
-  height: calc(100vh - 56px);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.leaflet-register-button,
+.leaflet-login-button {
+  background-color: #337ab7;
+  border-radius: 4px;
+  color: #fff;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 4px;
+}
+
+.leaflet-register-button:hover,
+.leaflet-login-button:hover {
+  background-color: #286090;
+}
+
+.leaflet-register-button:active,
+.leaflet-login-button:active {
+  background-color: #204d74;
+}
+.my-custom-control {
+  border: none;
 }

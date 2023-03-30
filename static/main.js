@@ -339,3 +339,109 @@ async function getData() {
       console.error("Error:", error);
     });
 }
+
+// var loginButton = L.DomUtil.create("button", "btn btn-primary");
+// loginButton.innerHTML = "Log in";
+// loginButton.addEventListener("click", function () {
+//   window.location.href = "/login";
+// });
+// var loginControl = L.control({ position: "topright" });
+
+// loginControl.onAdd = function (map) {
+//   var container = L.DomUtil.create("div", "leaflet-bar");
+//   container.appendChild(loginButton);
+//   return container;
+// };
+
+// loginControl.addTo(map);
+
+var pointModalButton = L.DomUtil.create("button", "btn btn-secondary");
+pointModalButton.innerHTML = "Points";
+pointModalButton.setAttribute("data-bs-toggle", "offcanvas");
+pointModalButton.setAttribute("data-bs-target", "#offcanvasScrolling");
+pointModalButton.setAttribute("aria-controls", "offcanvasScrolling");
+pointModalButton.setAttribute("style", "margin-right: 10px");
+
+var aboutButton = L.DomUtil.create("button", "btn btn-secondary");
+aboutButton.innerHTML = "About";
+aboutButton.setAttribute("style", "margin-right: 10px");
+aboutButton.addEventListener("click", function () {
+  window.location.href = "/about";
+});
+
+var loginButton = L.DomUtil.create("button", "btn btn-secondary");
+loginButton.innerHTML = "Log in";
+loginButton.addEventListener("click", function () {
+  window.location.href = "/login";
+});
+
+var logoutButton = L.DomUtil.create("button", "btn btn-secondary");
+logoutButton.innerHTML = "Log out";
+logoutButton.addEventListener("click", function () {
+  window.location.href = "/logout";
+});
+
+var userPointButton = L.DomUtil.create("button", "btn btn-secondary");
+userPointButton.innerHTML = "My points";
+userPointButton.setAttribute("style", "margin-right: 10px");
+userPointButton.addEventListener("click", function () {
+  window.location.href = "/user_points";
+});
+
+var addPointButton = L.DomUtil.create("button", "btn btn-secondary");
+addPointButton.innerHTML = "Add point";
+addPointButton.setAttribute("style", "margin-right: 10px");
+addPointButton.addEventListener("click", function () {
+  window.location.href = "/add_point";
+});
+
+var loginControl = L.control({ position: "topright" });
+
+loginControl.onAdd = function (map) {
+  var container = L.DomUtil.create("div", "leaflet-bar my-custom-control");
+  container.appendChild(aboutButton);
+  container.appendChild(pointModalButton);
+  container.appendChild(loginButton);
+  return container;
+};
+
+loginControl.addTo(map);
+
+fetch("/get_session_info")
+  .then((response) => response.json())
+  .then((data) => {
+    if (data.logged_in) {
+      if (data.type == "user") {
+        var userProfileButton = L.DomUtil.create("button", "btn btn-secondary");
+        userProfileButton.innerHTML = data.username;
+        userProfileButton.setAttribute("style", "margin-right: 10px");
+        userProfileButton.addEventListener("click", function () {
+          window.location.href = "/profile/" + data.username;
+        });
+        var container = document.getElementsByClassName("my-custom-control")[0];
+        container.innerHTML = "";
+        container.appendChild(userProfileButton);
+        container.appendChild(addPointButton);
+        container.appendChild(userPointButton);
+        container.appendChild(aboutButton);
+        container.appendChild(pointModalButton);
+        container.appendChild(logoutButton);
+      }
+      if (data.type == "admin") {
+        var adminButton = L.DomUtil.create("button", "btn btn-secondary");
+        adminButton.innerHTML = data.username;
+        adminButton.setAttribute("style", "margin-right: 10px");
+        adminButton.addEventListener("click", function () {
+          window.location.href = "/admin_ui";
+        });
+        var container = document.getElementsByClassName("my-custom-control")[0];
+        container.innerHTML = "";
+        container.appendChild(adminButton);
+        container.appendChild(aboutButton);
+        container.appendChild(pointModalButton);
+        container.appendChild(logoutButton);
+      }
+    } else {
+      // If user is not logged in, control already shows login button
+    }
+  });
