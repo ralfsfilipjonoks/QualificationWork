@@ -140,12 +140,66 @@ def register():
         repeatpassword = request.form['repeatpassword']
         hash_object = hashlib.sha256(password.encode('utf-8'))
         hash_hex = hash_object.hexdigest()
+        # Input field Validation
+        # Checks if name isn't empty or bigger than 30 characters
+        if (name == "" or len(name) > 30):
+            notification = "Name can't be empty or bigger than 30 characters"
+            return render_template('register.html', notification=notification)
+        
+        # Checks if surname ins't empty or bigger than 30 characters
+        if (surname == "" or len(surname) > 30):
+            notification = "Surname can't be empty or bigger than 30 characters"
+            return render_template('register.html', notification=notification)
+
+        # Checks if date isn't empty or after today
+        today = datetime.utcnow()
+        today = today.strftime("%Y-%m-%d")
+        if (dateofbirth == "" or dateofbirth > today):
+            notification = "Date of birth can't be empty or be after "+today+""
+            return render_template('register.html', notification=notification)
+        
+        # Checks if username isn't empty or bigger than 30 characters
+        if (username == "" or len(username) < 3 or len(username) > 30):
+            notification = "Username can't be empty or less than 3 characters"
+            return render_template('register.html', notification=notification)
+
+        # User Validation
+        # Duplicate user cehck
         if users.find_one({'username': username}) or admin.find_one({'username': username}):
             notification = 'Username already taken'
             return render_template('register.html', notification=notification)
+        
+        # Password Validation
+        # Check if passwords match
         if (password != repeatpassword):
             notification = 'Passwords does not match'
             return render_template('register.html', notification=notification)
+        
+        #Checks password length
+        if len(password) < 8 or len(password) > 50:
+            notification = 'Password must be at least 8 characters long or longer than 50 characters' 
+            return render_template('register.html', notification=notification)
+        
+        # Check for uppercase letter
+        if not any(char.isupper() for char in password):
+            notification = 'Password must contain at least one uppercase letter'
+            return render_template('register.html', notification=notification)
+        
+        # Check for lowercase letter
+        if not any(char.islower() for char in password):
+            notification = 'Password must contain at least one lowercase letter'
+            return render_template('register.html', notification=notification)
+        
+        # Check for number
+        if not any(char.isdigit() for char in password):
+            notification = 'Password must contain at least one number'
+            return render_template('register.html', notification=notification)
+        
+        # Check for special character
+        if not any(char in '!@#$%^&*()_+}{:;\'?/>,.<>[]-\\|' for char in password):
+            notification = 'Password must contain at least one special character'
+            return render_template('register.html', notification=notification)
+        
         users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex})
         usettings.insert_one({'username': username, 'settings': {'posts': []}})
         return render_template('redirect.html')
@@ -312,11 +366,17 @@ def add_point():
         pointtype = request.form['type']
         user = user_session_username['username']
         coordinates_check = points.find_one({'latitude': latitude, 'longitude': longitude})
+        if len(pointname) > 50:
+            notification = "Post name can't be more than 50 characters!"
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+        if len(description) > 250:
+            notification = "Description can't be more than 250 characters!"
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if coordinates_check:
             notification = "Can't create post with same latitude and longitude!"
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if today > removedate:
-            notification = 'Bad remove date!'
+            notification = "Remove date can't be before today"
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if str(latitude) == '' or str(longitude) == '':
             notification = 'Put a point in the map!'
@@ -350,14 +410,21 @@ def usersettings():
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        profile_setting = users.find_one({'username': user_session_username["username"]})
         settings = usettings.find_one({"username": user_session_username["username"]})
         if settings == None:
             usettings.insert_one({'username': user_session_username["username"], 'settings': {'posts': []}})
 
         if request.method == 'POST':
             posts = request.form.getlist('post')
+            users.update_one({'username': user_session_username["username"]}, {'$set': {
+                'name': request.form['name'],
+                'surname': request.form['surname'],
+                'dateofbirth': request.form['dob'],
+            }})
             usettings.update_one({'username': user_session_username["username"]}, {'$set': {'settings.posts': posts}})
-        return render_template('user_settings.html',  username = user_session_username["username"], settings=settings, allTypes=allTypes)
+            return redirect(url_for('usersettings'))
+        return render_template('user_settings.html',  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting)
     else:
         return redirect(url_for('home'))
 
@@ -396,7 +463,13 @@ def edit_point(point_id):
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         if request.method == 'POST':
             if today > request.form['remove_date']:
-                notification = 'Bad remove date!'
+                notification = "Remove date can't be before today"
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
+            if len(request.form['name']) > 50:
+                notification = "Post name can't have more than 50 characters"
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
+            if len(request.form['description']) > 250:
+                notification = "Description can't have more than 250 characters"
                 return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
             else:
                 points.update_one({'_id': ObjectId(point_id)}, {'$set': {
@@ -445,26 +518,6 @@ def profile(username):
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         profile = users.find_one({'username': username})
         return render_template('profile.html', profile=profile, username=user_session_username["username"])
-    else:
-        return redirect(url_for('home'))
-    
-@app.route('/profile/edit/<username>', methods=['GET', 'POST'])
-def profile_edit(username):
-    if 'admin_session' in session:
-        return redirect(url_for('home'))
-    if 'user_session' in session:
-        user_session_id = session['user_session']
-        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        profile = users.find_one({'username': user_session_username["username"]})
-        if request.method == 'POST':
-            users.update_one({'username': user_session_username["username"]}, {'$set': {
-                'name': request.form['name'],
-                'surname': request.form['surname'],
-                'dateofbirth': request.form['dob'],
-            }})
-            notification = "success"
-            return render_template('profile_edit.html', profile=profile, username=user_session_username["username"], notification=notification)
-        return render_template('profile_edit.html', profile=profile, username=user_session_username["username"])
     else:
         return redirect(url_for('home'))
 

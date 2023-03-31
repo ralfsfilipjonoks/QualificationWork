@@ -9,9 +9,7 @@ content %}
     <div class="container mx-auto">
       <h1>Edit Point</h1>
       {% if notification %}
-      <div class="alert alert-danger" role="alert">
-        Remove date can't be before today!
-      </div>
+      <div class="alert alert-danger" role="alert">{{ notification }}</div>
       {% endif %}
       <div
         class="alert alert-danger"

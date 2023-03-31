@@ -30,7 +30,50 @@ block content %}
               <label class="form-check-label">{{ x['type'] }}</label>
             </div>
             {% endfor %} {% endif %}
-            <button type="submit" class="btn btn-primary">Save settings</button>
+            <h4>Personal information</h4>
+            {% if notification %}
+            <div class="alert alert-success" role="alert">
+              Profile updated sucessfully!
+            </div>
+            {%endif%} {% if username %}
+            <form method="post">
+              <div class="form-group">
+                <label for="name">Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  placeholder="Enter name"
+                  name="name"
+                  value="{{ profile['name'] }}"
+                  required />
+              </div>
+              <div class="form-group">
+                <label for="surname">Surname:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="surname"
+                  placeholder="Enter surname"
+                  name="surname"
+                  value="{{ profile['surname'] }}"
+                  required />
+              </div>
+              <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="dob"
+                  name="dob"
+                  value="{{ profile['dateofbirth'] }}"
+                  required />
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                Save Changes
+              </button>
+            </form>
+            {% else %} {% endif %}
           </div>
           <div class="alert alert-primary">
             <h4>Upgrade to Premium</h4>
@@ -45,11 +88,16 @@ block content %}
             <a href="#" class="btn btn-primary disabled">Upgrade Now</a>
           </div>
           <div class="alert alert-warning">
-            <h4>Edit Account</h4>
+            <h4>Edit Account Information</h4>
             <p>Click the button below to edit your account:</p>
             <a href="/profile/edit/{{ username }}" class="btn btn-warning"
               >Edit Information</a
             >
+          </div>
+          <div class="alert alert-warning">
+            <h4>Verify Account</h4>
+            <p>Click the button below to verify your account:</p>
+            <a href="#" class="btn btn-warning disabled">Verify Email</a>
           </div>
           <div class="alert alert-danger">
             <h4>Danger Zone</h4>

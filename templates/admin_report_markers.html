@@ -50,7 +50,9 @@ block content %}
                 >
                 <a
                   href="/admin_ui/report_markers/delete_report/{{ x['_id'] }}"
-                  class="btn btn-success"
+                  class="btn btn-danger"
+                  data-toggle="modal"
+                  data-target="#deleteReport-{{ x['marker'] }}"
                   >Delete report</a
                 >
                 <a
@@ -94,6 +96,47 @@ block content %}
                           type="button"
                           class="btn btn-danger"
                           >Remove Marker</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="modal fade"
+                  id="deleteReport-{{ x['marker'] }}"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="deleteModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">
+                          Confirm Report Deletion
+                        </h5>
+                        <button
+                          type="button"
+                          class="close"
+                          data-dismiss="modal"
+                          aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Delete report with id of: {{ x['_id'] }}
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-dismiss="modal">
+                          Cancel
+                        </button>
+                        <a
+                          href="/admin_ui/report_markers/delete_report/{{ x['_id'] }}"
+                          type="button"
+                          class="btn btn-danger"
+                          >Remove Report</a
                         >
                       </div>
                     </div>
