@@ -23,7 +23,7 @@ app.secret_key = secrets.token_hex(16)
 # Set session lifetime to 30 minutes
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800
 
-client = os.getenv('client')
+client = pymongo.MongoClient(os.getenv('client'))
 db = client.webdata
 
 points = db.pointinfo
