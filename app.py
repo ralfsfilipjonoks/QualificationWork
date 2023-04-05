@@ -19,12 +19,6 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 
 app.secret_key = secrets.token_hex(16)
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-# app.config['MAIL_PORT'] = 587
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USERNAME'] = 'qualificationwork121@gmail.com'
-# app.config['MAIL_PASSWORD'] = 'nrgjxiqboqguxhfj'
-# app.config['MAIL_DEFAULT_SENDER'] = 'qualificationwork121@gmail.com'
 
 # Set session lifetime to 30 minutes
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800
