@@ -5,7 +5,7 @@ content %}
   href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
 <body onload="initMap()">
-  <div class="container mt-5 text-center">
+  <div class="container mt-5">
     <div class="container mx-auto">
       <h1>Edit Point</h1>
       {% if notification %}
@@ -116,4 +116,8 @@ content %}
   </div>
 </body>
 <script src="{{url_for('static', filename='edit_point.js')}}"></script>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 {% endblock %}

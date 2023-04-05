@@ -1,19 +1,35 @@
 from bson import ObjectId
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash
 from flask_pymongo import pymongo
-import requests, json, hashlib, secrets
+import requests, json, hashlib, secrets, random, os
+from dotenv import load_dotenv
 from datetime import datetime
-# from flask_mail import Mail, Message
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
-app.secret_key = 'mysecretkey'
+
+# Load environment variables from .env file
+load_dotenv()
+
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+
+app.secret_key = secrets.token_hex(16)
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# app.config['MAIL_PORT'] = 587
+# app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_USERNAME'] = 'qualificationwork121@gmail.com'
+# app.config['MAIL_PASSWORD'] = 'nrgjxiqboqguxhfj'
+# app.config['MAIL_DEFAULT_SENDER'] = 'qualificationwork121@gmail.com'
 
 # Set session lifetime to 30 minutes
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800
 
-#mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority
-
-client = pymongo.MongoClient("mongodb+srv://user:VqA9R7wCCekChPBd@projektskarte.jjmneth.mongodb.net/?retryWrites=true&w=majority")
+client = os.getenv('client')
 db = client.webdata
 
 points = db.pointinfo
@@ -23,56 +39,57 @@ admin = db.adminuserdata
 usettings = db.usersettings
 point_report = db.pointreports
 
-@app.route('/email_verification')
-def email_verification():
+mail = Mail(app)
+
+
+# dictionary to store verification codes
+verification_codes = {}
+
+@app.route('/send-code', methods=['GET', 'POST'])
+def send_code():
     if 'user_session' in session:
         user_session_id = session['user_session']
-        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('email_verification.html', username = user_session_username['username'])
+        user_session_details = users.find_one({"_id": ObjectId(user_session_id)})
+        if user_session_details['email'] != "":
+            return redirect(url_for('home'))
+        if request.method == 'POST':
+            email = request.form['email']
+            # generate random 6-digit code
+            code = str(random.randint(100000, 999999))
+            verification_codes[email] = code
+
+            # send email with code
+            msg = Message('Verification Code', recipients=[email])
+            msg.body = f'Your verification code is {code}.'
+            mail.send(msg)
+
+            return redirect(url_for('enter_code'))
+        return render_template('send_code.html') 
     else:
-        return redirect(url_for('home'))   
-
-
-@app.route('/verify-email', methods=['GET', 'POST'])
-def verify_email():
-    if 'user_session' in session:
-        user_session_id = session['user_session']
-        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('verify_email.html', username = user_session_username['username'])
-    else:
-        return redirect(url_for('home'))   
-
-@app.route('/send-verification-code', methods=['POST'])
-def send_verification_code():
-    email = request.form['email']
-    
-    # Generate a verification code and store it in a session cookie
-    verification_code = secrets.token_hex(3).upper()
-    session['verification_code'] = verification_code
-    session['email'] = email
-    
-    # Send email with the verification code
-    # message = Message('Email verification code', recipients=[email])
-    # message.body = f'Your verification code is {verification_code}'
-    # mail.send(message)
-    
-    flash('Verification code sent to your email address')
-    return redirect(url_for('verify_email'))
-
-@app.route('/check-verification-code', methods=['POST'])
-def check_verification_code():
-    verification_code = session.get('verification_code')
-    email = session.get('email')
-    entered_code = request.form['verification_code']
-    if entered_code == verification_code:
-        flash('Email verified successfully')
-        # Clear the session data
-        session.pop('verification_code', None)
-        session.pop('email', None)
         return redirect(url_for('home'))
+
+@app.route('/enter-code', methods=['GET', 'POST'])
+def enter_code():
+    if 'user_session' in session:
+        user_session_id = session['user_session']
+        if request.method == 'POST':
+            email = request.form['email']
+            code = request.form['code']
+            if email in verification_codes and code == verification_codes[email]:
+                # verification successful
+                users.update_one({'_id': ObjectId(user_session_id)}, {'$set': {
+                'email': request.form['email'],
+            }})
+                del verification_codes[email] # remove code from dictionary
+                # return 'Verification successful!'
+                return redirect(url_for('usersettings'))
+            else:
+                # verification failed
+                return 'Verification code is incorrect. Please try again.'
+
+        return render_template('enter_code.html')
     else:
-        flash('Verification code does not match')
-        return redirect(url_for('verify_email'))
+        return redirect(url_for('home'))      
 
 @app.route('/')
 def home():
@@ -154,6 +171,7 @@ def register():
         # Checks if date isn't empty or after today
         today = datetime.utcnow()
         today = today.strftime("%Y-%m-%d")
+        print("Today:"+today+ "date of birth:"+ dateofbirth)
         if (dateofbirth == "" or dateofbirth > today):
             notification = "Date of birth can't be empty or be after "+today+""
             return render_template('register.html', notification=notification)
@@ -200,7 +218,7 @@ def register():
             notification = 'Password must contain at least one special character'
             return render_template('register.html', notification=notification)
         
-        users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex})
+        users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex, 'email': ''})
         usettings.insert_one({'username': username, 'settings': {'posts': []}})
         return render_template('redirect.html')
     return render_template('register.html')
@@ -411,11 +429,29 @@ def usersettings():
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         profile_setting = users.find_one({'username': user_session_username["username"]})
+        user_session_details = users.find_one({"_id": ObjectId(user_session_id)})
         settings = usettings.find_one({"username": user_session_username["username"]})
         if settings == None:
             usettings.insert_one({'username': user_session_username["username"], 'settings': {'posts': []}})
 
         if request.method == 'POST':
+            # Checks if date isn't empty or after today
+            today = datetime.utcnow()
+            today = today.strftime("%Y-%m-%d")
+            dateofbirth = request.form['dob']
+            # Checks if username isn't empty or bigger than 30 characters
+            if (request.form['name'] == "" or len(request.form['name']) < 3 or len(request.form['name']) > 30):
+                notification = "Username can't be empty or less than 3 characters or more than 30 characters"
+                return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
+            if (request.form['surname'] == "" or len(request.form['surname']) < 3 or len(request.form['surname']) > 30):
+                notification = "Username can't be empty or less than 3 characters or more than 30 characters"
+                return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
+            if (dateofbirth == "" or dateofbirth > today):
+                notification = "Date of birth can't be empty or be after "+today+""
+                return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
+            if (dateofbirth == "111111-11-11"):
+                notification = "Date of birth can't be empty or be after "+today+""
+                return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
             posts = request.form.getlist('post')
             users.update_one({'username': user_session_username["username"]}, {'$set': {
                 'name': request.form['name'],
@@ -424,7 +460,7 @@ def usersettings():
             }})
             usettings.update_one({'username': user_session_username["username"]}, {'$set': {'settings.posts': posts}})
             return redirect(url_for('usersettings'))
-        return render_template('user_settings.html',  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting)
+        return render_template('user_settings.html',  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
     else:
         return redirect(url_for('home'))
 
