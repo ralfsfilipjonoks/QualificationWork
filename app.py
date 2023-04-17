@@ -23,6 +23,16 @@ app.secret_key = secrets.token_hex(16)
 # Set session lifetime to 30 minutes
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800
 
+client_for_users = pymongo.MongoClient(os.getenv('client_for_users'))
+user_db = client_for_users.webdata
+
+user_points = user_db.pointinfo
+user_users = user_db.userdata
+user_types = user_db.pointtypes
+user_admin = user_db.adminuserdata
+user_usettings = user_db.usersettings
+user_point_report = user_db.pointreports
+
 client = pymongo.MongoClient(os.getenv('client'))
 db = client.webdata
 
@@ -34,7 +44,6 @@ usettings = db.usersettings
 point_report = db.pointreports
 
 mail = Mail(app)
-
 
 # dictionary to store verification codes
 verification_codes = {}
@@ -71,7 +80,7 @@ def enter_code():
             code = request.form['code']
             if email in verification_codes and code == verification_codes[email]:
                 # verification successful
-                users.update_one({'_id': ObjectId(user_session_id)}, {'$set': {
+                user_users.update_one({'_id': ObjectId(user_session_id)}, {'$set': {
                 'email': request.form['email'],
             }})
                 del verification_codes[email] # remove code from dictionary
@@ -92,7 +101,7 @@ def home():
     query = {"removedate": {"$lt": today}}
     documents_to_delete = points.find(query)
     for doc in documents_to_delete:
-        points.delete_one({"_id": doc["_id"]})
+        user_points.delete_one({"_id": doc["_id"]})
     allTypes = types.find()
     url = "https://eu-central-1.aws.data.mongodb-api.com/app/data-ywrin/endpoint/data/v1/action/find"
     payload = json.dumps({
@@ -114,7 +123,7 @@ def home():
     headers = {
     'Content-Type': 'application/ejson',
     'Access-Control-Request-Headers': '*',
-    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    'api-key': "EiN5yepFd4DIUfNDc3R6aU6OKia70VZ7FxrPv2ZQAWiA4B4ybVMA5t1pNmMMpz46", 
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     all_posts = json.loads(response.text)
@@ -212,8 +221,8 @@ def register():
             notification = 'Password must contain at least one special character'
             return render_template('register.html', notification=notification)
         
-        users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex, 'email': ''})
-        usettings.insert_one({'username': username, 'settings': {'posts': []}})
+        user_users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex, 'email': ''})
+        user_usettings.insert_one({'username': username, 'settings': {'posts': []}})
         return render_template('redirect.html')
     return render_template('register.html')
 
@@ -221,11 +230,11 @@ def register():
 def about():
     if 'user_session' in session:
         user_session_id = session['user_session']
-        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        user_session_username = user_users.find_one({"_id": ObjectId(user_session_id)})
         return render_template('about.html', username = user_session_username['username'])
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
-        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        admin_session_username = user_admin.find_one({"_id": ObjectId(admin_session_id)})
         return render_template('about.html', admin = admin_session_username['username'])
     else:
         return render_template('about.html')
@@ -234,11 +243,11 @@ def about():
 def release():
     if 'user_session' in session:
         user_session_id = session['user_session']
-        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        user_session_username = user_users.find_one({"_id": ObjectId(user_session_id)})
         return render_template('release.html', username = user_session_username['username'])
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
-        admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
+        admin_session_username = user_admin.find_one({"_id": ObjectId(admin_session_id)})
         return render_template('release.html', admin = admin_session_username['username'])
     else:
         return render_template('release.html')    
@@ -254,8 +263,8 @@ def login():
         password = request.form['password']
         hash_object = hashlib.sha256(password.encode('utf-8'))
         hash_hex = hash_object.hexdigest()
-        user = users.find_one({'username': username})
-        administrator = admin.find_one({'username': username})
+        user = user_users.find_one({'username': username})
+        administrator = user_admin.find_one({'username': username})
         if user:
             if hash_hex == user['password']:
                 session['user_session'] = str(user['_id'])
@@ -308,7 +317,7 @@ def get_data_count():
     headers = {
     'Content-Type': 'application/ejson',
     'Access-Control-Request-Headers': '*',
-    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    'api-key': "EiN5yepFd4DIUfNDc3R6aU6OKia70VZ7FxrPv2ZQAWiA4B4ybVMA5t1pNmMMpz46", 
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
@@ -343,7 +352,7 @@ def get_data():
     headers = {
     'Content-Type': 'application/ejson',
     'Access-Control-Request-Headers': '*',
-    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    'api-key': "EiN5yepFd4DIUfNDc3R6aU6OKia70VZ7FxrPv2ZQAWiA4B4ybVMA5t1pNmMMpz46", 
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
@@ -363,7 +372,7 @@ def add_point():
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        postsByUser = points.count_documents({"author": user_session_username['username']})
+        postsByUser = user_points.count_documents({"author": user_session_username['username']})
         if postsByUser >= 10:
             return render_template('add_point_limit.html', username = user_session_username['username'])
     else:
@@ -396,7 +405,7 @@ def add_point():
         else:
             latitude = float(request.form['latitude'])
             longitude = float(request.form['longitude'])
-            points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
+            user_points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
             notification = 'Point added sucessfully!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
     return render_template('add_point.html', types = allTypes, username = user_session_username['username'])
@@ -426,7 +435,7 @@ def usersettings():
         user_session_details = users.find_one({"_id": ObjectId(user_session_id)})
         settings = usettings.find_one({"username": user_session_username["username"]})
         if settings == None:
-            usettings.insert_one({'username': user_session_username["username"], 'settings': {'posts': []}})
+            user_usettings.insert_one({'username': user_session_username["username"], 'settings': {'posts': []}})
 
         if request.method == 'POST':
             # Checks if date isn't empty or after today
@@ -447,12 +456,12 @@ def usersettings():
                 notification = "Date of birth can't be empty or be after "+today+""
                 return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
             posts = request.form.getlist('post')
-            users.update_one({'username': user_session_username["username"]}, {'$set': {
+            user_users.update_one({'username': user_session_username["username"]}, {'$set': {
                 'name': request.form['name'],
                 'surname': request.form['surname'],
                 'dateofbirth': request.form['dob'],
             }})
-            usettings.update_one({'username': user_session_username["username"]}, {'$set': {'settings.posts': posts}})
+            user_usettings.update_one({'username': user_session_username["username"]}, {'$set': {'settings.posts': posts}})
             return redirect(url_for('usersettings'))
         return render_template('user_settings.html',  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
     else:
@@ -475,7 +484,13 @@ def delete_point(point_id):
     if 'admin_session' in session:
         return redirect(url_for('home'))
     if 'user_session' in session:
-        points.delete_one({'_id': ObjectId(point_id)})
+        user_session_id = session['user_session']
+        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        point_to_delete = points.find_one({'_id': ObjectId(point_id)})
+        if user_session_username['username'] != point_to_delete['author']:
+            # Other user trying to delete other point
+            return "Not your point to delete"
+        user_points.delete_one({'_id': ObjectId(point_id)})
         return redirect(url_for('home'))
     else:
         return redirect(url_for('home'))
@@ -491,6 +506,9 @@ def edit_point(point_id):
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        if user_session_username['username'] != point['author']:
+            # Other user trying to access other point
+            return redirect(url_for('home'))
         if request.method == 'POST':
             if today > request.form['remove_date']:
                 notification = "Remove date can't be before today"
@@ -502,7 +520,7 @@ def edit_point(point_id):
                 notification = "Description can't have more than 250 characters"
                 return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
             else:
-                points.update_one({'_id': ObjectId(point_id)}, {'$set': {
+                user_points.update_one({'_id': ObjectId(point_id)}, {'$set': {
                 'name': request.form['name'],
                 'description': request.form['description'],
                 'latitude': request.form['latitude'],
@@ -516,7 +534,7 @@ def edit_point(point_id):
         else:
             return render_template('edit_point.html', point=point, username = user_session_username['username'], types = allTypes)
     else:
-        return render_template('edit_point.html', point=point, types = allTypes, username = user_session_username['username'])
+        return redirect(url_for('home'))
 
 @app.route('/get_point_types',  methods=['GET', 'POST'])
 def get_type():
@@ -533,7 +551,7 @@ def get_type():
     headers = {
     'Content-Type': 'application/ejson',
     'Access-Control-Request-Headers': '*',
-    'api-key': "6des2LGmUnOVhxGKcYBySSZhA43c2s58ThSQbe8DQYYtR3t9UHMii9d1Oftvj0Z1", 
+    'api-key': "EiN5yepFd4DIUfNDc3R6aU6OKia70VZ7FxrPv2ZQAWiA4B4ybVMA5t1pNmMMpz46", 
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
@@ -547,6 +565,8 @@ def profile(username):
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         profile = users.find_one({'username': username})
+        if user_session_username['username'] != profile['username']:
+            return "Not your profile"
         return render_template('profile.html', profile=profile, username=user_session_username["username"])
     else:
         return redirect(url_for('home'))
@@ -558,15 +578,17 @@ def delete_user(username):
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        if user_session_username['username'] != username:
+            return "not your account to delete"
         # Delete user from users collection
         result = users.delete_one({'username': user_session_username["username"]})
         if result.deleted_count == 0:
             return {'message': 'User not found'}, 404
 
         # Delete all points with user's username from points collection
-        points.delete_many({'author': user_session_username["username"]})
-        usettings.delete_one({'username': user_session_username["username"]})
-        point_report.delete_many({'reporter': user_session_username["username"]})
+        user_points.delete_many({'author': user_session_username["username"]})
+        user_usettings.delete_one({'username': user_session_username["username"]})
+        user_point_report.delete_many({'reporter': user_session_username["username"]})
         session.pop('user_session', None)
         return redirect(url_for('home'))
         
@@ -620,8 +642,8 @@ def admin_user_delete(user_id):
         return redirect(url_for('home'))
     if 'admin_session' in session:
         author = users.find_one({'_id': ObjectId(user_id)})
-        users.delete_one({'_id': ObjectId(user_id)})
-        points.delete_many({'author': author['username']})
+        user_users.delete_one({'_id': ObjectId(user_id)})
+        user_points.delete_many({'author': author['username']})
         return redirect(url_for('home'))
     else:
         return redirect(url_for('home'))
@@ -649,10 +671,10 @@ def admin_spec_user_markers():
 def admin_delete_point(point_id):
     if 'admin_session' in session:
         all_reports = point_report.find({"marker": point_id})
-        points.delete_one({'_id': ObjectId(point_id)})
+        user_points.delete_one({'_id': ObjectId(point_id)})
         if(all_reports):
             print("DELETE ALL")
-            point_report.delete_many({"marker": point_id})
+            user_point_report.delete_many({"marker": point_id})
         return redirect(url_for('home'))
     if 'user_session' in session:
         return redirect(url_for('home'))
@@ -672,10 +694,10 @@ def report_marker(marker_id):
             report_description = request.form['report_description']
             if report_reason == "other":
                 report_reason_from_user = request.form['other-reason']
-                point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason_from_user, "report_description": report_description})
+                user_point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason_from_user, "report_description": report_description})
                 return render_template('report_marker_exists.html', username = user_session_username["username"])
             else:
-                point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
+                user_point_report.insert_one({"reporter": user_session_username["username"], "marker": marker_id, "report_reason": report_reason, "report_description": report_description})
                 return redirect(url_for('home'))
         return render_template('report_marker.html', marker_id = marker_id, username = user_session_username["username"])
     else:
@@ -689,7 +711,7 @@ def admin_report_delete_markers(report_id):
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
         admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
-        point_report.find_one_and_delete({"_id": ObjectId(report_id)})
+        user_point_report.find_one_and_delete({"_id": ObjectId(report_id)})
         reports = list(point_report.find())
         return render_template('admin_report_markers.html', admin = admin_session_username["username"], reports = reports)
     else:
@@ -716,14 +738,14 @@ def delete_user_by_marker(marker_id):
         # Delete user from users collection
         reported_user = points.find_one({"_id": ObjectId(marker_id)})
         # print(reported_user['author'])
-        result = users.delete_one({'username': reported_user['author']})
+        result = user_users.delete_one({'username': reported_user['author']})
         if result.deleted_count == 0:
             return {'message': 'User not found'}, 404
 
         # Delete all points with user's username from points collection
-        points.delete_many({'author': reported_user['author']})
-        usettings.delete_one({'username': reported_user['author']})
-        point_report.delete_many({'reporter': reported_user['author']})
+        user_points.delete_many({'author': reported_user['author']})
+        user_usettings.delete_one({'username': reported_user['author']})
+        user_point_report.delete_many({'reporter': reported_user['author']})
         session.pop('username', None)
         return redirect(url_for('home'))
     
