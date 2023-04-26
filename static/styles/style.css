@@ -27,3 +27,23 @@ body,
 .my-custom-control {
   border: none;
 }
+.btn-white {
+  background-color: #fff;
+  color: #000;
+  border-color: #000;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.btn-white:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.btn-icon {
+  color: #000;
+}
+
+.leaflet-bar.my-custom-control.leaflet-control {
+  border: none;
+}

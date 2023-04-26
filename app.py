@@ -94,7 +94,7 @@ def enter_code():
     else:
         return redirect(url_for('home'))      
 
-@app.route('/')
+@app.route('/' , methods=['GET', 'POST'])
 def home():
     today = datetime.utcnow()
     today = today.strftime("%Y-%m-%d")
@@ -131,6 +131,26 @@ def home():
     filtered_markers = [marker for marker in all_posts['documents'] if marker["postdate"] <= str(current_date)]
     upcoming_markers = [marker for marker in all_posts['documents'] if marker["postdate"] > str(current_date)]
     count = 0
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        hash_object = hashlib.sha256(password.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
+        user = user_users.find_one({'username': username})
+        administrator = user_admin.find_one({'username': username})
+        if user:
+            if hash_hex == user['password']:
+                session['user_session'] = str(user['_id'])
+                return jsonify({'success': True})
+            else:
+                return jsonify({'success': False, 'message': 'Incorrect username or password'})
+        if administrator:
+            if password == administrator['password']:
+                session['admin_session'] = str(administrator['_id'])
+                return jsonify({'success': True})
+            else:
+                return jsonify({'success': False, 'message': 'Incorrect username or password'})
+        return jsonify({'success': False, 'message': 'Incorrect username or password'})
     for obj in all_posts['documents']:
         if '_id' in obj:
             count += 1
@@ -226,19 +246,6 @@ def register():
         return render_template('redirect.html')
     return render_template('register.html')
 
-@app.route('/about')
-def about():
-    if 'user_session' in session:
-        user_session_id = session['user_session']
-        user_session_username = user_users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('about.html', username = user_session_username['username'])
-    if 'admin_session' in session:
-        admin_session_id = session['admin_session']
-        admin_session_username = user_admin.find_one({"_id": ObjectId(admin_session_id)})
-        return render_template('about.html', admin = admin_session_username['username'])
-    else:
-        return render_template('about.html')
-
 @app.route('/release')
 def release():
     if 'user_session' in session:
@@ -251,39 +258,6 @@ def release():
         return render_template('release.html', admin = admin_session_username['username'])
     else:
         return render_template('release.html')    
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if 'user_session' in session:
-        return redirect(url_for('home'))
-    if 'admin_session' in session:
-        return redirect(url_for('home'))
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        hash_object = hashlib.sha256(password.encode('utf-8'))
-        hash_hex = hash_object.hexdigest()
-        user = user_users.find_one({'username': username})
-        administrator = user_admin.find_one({'username': username})
-        if user:
-            if hash_hex == user['password']:
-                session['user_session'] = str(user['_id'])
-                return redirect(url_for('home'))
-            else:
-                error = 'Invalid name or password. Please try again.'
-                return render_template('login.html', error=error)
-        error = 'Invalid name or password. Please try again.'
-        if administrator:
-            if password == administrator['password']:
-                session['admin_session'] = str(administrator['_id'])
-                return redirect(url_for('home'))
-            else:
-                error = 'Invalid name or password. Please try again.'
-                return render_template('login.html', error=error)
-        error = 'Invalid name or password. Please try again.'
-        return render_template('login.html', error=error)
-    else:
-        return render_template('login.html')
 
 @app.route('/logout')
 def logout():
@@ -748,18 +722,6 @@ def delete_user_by_marker(marker_id):
         user_point_report.delete_many({'reporter': reported_user['author']})
         session.pop('username', None)
         return redirect(url_for('home'))
-    
-@app.route('/login_map')
-def login_map():
-    # Check if a user session token exists
-    if 'user_session' in session:
-        user_session_id = session['user_session']
-        user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        # If a session token exists, return a response with the token
-        return {'token': user_session_username['username']}
-    else:
-        # If no session token exists, return a response indicating the user is not logged in
-        return {'message': 'User is not logged in'}
     
 @app.route('/get_session_info')
 def get_session_info():
