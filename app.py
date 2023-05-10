@@ -26,6 +26,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 1800
 client_for_users = pymongo.MongoClient(os.getenv('client_for_users'))
 user_db = client_for_users.webdata
 
+user_comments = user_db.pointcomments
 user_points = user_db.pointinfo
 user_users = user_db.userdata
 user_types = user_db.pointtypes
@@ -36,6 +37,7 @@ user_point_report = user_db.pointreports
 client = pymongo.MongoClient(os.getenv('client'))
 db = client.webdata
 
+comments = db.pointcomments
 points = db.pointinfo
 users = db.userdata
 types = db.pointtypes
@@ -47,6 +49,13 @@ mail = Mail(app)
 
 # dictionary to store verification codes
 verification_codes = {}
+
+def is_new_user():
+    if 'visited' in session:
+        return False
+    else:
+        session['visited'] = True
+        return True
 
 @app.route('/send-code', methods=['GET', 'POST'])
 def send_code():
@@ -130,6 +139,7 @@ def home():
     current_date = datetime.now().date()
     filtered_markers = [marker for marker in all_posts['documents'] if marker["postdate"] <= str(current_date)]
     upcoming_markers = [marker for marker in all_posts['documents'] if marker["postdate"] > str(current_date)]
+    all_comments = comments.find()
     count = 0
     if request.method == 'POST':
         username = request.form['username']
@@ -153,17 +163,28 @@ def home():
         return jsonify({'success': False, 'message': 'Incorrect username or password'})
     for obj in all_posts['documents']:
         if '_id' in obj:
+            # Post counts
             count += 1
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('home.html', count = count, username = user_session_username['username'], upcoming = upcoming_markers,result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', all_comments=all_comments, count = count, username = user_session_username['username'], upcoming = upcoming_markers,result=filtered_markers, active_page='home.html', allTypes=allTypes)
     if 'admin_session' in session:
         admin_session_id = session['admin_session']
         admin_session_username = admin.find_one({"_id": ObjectId(admin_session_id)})
-        return render_template('home.html', count = count, admin = admin_session_username['username'], upcoming = upcoming_markers ,  result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        return render_template('home.html', all_comments=all_comments, count = count, admin = admin_session_username['username'], upcoming = upcoming_markers ,  result=filtered_markers, active_page='home.html', allTypes=allTypes)
     else:
-        return render_template('home.html', count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        if is_new_user():
+            print(is_new_user())
+            return render_template('home.html', show_modal=True, all_comments=all_comments, count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        else:
+            print(is_new_user())
+            return render_template('home.html', show_modal=False, all_comments=all_comments, count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
+        
+@app.route('/popsession')
+def popsession():
+    session.pop('visitor', None)
+    return "Session visitor poped"
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -301,6 +322,7 @@ def get_data_count():
     count = 0
     for obj in data:
         if '_id' in obj:
+            # Posts
             count += 1
     return jsonify(count=count)
 
@@ -361,6 +383,13 @@ def add_point():
         pointtype = request.form['type']
         user = user_session_username['username']
         coordinates_check = points.find_one({'latitude': latitude, 'longitude': longitude})
+        try:
+            # try to parse the postdate string into a datetime object
+            datetime.strptime(postdate, '%Y-%m-%d')
+            datetime.strptime(postdate, '%Y-%m-%d')
+        except ValueError:
+            notification = "Invalid date formats!"
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if len(pointname) > 50:
             notification = "Post name can't be more than 50 characters!"
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])

@@ -14,6 +14,10 @@ async function getDataCount() {
 }
 
 $(document).ready(function () {
+  $("#myModal").modal("show");
+});
+
+$(document).ready(function () {
   $("#login-form").submit(function (e) {
     e.preventDefault(); // Prevent form submission
 
@@ -121,6 +125,13 @@ var otherIcon = L.icon({
   popupAnchor: [0, -32],
 });
 
+var foodFestIcon = L.icon({
+  iconUrl: "/static/icons/foodfesticon.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
 // Sets map range to user
 var southWest = L.latLng(-90, -180);
 var northEast = L.latLng(90, 180);
@@ -135,6 +146,7 @@ var concertLayer = L.markerClusterGroup();
 var otherLayer = L.markerClusterGroup();
 var meetupLayer = L.markerClusterGroup();
 var roadWorkLayer = L.markerClusterGroup();
+var foodLayer = L.markerClusterGroup();
 var overlayMaps = {
   Charity: charityLayer,
   Concert: concertLayer,
@@ -142,11 +154,45 @@ var overlayMaps = {
   Other: otherLayer,
   "Road work": roadWorkLayer,
   Warning: warningLayer,
+  "Food festival": foodLayer,
 };
 // map tools
 var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
 layerControl.setPosition("bottomright", true);
 //"Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}')
+
+// Array to store checked markerClusterGroups
+let checkedGroups = [];
+
+// Get checked markerClusterGroups and trigger hidden element with matching value
+function refreshCheckedGroups() {
+  checkedGroups = [];
+  for (const [groupName, groupLayer] of Object.entries(overlayMaps)) {
+    if (map.hasLayer(groupLayer)) {
+      checkedGroups.push(groupName);
+    }
+  }
+
+  // Toggle display property of elements based on checkedGroups
+  const elements = document.querySelectorAll("[data-group]");
+  for (const element of elements) {
+    const groupName = element.getAttribute("data-group");
+    if (checkedGroups.includes(groupName)) {
+      element.style.display = "block";
+    } else {
+      element.style.display = "none";
+    }
+  }
+}
+
+// Bind event listeners to refresh checkedGroups when layers are toggled
+map.on("overlayadd overlayremove", refreshCheckedGroups);
+
+// Bind event listeners to refresh checkedGroups when checkboxes are checked
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+for (const checkbox of checkboxes) {
+  checkbox.addEventListener("change", refreshCheckedGroups);
+}
 
 // Fetch data about points and put them on map with all information
 async function getData() {
@@ -163,8 +209,10 @@ async function getData() {
           warningLayer.addTo(map);
           meetupLayer.addTo(map);
           roadWorkLayer.addTo(map);
+          foodLayer.addTo(map);
         } else {
-          for (let i = 0; i < 6; i++) {
+          var typeCount = 7;
+          for (let i = 0; i < typeCount; i++) {
             if (data[i] == "Charity") {
               charityLayer.addTo(map);
             }
@@ -182,6 +230,9 @@ async function getData() {
             }
             if (data[i] == "Road work") {
               roadWorkLayer.addTo(map);
+            }
+            if (data[i] == "Food festival") {
+              foodLayer.addTo(map);
             }
           }
         }
@@ -208,6 +259,8 @@ async function getData() {
           ? meetupIcon
           : data[i].type === "Road work"
           ? roadWorkIcon
+          : data[i].type === "Food festival"
+          ? foodFestIcon
           : otherIcon,
     }).bindPopup(`
       <div class="container">
@@ -240,16 +293,19 @@ async function getData() {
           </div>
         </div>
         <div class="row">
-          <div class="col-4 text-center">
+          <div class="col-3 text-center">
             <form action="/report_marker/${data[i]._id}">
-              <button type="submit" class="btn btn-danger"><i class="bi bi-flag-fill"></i></button>
+              <button type="submit" class="btn btn-white"><i class="bi bi-flag"></i></button>
             </form>
           </div>
-          <div class="col-4 text-center">
-            <a href="https://www.google.com/maps?q=${postLatitude},${postLongitude}" target="_blank" class="btn btn-primary"><i class="bi bi-map-fill"></i></a>
+          <div class="col-3 text-center">
+            <a href="https://www.google.com/maps?q=${postLatitude},${postLongitude}" target="_blank" class="btn btn btn-white"><i class="bi bi-map-fill"></i></a>
           </div>
-          <div class="col-4 text-center">
-            <a href="https://www.waze.com/live-map?navigate=yes&lat=${postLatitude}&lon=${postLongitude}" target="_blank" class="btn btn-primary"><i class="bi bi-geo-alt-fill"></i></a>
+          <div class="col-3 text-center">
+            <a href="https://www.waze.com/live-map?navigate=yes&lat=${postLatitude}&lon=${postLongitude}" target="_blank" class="btn btn btn-white"><i class="bi bi-geo-alt"></i></a>
+          </div>
+          <div class="col-3 text-center">
+            <button type="button" class="btn btn-white disabled" data-bs-toggle="modal" data-bs-target="#commentModal-${data[i]._id}"><i class="bi bi-chat-dots"></i></button>
           </div>
         </div>
       </div>
@@ -274,10 +330,13 @@ async function getData() {
       case "Road work":
         roadWorkLayer.addLayer(marker);
         break;
+      case "Food festival":
+        foodLayer.addLayer(marker);
+        break;
     }
 
     marker.on("click", function (event) {
-      map.setView(event.latlng, 16);
+      map.setView(event.latlng, 18);
     });
   }
 }
@@ -360,8 +419,12 @@ fetch("/get_session_info")
         container.appendChild(logoutButton);
       }
       if (data.type == "admin") {
-        var adminButton = L.DomUtil.create("button", "btn btn-secondary");
-        adminButton.innerHTML = data.username;
+        var adminButton = L.DomUtil.create(
+          "button",
+          "btn btn-white rounded-pill"
+        );
+        adminButton.innerHTML =
+          '<i class="bi bi-sliders"></i> ' + data.username;
         adminButton.setAttribute("style", "margin-right: 10px");
         adminButton.addEventListener("click", function () {
           window.location.href = "/admin_ui";
@@ -377,3 +440,67 @@ fetch("/get_session_info")
       // If user is not logged in, control already shows login button
     }
   });
+
+// var polygon = L.polygon([
+//   [56.9465542, 24.1183725],
+//   [56.9465556, 24.1187856],
+//   [56.9466449, 24.1187748],
+//   [56.9466551, 24.1196519],
+//   [56.946661, 24.1211003],
+//   [56.9469682, 24.1210654],
+//   [56.9469565, 24.1197833],
+//   [56.9471335, 24.119778],
+//   [56.9471291, 24.1188446],
+//   [56.9470764, 24.1188365],
+//   [56.9470794, 24.1185334],
+//   [56.9469082, 24.1185361],
+//   [56.9469082, 24.1183779],
+//   [56.9465542, 24.1183671],
+// ]).addTo(map);
+// polygon.bindPopup(`
+//       <div class="container">
+//         <div class="row mb-2">
+//           <div class="col-12 text-center">
+//           <h1>TESTING</h1>
+//             <h5> Origo sale </h5>
+//           </div>
+//         </div>
+//         <div class="row mb-2">
+//           <div class="col-12">
+//             <p>Everything has 50 % off</p>
+//           </div>
+//         </div>
+//         <div class="row mb-2">
+//           <div class="col-sm-4 text-center">
+//             <strong>Post date:</strong> April 28 2023
+//           </div>
+//           <div class="col-sm-4 text-center">
+//             <strong>End date:</strong> June 4 2023
+//           </div>
+//           <div class="col-sm-4 text-center">
+//             <strong>Type:</strong> Sale
+//           </div>
+//         </div>
+//         <div class="row mb-2">
+//           <div class="col-12 text-center">
+//             <strong>Author:</strong> TC "Origo"
+//             <br>
+//             <small class="text-muted">ID: 13283128712</small>
+//           </div>
+//         </div>
+//         <div class="row">
+//           <div class="col-4 text-center">
+//             <form action="/report_marker/0">
+//               <button type="submit" class="btn btn-danger"><i class="bi bi-flag-fill"></i></button>
+//             </form>
+//           </div>
+//           <div class="col-4 text-center">
+//             <a href="https://www.google.com/maps?q=0,0" target="_blank" class="btn btn-primary"><i class="bi bi-map-fill"></i></a>
+//           </div>
+//           <div class="col-4 text-center">
+//             <a href="https://www.waze.com/live-map?navigate=yes&lat=0&lon=0" target="_blank" class="btn btn-primary"><i class="bi bi-geo-alt-fill"></i></a>
+//           </div>
+//         </div>
+//       </div>
+//     `);
+// foodLayer.addLayer(polygon);

@@ -47,3 +47,12 @@ body,
 .leaflet-bar.my-custom-control.leaflet-control {
   border: none;
 }
+.btn-close {
+  color: white;
+}
+
+.btn-close:hover {
+  color: black;
+  background-color: white;
+  border-color: black;
+}

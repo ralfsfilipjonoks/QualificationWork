@@ -31,3 +31,13 @@ headers.forEach((header, index) => {
     sortedRows.forEach((row) => table.querySelector("tbody").appendChild(row));
   });
 });
+
+// Add click event listener to all "See More" buttons
+const seeMoreButtons = document.querySelectorAll(".see-more");
+seeMoreButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    // Find the parent "description" cell and add expandable class
+    const descriptionCell = button.closest(".description-cell");
+    descriptionCell.classList.add("expandable");
+  });
+});

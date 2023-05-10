@@ -30,8 +30,7 @@ content %}
             <th scope="col" onclick="toggleDate()">post date</th>
             <th scope="col" onclick="toggleRemoveDate()">remove date</th>
             <th scope="col">type</th>
-            <th scope="col">Delete</th>
-            <th scope="col">Edit</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -46,62 +45,61 @@ content %}
             <td>{{ x['removedate'] }}</td>
             <td>{{ x['type'] }}</td>
             <td>
-              <form action="/delete_point/{{ x['_id'] }}" method="POST">
-                <button
-                  style="margin-right: 10px"
-                  type="button"
-                  class="btn btn-danger"
-                  data-toggle="modal"
-                  data-target="#deleteModal-{{ x['_id'] }}">
-                  Delete
-                </button>
-                <div
-                  class="modal fade"
-                  id="deleteModal-{{ x['_id'] }}"
-                  tabindex="-1"
-                  role="dialog"
-                  aria-labelledby="deleteModalLabel"
-                  aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">
-                          Confirm Marker Deletion
-                        </h5>
-                        <button
-                          type="button"
-                          class="close"
-                          data-dismiss="modal"
-                          aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        Delete marker with id of: {{ x['_id'] }}
-                      </div>
-                      <div class="modal-footer">
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          data-dismiss="modal">
-                          Cancel
-                        </button>
-                        <a
-                          href="/delete_point/{{ x['_id'] }}"
-                          type="button"
-                          class="btn btn-danger"
-                          >Delete Marker</a
-                        >
+              <div class="d-flex justify-content-start">
+                <form action="/delete_point/{{ x['_id'] }}" method="POST">
+                  <button
+                    type="button"
+                    class="btn btn-danger mr-2"
+                    data-toggle="modal"
+                    data-target="#deleteModal-{{ x['_id'] }}">
+                    Delete
+                  </button>
+                  <div
+                    class="modal fade"
+                    id="deleteModal-{{ x['_id'] }}"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="deleteModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="deleteModalLabel">
+                            Confirm Marker Deletion
+                          </h5>
+                          <button
+                            type="button"
+                            class="close"
+                            data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          Delete marker with id of: {{ x['_id'] }}
+                        </div>
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+                            Cancel
+                          </button>
+                          <a
+                            href="/delete_point/{{ x['_id'] }}"
+                            type="button"
+                            class="btn btn-danger"
+                            >Delete Marker</a
+                          >
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </form>
-            </td>
-            <td>
-              <form action="/edit_point/{{ x['_id'] }}" method="GET">
-                <button type="submit" class="btn btn-success">Edit</button>
-              </form>
+                </form>
+                <form action="/edit_point/{{ x['_id'] }}" method="GET">
+                  <button type="submit" class="btn btn-success">Edit</button>
+                </form>
+              </div>
             </td>
           </tr>
           {% endfor %}

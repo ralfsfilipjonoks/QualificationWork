@@ -3,49 +3,116 @@
 <html>
   <head>
     <title>Eventus</title>
+    <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <!-- Bootstrap CSS OffcanvasScrolling -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
       crossorigin="anonymous" />
+    <!-- Bootstrap JS OffcanvasScrolling -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
       crossorigin="anonymous"></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-      crossorigin="" />
+    <!-- Leaflet.JS JS Map -->
     <script
       src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
       integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
       crossorigin=""></script>
+    <!-- Leaflet.JS Marker Cluster Zoom CSS -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.css" />
+    <!-- Leaflet.JS Marker Cluster Coloring CSS -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/MarkerCluster.Default.css" />
+    <!-- Leaflet.JS Marker Cluster JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/leaflet.markercluster.js"></script>
+    <!-- Leaflet.JS CSS For Map -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <!-- CSS File for Homepage -->
     <link
       rel="stylesheet"
       type="text/css"
       href="{{ url_for('static',filename='styles/style.css') }}" />
   </head>
   <body onload="getDataCount()">
+    {% if show_modal %}
+    <!-- Bootstrap modal -->
+    <div
+      class="modal fade"
+      id="myModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content bg-light text-dark">
+          <div class="modal-header bg-dark">
+            <h5 class="modal-title text-white" id="myModalLabel">
+              Welcome user!
+            </h5>
+            <button
+              type="button"
+              class="btn-close text-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Welcome to our site! We're excited to have you here. Our map
+              allows users to insert points and share them with everyone.
+              Explore what others have shared and add your own points to the
+              community. Enjoy your time here and feel free to reach out with
+              any questions or feedback. Thank you for visiting!
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <div class="row">
+              <div class="col-md-4 d-flex justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-white d-flex flex-column align-items-center"
+                  onclick="startTutorial()">
+                  <i class="bi bi-journal-code"></i>
+                  Tutorial
+                </button>
+              </div>
+              <div class="col-md-4 d-flex justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-white d-flex flex-column align-items-center"
+                  data-bs-dismiss="modal">
+                  <i class="bi bi-skip-backward"></i>
+                  Skip
+                </button>
+              </div>
+              <div class="col-md-4 d-flex justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-white d-flex flex-column align-items-center"
+                  data-bs-dismiss="modal">
+                  <i class="bi bi-geo-alt"></i>
+                  Explore
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Login Modal -->
     <div
       class="modal fade"
@@ -69,9 +136,6 @@
               role="alert"
               id="error-message"
               hidden></div>
-            <!-- {% if error %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-            {% endif %} -->
             <!-- Login form -->
             <form id="login-form" action="{{ url_for('home') }}" method="POST">
               <div class="mb-3">
@@ -94,18 +158,14 @@
                   placeholder="Password"
                   required />
               </div>
-              <button type="submit" class="btn btn-primary w-100">
+              <button type="submit" class="btn btn btn-white w-100">
                 Log in
               </button>
             </form>
             <hr class="my-3" />
             <p class="text-center">Don't have an account?</p>
             <div class="d-grid gap-2">
-              <a
-                class="btn btn-primary"
-                role="button"
-                data-bs-toggle="modal"
-                data-bs-target="#registrationModal"
+              <a class="btn btn btn-white" role="button" href="/register"
                 >Register</a
               >
             </div>
@@ -113,7 +173,7 @@
         </div>
       </div>
     </div>
-    <!-- Modal -->
+    <!-- About Modal -->
     <div
       class="modal fade"
       id="aboutModal"
@@ -175,74 +235,10 @@
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn btn-white"
               data-bs-dismiss="modal">
               Close
             </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Registration Modal -->
-    <div
-      class="modal fade"
-      id="registrationModal"
-      tabindex="-1"
-      aria-labelledby="registrationModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="registrationModalLabel">Register</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="alert alert-danger" role="alert">Work in progress</div>
-            <form>
-              <div class="mb-3">
-                <label for="firstName" class="form-label">First Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="firstName"
-                  required />
-              </div>
-              <div class="mb-3">
-                <label for="lastName" class="form-label">Last Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="lastName"
-                  required />
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" required />
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="passwordE"
-                  required />
-              </div>
-              <div class="mb-3">
-                <label for="confirmPassword" class="form-label"
-                  >Confirm Password</label
-                >
-                <input
-                  type="password"
-                  class="form-control"
-                  id="confirmPassword"
-                  required />
-              </div>
-              <button type="submit" class="btn btn-primary">Register</button>
-            </form>
           </div>
         </div>
       </div>
@@ -262,29 +258,23 @@
           data-bs-dismiss="offcanvas"
           aria-label="Close"></button>
       </div>
-      <!-- Type filter for the future (Need JS code to work!) -->
-      <!-- <form>
-        {% if allTypes %} {% for x in allTypes %}
-        <label for="{{ x['type'] }}">
-          <input
-            type="checkbox"
-            name="{{ x['type'] }}"
-            value="{{ x['type'] }}"
-            class="check" /> </label
-        >{{ x['type'] }} {% endfor %} {% endif %}
-      </form> -->
       <div class="offcanvas-body">
         {% if result %} {% for x in result %}
-        <div id="{{ x['type'] }}" class="card" style="margin-bottom: 10px">
+        <div
+          id="{{ x['type'] }}"
+          class="card"
+          style="margin-bottom: 10px; display: none"
+          data-group="{{ x['type'] }}">
           <h5 class="card-header" id="{{ x['type'] }}">{{ x['type'] }}</h5>
           <div class="card-body">
             <h5 class="card-title">{{ x['name'] }}</h5>
             <p class="card-text">{{ x['description'] }}</p>
             <p class="fw-light">{{ x['postdate'] }}</p>
+            <p class="fw-light">Author: {{ x['author'] }}</p>
             <a
               onclick="goToMarker(`{{ x['latitude'] }}`, `{{ x['longitude'] }}`)"
               id="my-button"
-              class="btn btn-primary"
+              class="btn btn btn-white"
               >Event lookup</a
             >
           </div>
@@ -303,6 +293,7 @@
             <h5 class="card-title">{{ x['name'] }}</h5>
             <p class="card-text">{{ x['description'] }}</p>
             <p class="fw-light">{{ x['postdate'] }}</p>
+            <p class="fw-light">Author: {{ x['author'] }}</p>
           </div>
         </div>
         {% endfor %} {% else %} {% endif %}
@@ -310,6 +301,8 @@
     </div>
     <div id="map" style="position: relative"></div>
   </body>
+  <!-- Jquery JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- JS File for Homepage -->
   <script src="{{url_for('static', filename='main.js')}}"></script>
 </html>
