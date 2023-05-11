@@ -79,31 +79,29 @@
           </div>
           <div class="modal-footer justify-content-center">
             <div class="row">
-              <div class="col-md-4 d-flex justify-content-center">
+              <div class="col">
                 <button
+                  data-bs-toggle="modal"
+                  data-bs-target="#tutorialModal"
                   type="button"
-                  class="btn btn-white d-flex flex-column align-items-center"
-                  onclick="startTutorial()">
-                  <i class="bi bi-journal-code"></i>
-                  Tutorial
+                  class="btn btn btn-white d-flex flex-column align-items-center">
+                  <i class="bi bi-journal-code"></i> Tutorial
                 </button>
               </div>
-              <div class="col-md-4 d-flex justify-content-center">
+              <div class="col">
                 <button
                   type="button"
-                  class="btn btn-white d-flex flex-column align-items-center"
+                  class="btn btn btn-white d-flex flex-column align-items-center"
                   data-bs-dismiss="modal">
-                  <i class="bi bi-skip-backward"></i>
-                  Skip
+                  <i class="bi bi-skip-backward"></i> Skip
                 </button>
               </div>
-              <div class="col-md-4 d-flex justify-content-center">
+              <div class="col">
                 <button
                   type="button"
-                  class="btn btn-white d-flex flex-column align-items-center"
+                  class="btn btn btn-white d-flex flex-column align-items-center"
                   data-bs-dismiss="modal">
-                  <i class="bi bi-geo-alt"></i>
-                  Explore
+                  <i class="bi bi-geo-alt"></i> Explore
                 </button>
               </div>
             </div>
@@ -112,6 +110,56 @@
       </div>
     </div>
     {% endif %}
+
+    <!-- Tutorial modal -->
+    <div
+      class="modal fade"
+      id="tutorialModal"
+      tabindex="-1"
+      aria-labelledby="tutorialModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="tutorialModalLabel">
+              Welcome to the Tutorial!
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Here you will learn how to use our map.</p>
+            <ul>
+              <li>Step 1: Regiser or login.</li>
+              <li>
+                Step 2: You will get all options starting from inserting point
+                and ending with modifying and deleting point.
+              </li>
+              <li>Step 3: Based on your thoughts insert your first point.</li>
+              <li>
+                Step 4: Explore the map and view the points that others have
+                added.
+              </li>
+            </ul>
+            <p>
+              That's it! You're now ready to use our map to its fullest
+              potential.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal">
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Login Modal -->
     <div

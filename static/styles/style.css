@@ -56,3 +56,13 @@ body,
   background-color: white;
   border-color: black;
 }
+
+@media (max-width: 767px) {
+  .modal-dialog {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+}
+.modal-body {
+  font-size: 1.2rem;
+}

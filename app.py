@@ -146,21 +146,21 @@ def home():
         password = request.form['password']
         hash_object = hashlib.sha256(password.encode('utf-8'))
         hash_hex = hash_object.hexdigest()
-        user = user_users.find_one({'username': username})
-        administrator = user_admin.find_one({'username': username})
-        if user:
-            if hash_hex == user['password']:
-                session['user_session'] = str(user['_id'])
+        find_user_from_login = users.find_one({'username': username})
+        administrator = admin.find_one({'username': username})
+        if find_user_from_login:
+            if hash_hex == find_user_from_login['password']:
+                session['user_session'] = str(find_user_from_login['_id'])
                 return jsonify({'success': True})
             else:
-                return jsonify({'success': False, 'message': 'Incorrect username or password'})
+                return jsonify({'success': False, 'message': 'Login failed. Please check your login credentials.'})
         if administrator:
             if password == administrator['password']:
                 session['admin_session'] = str(administrator['_id'])
                 return jsonify({'success': True})
             else:
-                return jsonify({'success': False, 'message': 'Incorrect username or password'})
-        return jsonify({'success': False, 'message': 'Incorrect username or password'})
+                return jsonify({'success': False, 'message': 'Login failed. Please check your login credentials.'})
+        return jsonify({'success': False, 'message': 'Login failed. Please check your login credentials.'})
     for obj in all_posts['documents']:
         if '_id' in obj:
             # Post counts
@@ -175,10 +175,8 @@ def home():
         return render_template('home.html', all_comments=all_comments, count = count, admin = admin_session_username['username'], upcoming = upcoming_markers ,  result=filtered_markers, active_page='home.html', allTypes=allTypes)
     else:
         if is_new_user():
-            print(is_new_user())
             return render_template('home.html', show_modal=True, all_comments=all_comments, count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
         else:
-            print(is_new_user())
             return render_template('home.html', show_modal=False, all_comments=all_comments, count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
         
 @app.route('/popsession')

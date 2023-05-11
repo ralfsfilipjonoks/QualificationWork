@@ -61,3 +61,190 @@ function checkPasswordStrength() {
     passwordStrengthText.innerHTML = "Very Strong";
   }
 }
+
+const form = $("#name").closest("form");
+
+const validateInput = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[a-zA-Z0-9_]{3,30}$/;
+
+  if (!regex.test(value)) {
+    errors.push(
+      `${input.attr(
+        "name"
+      )} must be between 3 and 30 characters and can only contain letters, numbers, and underscores!`
+    );
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateDateInput = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const enteredDate = new Date(value);
+  const currentDate = new Date();
+
+  if (enteredDate > currentDate) {
+    errors.push("Please enter a valid date of birth");
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const createErrorElement = () =>
+  $(
+    '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
+  );
+
+const nameInput = $("#name");
+const surnameInput = $("#surname");
+const dateInput = $("#dateofbirth");
+const usernameInput = $("#username");
+
+const nameErrorElement = createErrorElement();
+const surnameErrorElement = createErrorElement();
+const dateErrorElement = createErrorElement();
+const usernameErrorElement = createErrorElement();
+
+form.append(
+  nameErrorElement,
+  surnameErrorElement,
+  dateErrorElement,
+  usernameErrorElement
+);
+
+nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
+surnameInput.on("blur", () => validateInput(surnameInput, surnameErrorElement));
+dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
+usernameInput.on("blur", () =>
+  validateInput(usernameInput, usernameErrorElement)
+);
+
+form.on("submit", (event) => {
+  if (
+    !validateInput(nameInput, nameErrorElement) ||
+    !validateInput(surnameInput, surnameErrorElement) ||
+    !validateDateInput(dateInput, dateErrorElement) ||
+    !validateInput(usernameInput, usernameErrorElement)
+  ) {
+    event.preventDefault();
+    return false;
+  }
+});
+
+const passwordInput = $("#password");
+const repeatPasswordInput = $("#repeatpassword");
+
+const passwordErrorElement = createErrorElement();
+const repeatPasswordErrorElement = createErrorElement();
+
+form.append(passwordErrorElement, repeatPasswordErrorElement);
+
+const validatePasswordInput = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  // Password length must be between 8 and 50 characters.
+  if (value.length < 8 || value.length > 50) {
+    errors.push("Password must be between 8 and 50 characters!");
+  }
+
+  // Password must have at least one uppercase, one lowercase, one number, and one symbol.
+  if (!/[A-Z]/.test(value)) {
+    errors.push("Password must contain at least one uppercase letter!");
+  }
+  if (!/[a-z]/.test(value)) {
+    errors.push("Password must contain at least one lowercase letter!");
+  }
+  if (!/\d/.test(value)) {
+    errors.push("Password must contain at least one number!");
+  }
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
+    errors.push("Password must contain at least one symbol!");
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+passwordInput.on("blur", () =>
+  validatePasswordInput(passwordInput, passwordErrorElement)
+);
+repeatPasswordInput.on("blur", () =>
+  validateRepeatPasswordInput(
+    passwordInput,
+    repeatPasswordInput,
+    repeatPasswordErrorElement
+  )
+);
+
+const validateRepeatPasswordInput = (
+  passwordInput,
+  repeatPasswordInput,
+  errorMsgs
+) => {
+  const value = repeatPasswordInput.val();
+  const errors = [];
+
+  // Check if repeat password matches password.
+  if (value !== passwordInput.val()) {
+    errors.push("Passwords do not match!");
+  }
+
+  if (errors.length > 0) {
+    repeatPasswordInput.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  repeatPasswordInput.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
