@@ -27,6 +27,11 @@ body,
 .my-custom-control {
   border: none;
 }
+.btn-white:focus,
+.btn-white:active {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
 .btn-white {
   background-color: #fff;
   color: #000;

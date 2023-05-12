@@ -388,10 +388,10 @@ def add_point():
         except ValueError:
             notification = "Invalid date formats!"
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
-        if len(pointname) > 50:
+        if 3 < len(pointname) > 50:
             notification = "Post name can't be more than 50 characters!"
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
-        if len(description) > 250:
+        if len(description) > 100:
             notification = "Description can't be more than 250 characters!"
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         if coordinates_check:
@@ -403,11 +403,19 @@ def add_point():
         if str(latitude) == '' or str(longitude) == '':
             notification = 'Put a point in the map!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
-        else:
-            latitude = float(request.form['latitude'])
-            longitude = float(request.form['longitude'])
-            user_points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
-            notification = 'Point added sucessfully!'
+        if request.form['username'] != user_session_username['username']:
+            notification = 'Can\'t change username!'
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+        for x in allTypes:
+            if request.form['type'] in x['type']:
+                latitude = float(request.form['latitude'])
+                longitude = float(request.form['longitude'])
+                user_points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
+                notification = 'Point added sucessfully!'
+                return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+            else:
+                print("nav")
+            notification = '(Trying to override value!) Type value is different!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
     return render_template('add_point.html', types = allTypes, username = user_session_username['username'])
 

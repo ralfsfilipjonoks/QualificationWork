@@ -17,73 +17,6 @@ function initMap() {
   map.setMaxBounds(bounds);
   var markers = [];
 
-  const postDateInput = document.getElementById("postdate");
-  const removeDateInput = document.getElementById("removedate");
-  const postTextInput = document.getElementById("name");
-  const postDescInput = document.getElementById("description");
-  const submitButton = document.getElementById("add-point");
-  const notificationDiv = document.getElementById("notification");
-
-  function checkInputs() {
-    const postDate = new Date(postDateInput.value);
-    const removeDate = new Date(removeDateInput.value);
-    const postText = postTextInput.value.toLowerCase();
-    const postDesc = postDescInput.value.toLowerCase();
-    let notification = "";
-
-    // Check if post date is before remove date
-    if (postDate > removeDate) {
-      notification = "Post date must be before remove date.";
-    }
-
-    // Check for bad words in post text
-    const badWords = [
-      "cunt",
-      "fuck",
-      "kys",
-      "retard",
-      "nigg",
-      "nigger",
-      "nigga",
-      "fuck",
-      "fucker",
-      "niger",
-      "N1gger",
-      "nigge",
-      "niggers",
-      "kysretard",
-      "kill your self",
-      "idiot",
-      "Nigers",
-      "gejs",
-      "pimpis",
-    ];
-    for (const word of badWords) {
-      if (postText.includes(word)) {
-        notification = "Name contains a bad word.";
-        break;
-      }
-      if (postDesc.includes(word)) {
-        notification = "Description contains a bad word.";
-        break;
-      }
-    }
-
-    // Show or hide notification
-    if (notification) {
-      notificationDiv.textContent = notification;
-      notificationDiv.style.display = "block";
-      submitButton.disabled = true;
-    } else {
-      notificationDiv.style.display = "none";
-      submitButton.disabled = false;
-    }
-  }
-  postDateInput.addEventListener("input", checkInputs);
-  removeDateInput.addEventListener("input", checkInputs);
-  postDescInput.addEventListener("input", checkInputs);
-  postTextInput.addEventListener("input", checkInputs);
-
   map.on("click", function (e) {
     var lat = e.latlng.lat;
     var lng = e.latlng.lng;
@@ -100,3 +33,230 @@ function initMap() {
     }
   });
 }
+
+const form = $("#name").closest("form");
+
+const validateInput = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\| ]{3,50}$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} must be between 3 and 50 characters!`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateDescription = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[a-zA-Z0-9_!@#$%^&*()\-+=\[\]{};:'",.<>\/?\\|]{10,100}$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} must be between 10 and 100 characters!`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validatePostDate = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} format has to be YYYY-MM-DD.`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateRemoveDate = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  const enteredDate = new Date(value);
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 1);
+  const postdate = new Date(postDateInput.val());
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} format has to be YYYY-MM-DD.`);
+  }
+
+  if (postdate > enteredDate) {
+    errors.push("Please enter a remove date that is after the post date.");
+  }
+
+  if (enteredDate < currentDate) {
+    errors.push("Please enter a valid date after today.");
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateLatitude = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} latitude coordinates error`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateLongitude = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[-+]?((1[0-7]|[1-9])?\d(\.\d+)?|180(\.0+)?)$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} longitude coordinates error`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const createErrorElement = () =>
+  $(
+    '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
+  );
+
+const nameInput = $("#name");
+const descriptionInput = $("#description");
+const postDateInput = $("#postdate");
+const removeDateInput = $("#removedate");
+const latitudeInput = $("#latitude");
+const longitudeInput = $("#longitude");
+
+const nameErrorElement = createErrorElement();
+const descriptionErrorElement = createErrorElement();
+const postDateErrorElement = createErrorElement();
+const removeDateErrorElement = createErrorElement();
+const latitudeErrorElement = createErrorElement();
+const longitudeErrorElement = createErrorElement();
+
+form.append(
+  nameErrorElement,
+  descriptionErrorElement,
+  postDateErrorElement,
+  removeDateErrorElement,
+  latitudeErrorElement,
+  longitudeErrorElement
+);
+
+nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
+descriptionInput.on("blur", () =>
+  validateDescription(descriptionInput, descriptionErrorElement)
+);
+postDateInput.on("blur", () =>
+  validatePostDate(postDateInput, postDateErrorElement)
+);
+removeDateInput.on("blur", () =>
+  validateRemoveDate(removeDateInput, removeDateErrorElement)
+);
+latitudeInput.on("blur", () =>
+  validateLatitude(latitudeInput, latitudeErrorElement)
+);
+longitudeInput.on("blur", () =>
+  validateLongitude(longitudeInput, longitudeErrorElement)
+);
+
+form.on("submit", (event) => {
+  if (
+    !validateInput(nameInput, nameErrorElement) ||
+    !validateDescription(descriptionInput, descriptionErrorElement) ||
+    !validatePostDate(postDateInput, postDateErrorElement) ||
+    !validateRemoveDate(removeDateInput, removeDateErrorElement) ||
+    !validateLatitude(latitudeInput, latitudeErrorElement) ||
+    !validateLongitude(longitudeInput, longitudeErrorElement)
+  ) {
+    event.preventDefault();
+    return false;
+  }
+});
