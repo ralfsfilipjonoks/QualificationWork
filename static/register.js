@@ -68,13 +68,43 @@ const validateInput = (input, errorMsgs) => {
   const value = input.val();
   const errors = [];
 
-  const regex = /^[a-zA-Z0-9_]{3,30}$/;
+  const regex = /^[a-zA-Z\s]{2,30}$/;
 
   if (!regex.test(value)) {
     errors.push(
       `${input.attr(
         "name"
-      )} must be between 3 and 30 characters and can only contain letters, numbers, and underscores!`
+      )} should consist of 2 to 30 characters, allowing both uppercase and lowercase letters and spaces. Special characters and punctuation marks are not permitted.`
+    );
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateUsername = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[a-zA-Z0-9_]{3,20}$/;
+
+  if (!regex.test(value)) {
+    errors.push(
+      `${input.attr(
+        "name"
+      )} should be between 3 and 20 characters long, and it can only contain letters, numbers, and underscores (_).`
     );
   }
 
@@ -102,7 +132,9 @@ const validateDateInput = (input, errorMsgs) => {
   const currentDate = new Date();
 
   if (enteredDate > currentDate) {
-    errors.push("Please enter a valid date of birth");
+    errors.push(
+      "Please provide a date of birth that is before the current date or valid date."
+    );
   }
 
   if (errors.length > 0) {
@@ -147,7 +179,7 @@ nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
 surnameInput.on("blur", () => validateInput(surnameInput, surnameErrorElement));
 dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
 usernameInput.on("blur", () =>
-  validateInput(usernameInput, usernameErrorElement)
+  validateUsername(usernameInput, usernameErrorElement)
 );
 
 form.on("submit", (event) => {
@@ -155,7 +187,7 @@ form.on("submit", (event) => {
     !validateInput(nameInput, nameErrorElement) ||
     !validateInput(surnameInput, surnameErrorElement) ||
     !validateDateInput(dateInput, dateErrorElement) ||
-    !validateInput(usernameInput, usernameErrorElement)
+    !validateUsername(usernameInput, usernameErrorElement)
   ) {
     event.preventDefault();
     return false;
@@ -248,3 +280,11 @@ const validateRepeatPasswordInput = (
   errorMsgs.hide().text("");
   return true;
 };
+
+const inputField = document.getElementById("name");
+const counter = document.getElementById("counter");
+
+inputField.addEventListener("input", function () {
+  const inputLength = inputField.value.length;
+  counter.textContent = inputLength;
+});

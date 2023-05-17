@@ -1,5 +1,5 @@
 // Get the table and its headers
-const table = document.getElementById("myTable");
+const table = document.getElementById("pointTable");
 const headers = table.querySelectorAll("th");
 
 // Add click event listener to each header

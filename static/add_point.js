@@ -1,3 +1,4 @@
+getTypes();
 function initMap() {
   var map = L.map("map").setView([56.946285, 24.105078], 7);
 
@@ -40,7 +41,8 @@ const validateInput = (input, errorMsgs) => {
   const value = input.val();
   const errors = [];
 
-  const regex = /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\| ]{3,50}$/;
+  const regex =
+    /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\| \u{0100}-\u{017F}]{3,50}$/u;
 
   if (!regex.test(value)) {
     errors.push(`${input.attr("name")} must be between 3 and 50 characters!`);
@@ -65,7 +67,8 @@ const validateDescription = (input, errorMsgs) => {
   const value = input.val();
   const errors = [];
 
-  const regex = /^[a-zA-Z0-9_!@#$%^&*()\-+=\[\]{};:'",.<>\/?\\|]{10,100}$/;
+  const regex =
+    /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\|\s\u{0100}-\u{017F}]{10,100}$/u;
 
   if (!regex.test(value)) {
     errors.push(`${input.attr("name")} must be between 10 and 100 characters!`);
@@ -202,6 +205,47 @@ const validateLongitude = (input, errorMsgs) => {
   return true;
 };
 
+let allowedValues;
+async function getTypes() {
+  fetch("/get_point_types")
+    .then((response) => response.json())
+    .then((data) => {
+      const types = data.documents.map((obj) => obj.type);
+
+      // Define the allowed values
+      allowedValues = types;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+const validateType = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+  value.toString();
+
+  if (allowedValues.includes(value)) {
+  } else {
+    errors.push(`Type value can\'t be changed in inspect element!`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
 const createErrorElement = () =>
   $(
     '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
@@ -213,6 +257,7 @@ const postDateInput = $("#postdate");
 const removeDateInput = $("#removedate");
 const latitudeInput = $("#latitude");
 const longitudeInput = $("#longitude");
+const typeInput = $("#type");
 
 const nameErrorElement = createErrorElement();
 const descriptionErrorElement = createErrorElement();
@@ -220,6 +265,7 @@ const postDateErrorElement = createErrorElement();
 const removeDateErrorElement = createErrorElement();
 const latitudeErrorElement = createErrorElement();
 const longitudeErrorElement = createErrorElement();
+const typeErrorElement = createErrorElement();
 
 form.append(
   nameErrorElement,
@@ -227,7 +273,8 @@ form.append(
   postDateErrorElement,
   removeDateErrorElement,
   latitudeErrorElement,
-  longitudeErrorElement
+  longitudeErrorElement,
+  typeErrorElement
 );
 
 nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
@@ -246,6 +293,7 @@ latitudeInput.on("blur", () =>
 longitudeInput.on("blur", () =>
   validateLongitude(longitudeInput, longitudeErrorElement)
 );
+typeInput.on("blur", () => validateType(typeInput, typeErrorElement));
 
 form.on("submit", (event) => {
   if (
@@ -254,7 +302,8 @@ form.on("submit", (event) => {
     !validatePostDate(postDateInput, postDateErrorElement) ||
     !validateRemoveDate(removeDateInput, removeDateErrorElement) ||
     !validateLatitude(latitudeInput, latitudeErrorElement) ||
-    !validateLongitude(longitudeInput, longitudeErrorElement)
+    !validateLongitude(longitudeInput, longitudeErrorElement) ||
+    !validateType(typeInput, typeErrorElement)
   ) {
     event.preventDefault();
     return false;

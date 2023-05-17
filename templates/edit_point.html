@@ -4,6 +4,10 @@ content %}
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static',filename='styles/style.css') }}" />
 <body onload="initMap()">
   <div class="container mt-5">
     <div class="container mx-auto">
@@ -108,13 +112,14 @@ content %}
           style="width: 100%; margin-top: 20px; margin-bottom: 20px"
           type="submit"
           id="add-point"
-          class="btn btn-primary">
+          class="btn btn btn-white">
           Save Changes
         </button>
       </form>
     </div>
   </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="{{url_for('static', filename='edit_point.js')}}"></script>
 <!-- Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

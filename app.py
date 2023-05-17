@@ -178,11 +178,6 @@ def home():
             return render_template('home.html', show_modal=True, all_comments=all_comments, count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
         else:
             return render_template('home.html', show_modal=False, all_comments=all_comments, count = count, upcoming = upcoming_markers, result=filtered_markers, active_page='home.html', allTypes=allTypes)
-        
-@app.route('/popsession')
-def popsession():
-    session.pop('visitor', None)
-    return "Session visitor poped"
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -264,19 +259,6 @@ def register():
         user_usettings.insert_one({'username': username, 'settings': {'posts': []}})
         return render_template('redirect.html')
     return render_template('register.html')
-
-@app.route('/release')
-def release():
-    if 'user_session' in session:
-        user_session_id = session['user_session']
-        user_session_username = user_users.find_one({"_id": ObjectId(user_session_id)})
-        return render_template('release.html', username = user_session_username['username'])
-    if 'admin_session' in session:
-        admin_session_id = session['admin_session']
-        admin_session_username = user_admin.find_one({"_id": ObjectId(admin_session_id)})
-        return render_template('release.html', admin = admin_session_username['username'])
-    else:
-        return render_template('release.html')    
 
 @app.route('/logout')
 def logout():
@@ -406,16 +388,11 @@ def add_point():
         if request.form['username'] != user_session_username['username']:
             notification = 'Can\'t change username!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
-        for x in allTypes:
-            if request.form['type'] in x['type']:
-                latitude = float(request.form['latitude'])
-                longitude = float(request.form['longitude'])
-                user_points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
-                notification = 'Point added sucessfully!'
-                return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
-            else:
-                print("nav")
-            notification = '(Trying to override value!) Type value is different!'
+        else:
+            latitude = float(request.form['latitude'])
+            longitude = float(request.form['longitude'])
+            user_points.insert_one({'latitude': latitude, 'longitude': longitude, 'name': pointname,'description': description,'postdate': postdate,'removedate': removedate,'type': pointtype,'author': user})
+            notification = 'Point added sucessfully!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
     return render_template('add_point.html', types = allTypes, username = user_session_username['username'])
 

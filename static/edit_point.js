@@ -1,3 +1,4 @@
+getTypes();
 function initMap() {
   var map = L.map("map").setView([56.946285, 24.105078], 7);
 
@@ -38,70 +39,279 @@ function initMap() {
       document.getElementById("longitude").value = lng;
     }
   });
-
-  const postDateInput = document.getElementById("post_date");
-  const removeDateInput = document.getElementById("remove_date");
-  const postTextInput = document.getElementById("name");
-  const postDescInput = document.getElementById("description");
-  const submitButton = document.getElementById("add-point");
-  const notificationDiv = document.getElementById("notification");
-
-  function checkInputs() {
-    const postDate = new Date(postDateInput.value);
-    const removeDate = new Date(removeDateInput.value);
-    const postText = postTextInput.value.toLowerCase();
-    const postDesc = postDescInput.value.toLowerCase();
-    let notification = "";
-
-    // Check if post date is before remove date
-    if (postDate > removeDate) {
-      notification = "Post date must be before remove date.";
-    }
-
-    const badWords = [
-      "cunt",
-      "fuck",
-      "kys",
-      "retard",
-      "nigg",
-      "nigger",
-      "nigga",
-      "fuck",
-      "fucker",
-      "niger",
-      "N1gger",
-      "nigge",
-      "niggers",
-      "kysretard",
-      "kill your self",
-      "idiot",
-      "Nigers",
-      "gejs",
-      "pimpis",
-    ];
-    for (const word of badWords) {
-      if (postText.includes(word)) {
-        notification = "Name contains a bad word.";
-        break;
-      }
-      if (postDesc.includes(word)) {
-        notification = "Description contains a bad word.";
-        break;
-      }
-    }
-
-    // Show or hide notification
-    if (notification) {
-      notificationDiv.textContent = notification;
-      notificationDiv.style.display = "block";
-      submitButton.disabled = true;
-    } else {
-      notificationDiv.style.display = "none";
-      submitButton.disabled = false;
-    }
-  }
-  postDateInput.addEventListener("input", checkInputs);
-  removeDateInput.addEventListener("input", checkInputs);
-  postDescInput.addEventListener("input", checkInputs);
-  postTextInput.addEventListener("input", checkInputs);
 }
+
+const form = $("#name").closest("form");
+
+const validateName = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex =
+    /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\| \u{0100}-\u{017F}]{3,50}$/u;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} must be between 3 and 50 characters!`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateLatitude = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} latitude coordinates error`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateLongitude = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^[-+]?((1[0-7]|[1-9])?\d(\.\d+)?|180(\.0+)?)$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} longitude coordinates error`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateDescription = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex =
+    /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\|\s\u{0100}-\u{017F}]{10,100}$/u;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} must be between 10 and 100 characters!`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validatePostDate = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} format has to be YYYY-MM-DD.`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const validateRemoveDate = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  const enteredDate = new Date(value);
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 1);
+  const postdate = new Date(postDateInput.val());
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} format has to be YYYY-MM-DD.`);
+  }
+
+  if (postdate > enteredDate) {
+    errors.push("Please enter a remove date that is after the post date.");
+  }
+
+  if (enteredDate < currentDate) {
+    errors.push("Please enter a valid date after today.");
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+let allowedValues;
+async function getTypes() {
+  fetch("/get_point_types")
+    .then((response) => response.json())
+    .then((data) => {
+      const types = data.documents.map((obj) => obj.type);
+
+      // Define the allowed values
+      allowedValues = types;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+const validateType = (input, errorMsgs) => {
+  const value = input.val();
+  const errors = [];
+  value.toString();
+
+  if (allowedValues.includes(value)) {
+  } else {
+    errors.push(`Type value can\'t be changed in inspect element!`);
+  }
+
+  if (errors.length > 0) {
+    input.addClass("is-invalid");
+    errorMsgs.html(
+      `<ul class="mb-0">${errors
+        .map((error) => `<li>${error}</li>`)
+        .join("")}</ul>`
+    );
+    errorMsgs.show();
+    return false;
+  }
+
+  input.removeClass("is-invalid");
+  errorMsgs.hide().text("");
+  return true;
+};
+
+const createErrorElement = () =>
+  $(
+    '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
+  );
+
+const nameInput = $("#name");
+const latitudeInput = $("#latitude");
+const longitudeInput = $("#longitude");
+const descriptionInput = $("#description");
+const postDateInput = $("#post_date");
+const removeDateInput = $("#remove_date");
+const typeInput = $("#type");
+
+const nameErrorElement = createErrorElement();
+const latitudeErrorElement = createErrorElement();
+const longitudeErrorElement = createErrorElement();
+const descriptionErrorElement = createErrorElement();
+const postDateErrorElement = createErrorElement();
+const removeDateErrorElement = createErrorElement();
+const typeErrorElement = createErrorElement();
+
+form.append(
+  nameErrorElement,
+  latitudeErrorElement,
+  longitudeErrorElement,
+  descriptionErrorElement,
+  postDateErrorElement,
+  removeDateErrorElement,
+  typeErrorElement
+);
+
+nameInput.on("blur", () => validateName(nameInput, nameErrorElement));
+latitudeInput.on("blur", () =>
+  validateLatitude(latitudeInput, latitudeErrorElement)
+);
+longitudeInput.on("blur", () =>
+  validateLongitude(longitudeInput, longitudeErrorElement)
+);
+descriptionInput.on("blur", () =>
+  validateDescription(descriptionInput, descriptionErrorElement)
+);
+postDateInput.on("blur", () =>
+  validatePostDate(postDateInput, postDateErrorElement)
+);
+removeDateInput.on("blur", () =>
+  validateRemoveDate(removeDateInput, removeDateErrorElement)
+);
+typeInput.on("blur", () => validateType(typeInput, typeErrorElement));
+
+form.on("submit", (event) => {
+  if (
+    !validateName(nameInput, nameErrorElement) ||
+    !validateLatitude(latitudeInput, latitudeErrorElement) ||
+    !validateLongitude(longitudeInput, longitudeErrorElement) ||
+    !validateDescription(descriptionInput, descriptionErrorElement) ||
+    !validatePostDate(postDateInput, postDateErrorElement) ||
+    !validateRemoveDate(removeDateInput, removeDateErrorElement) ||
+    !validateType(typeInput, typeErrorElement)
+  ) {
+    event.preventDefault();
+    return false;
+  }
+});
