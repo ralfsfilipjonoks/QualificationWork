@@ -28,4 +28,55 @@
       </form>
     </div>
   </body>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script>
+    const form = $("#email").closest("form");
+
+    const validateEmail = (input, errorMsgs) => {
+      const value = input.val();
+      const errors = [];
+
+      const regex = /^(?!.*[^\s@]{101})[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!regex.test(value)) {
+        errors.push(`Wrong email format!`);
+      }
+
+      if (errors.length > 0) {
+        input.addClass("is-invalid");
+        errorMsgs.html(
+          `<ul class="mb-0">${errors
+            .map((error) => `<li>${error}</li>`)
+            .join("")}</ul>`
+        );
+        errorMsgs.show();
+        return false;
+      }
+
+      input.removeClass("is-invalid");
+      errorMsgs.hide().text("");
+      return true;
+    };
+
+    const createErrorElement = () =>
+      $(
+        '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
+      );
+
+    const emailInput = $("#email");
+
+    const emailErrorElement = createErrorElement();
+
+    form.append(emailErrorElement);
+
+    emailInput.on("blur", () => validateEmail(emailInput, emailErrorElement));
+
+    form.on("submit", (event) => {
+      if (!validateEmail(emailInput, emailErrorElement)) {
+        event.preventDefault();
+        return false;
+      }
+    });
+  </script>
 </html>
