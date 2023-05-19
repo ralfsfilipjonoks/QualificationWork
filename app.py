@@ -21,7 +21,7 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 app.secret_key = secrets.token_hex(16)
 
 # Set session lifetime to 30 minutes
-app.config['PERMANENT_SESSION_LIFETIME'] = 1800
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600*4
 
 client_for_users = pymongo.MongoClient(os.getenv('client_for_users'))
 user_db = client_for_users.webdata
@@ -442,6 +442,10 @@ def usersettings():
                 notification = "Date of birth can't be empty or be after "+today+""
                 return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
             posts = request.form.getlist('post')
+            for x in posts:
+                if len(x) > 20:
+                    notification = "Type value changed!"
+                    return render_template('user_settings.html', notification=notification,  username = user_session_username["username"], settings=settings, allTypes=allTypes, profile=profile_setting, verification_email = user_session_details['email'])
             user_users.update_one({'username': user_session_username["username"]}, {'$set': {
                 'name': request.form['name'],
                 'surname': request.form['surname'],
@@ -567,7 +571,7 @@ def delete_user(username):
         if user_session_username['username'] != username:
             return "not your account to delete"
         # Delete user from users collection
-        result = users.delete_one({'username': user_session_username["username"]})
+        result = user_users.delete_one({'username': user_session_username["username"]})
         if result.deleted_count == 0:
             return {'message': 'User not found'}, 404
 
@@ -630,6 +634,7 @@ def admin_user_delete(user_id):
         author = users.find_one({'_id': ObjectId(user_id)})
         user_users.delete_one({'_id': ObjectId(user_id)})
         user_points.delete_many({'author': author['username']})
+        user_usettings.delete_many({'username':author['username']})
         return redirect(url_for('home'))
     else:
         return redirect(url_for('home'))

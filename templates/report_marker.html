@@ -37,19 +37,21 @@ block content %}
         </div>
         <div class="form-group">
           <label for="report-description">Description (Optional):</label>
-          <textarea
+          <input
             class="form-control"
             id="report-description"
             name="report_description"
             rows="3"
-            placeholder="Enter description"></textarea>
+            placeholder="Enter description"></input>
         </div>
         <button type="submit" class="btn btn-primary" id="submit_report">
           Submit
         </button>
       </form>
+      <div id="error-container"></div>
     </div>
   </body>
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{url_for('static', filename='report_marker.js')}}"></script>
 {% endblock %}

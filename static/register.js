@@ -131,6 +131,12 @@ const validateDateInput = (input, errorMsgs) => {
   const enteredDate = new Date(value);
   const currentDate = new Date();
 
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (!regex.test(value)) {
+    errors.push(`${input.attr("name")} format has to be YYYY-MM-DD.`);
+  }
+
   if (enteredDate > currentDate) {
     errors.push(
       "Please provide a date of birth that is before the current date or valid date."

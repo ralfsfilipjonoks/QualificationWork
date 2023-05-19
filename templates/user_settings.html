@@ -216,5 +216,105 @@ block content %}
     </div>
   </body>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script>
+    const form = $("#name").closest("form");
+
+    const validateInput = (input, errorMsgs) => {
+      const value = input.val();
+      const errors = [];
+
+      const regex = /^[a-zA-Z\s]{2,30}$/;
+
+      if (!regex.test(value)) {
+        errors.push(
+          `${input.attr(
+            "name"
+          )} should consist of 2 to 30 characters, allowing both uppercase and lowercase letters and spaces. Special characters and punctuation marks are not permitted.`
+        );
+      }
+
+      if (errors.length > 0) {
+        input.addClass("is-invalid");
+        errorMsgs.html(
+          `<ul class="mb-0">${errors
+            .map((error) => `<li>${error}</li>`)
+            .join("")}</ul>`
+        );
+        errorMsgs.show();
+        return false;
+      }
+
+      input.removeClass("is-invalid");
+      errorMsgs.hide().text("");
+      return true;
+    };
+
+    const validateDateInput = (input, errorMsgs) => {
+      const value = input.val();
+      const errors = [];
+
+      const enteredDate = new Date(value);
+      const currentDate = new Date();
+
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+      if (!regex.test(value)) {
+        errors.push(`${input.attr("name")} format has to be YYYY-MM-DD.`);
+      }
+
+      if (enteredDate > currentDate) {
+        errors.push(
+          "Please provide a date of birth that is before the current date or valid date."
+        );
+      }
+
+      if (errors.length > 0) {
+        input.addClass("is-invalid");
+        errorMsgs.html(
+          `<ul class="mb-0">${errors
+            .map((error) => `<li>${error}</li>`)
+            .join("")}</ul>`
+        );
+        errorMsgs.show();
+        return false;
+      }
+
+      input.removeClass("is-invalid");
+      errorMsgs.hide().text("");
+      return true;
+    };
+
+    const createErrorElement = () =>
+      $(
+        '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
+      );
+
+    const nameInput = $("#name");
+    const surnameInput = $("#surname");
+    const dateInput = $("#dob");
+
+    const nameErrorElement = createErrorElement();
+    const surnameErrorElement = createErrorElement();
+    const dateErrorElement = createErrorElement();
+
+    form.append(nameErrorElement, surnameErrorElement, dateErrorElement);
+
+    nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
+    surnameInput.on("blur", () =>
+      validateInput(surnameInput, surnameErrorElement)
+    );
+    dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
+
+    form.on("submit", (event) => {
+      if (
+        !validateInput(nameInput, nameErrorElement) ||
+        !validateInput(surnameInput, surnameErrorElement) ||
+        !validateDateInput(dateInput, dateErrorElement)
+      ) {
+        event.preventDefault();
+        return false;
+      }
+    });
+  </script>
 </html>
 {% endblock %}
