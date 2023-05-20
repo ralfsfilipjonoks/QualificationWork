@@ -789,19 +789,24 @@ def get_session_info():
     
 @app.route('/send_wa/<id>', methods=['GET', 'POST'])
 def send_wa_event(id):
-    data = user_points.find_one({"_id": ObjectId(id)})
-    name = data['name']
-    description = data['description']
-    postdate = data['postdate']
+    if 'admin_session' in session:
+        return redirect(url_for('home'))
+    if 'user_session' in session:
+        data = user_points.find_one({"_id": ObjectId(id)})
+        name = data['name']
+        description = data['description']
+        postdate = data['postdate']
 
-    # Construct the WhatsApp share link
-    base_url = 'https://wa.me/?text='
-    event_details = f'{name} - {description} - {postdate}'
-    encoded_details = urllib.parse.quote(event_details)
-    share_link = f'{base_url}{encoded_details}'
+        # Construct the WhatsApp share link
+        base_url = 'https://wa.me/?text='
+        event_details = f'{name} - {description} - {postdate}'
+        encoded_details = urllib.parse.quote(event_details)
+        share_link = f'{base_url}{encoded_details}'
 
-    # Redirect the user to the WhatsApp share link
-    return redirect(share_link)
+        # Redirect the user to the WhatsApp share link
+        return redirect(share_link)
+    else:
+        return redirect(url_for('home'))
     
 
 if __name__ == '__main__':
