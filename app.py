@@ -2,6 +2,8 @@ from bson import ObjectId
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash
 from flask_pymongo import pymongo
 import requests, json, hashlib, secrets, random, os
+
+import urllib.parse
 from dotenv import load_dotenv
 from datetime import datetime
 from flask_mail import Mail, Message
@@ -208,7 +210,6 @@ def register():
         # Checks if date isn't empty or after today
         today = datetime.utcnow()
         today = today.strftime("%Y-%m-%d")
-        print("Today:"+today+ "date of birth:"+ dateofbirth)
         if (dateofbirth == "" or dateofbirth > today):
             notification = "Date of birth can't be empty or be after "+today+""
             return render_template('register.html', notification=notification)
@@ -255,8 +256,26 @@ def register():
             notification = 'Password must contain at least one special character'
             return render_template('register.html', notification=notification)
         
-        user_users.insert_one({'name': name,'surname': surname,'dateofbirth': dateofbirth, 'username': username, 'password': hash_hex, 'email': ''})
-        user_usettings.insert_one({'username': username, 'settings': {'posts': []}})
+        # Get the current date and time
+        creation_date = datetime.now()
+        formatted_date = creation_date.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Insert the data with the creation_date field
+        user_users.insert_one({
+            'name': name,
+            'surname': surname,
+            'dateofbirth': dateofbirth,
+            'username': username,
+            'password': hash_hex,
+            'email': '',
+            'creation_date': formatted_date
+        })
+
+        # Insert the user settings document
+        user_usettings.insert_one({
+            'username': username,
+            'settings': {'posts': []}
+        })
         return render_template('redirect.html')
     return render_template('register.html')
 
@@ -349,8 +368,10 @@ def add_point():
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         postsByUser = user_points.count_documents({"author": user_session_username['username']})
-        if postsByUser >= 10:
-            return render_template('add_point_limit.html', username = user_session_username['username'])
+        if postsByUser >= 10 and user_session_username['email'] == '':
+            return render_template('add_point_limit.html', username = user_session_username['username'], postsByUser = 10)
+        if postsByUser >= 20 and user_session_username['email'] != '':
+            return render_template('add_point_limit.html', username = user_session_username['username'], postsByUser = 20)
     else:
         return redirect(url_for('home'))
     if request.method == 'POST':
@@ -555,9 +576,10 @@ def profile(username):
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
         profile = users.find_one({'username': username})
+        current_post_count = user_points.count_documents({'author': username})
         if user_session_username['username'] != profile['username']:
             return "Not your profile"
-        return render_template('profile.html', profile=profile, username=user_session_username["username"])
+        return render_template('profile.html', profile=profile, username=user_session_username["username"], current_post_count=current_post_count, profile_creation_date = profile['creation_date'], account_verified = profile['email'])
     else:
         return redirect(url_for('home'))
 
@@ -664,7 +686,6 @@ def admin_delete_point(point_id):
         all_reports = point_report.find({"marker": point_id})
         user_points.delete_one({'_id': ObjectId(point_id)})
         if(all_reports):
-            print("DELETE ALL")
             user_point_report.delete_many({"marker": point_id})
         return redirect(url_for('home'))
     if 'user_session' in session:
@@ -728,7 +749,6 @@ def delete_user_by_marker(marker_id):
     if 'admin_session' in session:
         # Delete user from users collection
         reported_user = points.find_one({"_id": ObjectId(marker_id)})
-        # print(reported_user['author'])
         result = user_users.delete_one({'username': reported_user['author']})
         if result.deleted_count == 0:
             return {'message': 'User not found'}, 404
@@ -766,5 +786,23 @@ def get_session_info():
             'session_id': session.get("user_session", ""),
             'type': "visitor"
         }) 
+    
+@app.route('/send_wa/<id>', methods=['GET', 'POST'])
+def send_wa_event(id):
+    data = user_points.find_one({"_id": ObjectId(id)})
+    name = data['name']
+    description = data['description']
+    postdate = data['postdate']
+
+    # Construct the WhatsApp share link
+    base_url = 'https://wa.me/?text='
+    event_details = f'{name} - {description} - {postdate}'
+    encoded_details = urllib.parse.quote(event_details)
+    share_link = f'{base_url}{encoded_details}'
+
+    # Redirect the user to the WhatsApp share link
+    return redirect(share_link)
+    
+
 if __name__ == '__main__':
     app.run(port=8080)

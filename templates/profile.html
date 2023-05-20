@@ -2,22 +2,98 @@
 content %}
 <!DOCTYPE html>
 <html>
-  <head> </head>
+  <head>
+    <!-- Add custom CSS for mobile-friendly layout -->
+    <style>
+      @media (max-width: 768px) {
+        .profile-img {
+          margin-bottom: 1rem;
+        }
+      }
+      .custom-alert {
+        background-color: #fff;
+        color: #000;
+        border-color: #000;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='styles/style.css') }}" />
+  </head>
   <body>
     <div class="container mt-5">
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4 text-center">
           <img
             src="https://via.placeholder.com/150"
-            class="img-fluid rounded-circle"
+            class="img-fluid rounded-circle profile-img"
             alt="Profile Picture" />
         </div>
         <div class="col-md-8">
-          <h1 class="display-4">
+          <h1 class="display-4 mb-4">
             {{ profile['name'] }} {{ profile['surname'] }}
           </h1>
-          <p class="lead">Date of Birth: {{ profile['dateofbirth'] }}</p>
-          <p class="lead">Username: {{ profile['username'] }}</p>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="lead mb-2">
+                <strong>Date of Birth:</strong> {{ profile['dateofbirth'] }}
+              </p>
+              <p class="lead mb-2">
+                <strong>Username:</strong> {{ profile['username'] }}
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <h5>Statistics</h5>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="alert custom-alert">
+                <h6 class="mb-0">
+                  <strong><i class="bi bi-geo-alt"></i> Markers posted</strong>
+                </h6>
+
+                <p class="mb-0">{{ current_post_count }}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="alert custom-alert">
+                <h6 class="mb-0">
+                  <strong
+                    ><i class="bi bi-calendar-check"></i> Account
+                    created</strong
+                  >
+                </h6>
+
+                {% if profile_creation_date %}
+                <p class="mb-0">{{ profile_creation_date }}</p>
+
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="alert custom-alert">
+                <h6 class="mb-3">
+                  <strong><i class="bi bi-person"></i> Account</strong>
+                </h6>
+                {% if account_verified == '' %}
+                <p class="mb-3">
+                  <i class="bi bi-x-circle-fill text-danger"></i> Not verified
+                </p>
+                <a href="{{ url_for('send_code') }}" class="btn btn btn-white">
+                  <i class="bi bi-envelope-fill"></i> Verify my account
+                </a>
+                {% else %}
+                <p class="mb-3">
+                  <i class="bi bi-check-circle-fill text-success"></i> Verified
+                </p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -68,7 +68,7 @@ const validateInput = (input, errorMsgs) => {
   const value = input.val();
   const errors = [];
 
-  const regex = /^[a-zA-Z\s]{2,30}$/;
+  const regex = /^[\p{L}\s]{2,30}$/u;
 
   if (!regex.test(value)) {
     errors.push(

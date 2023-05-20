@@ -8,6 +8,10 @@ content %}
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='styles/style.css') }}" />
   </head>
   <body onload="initMap()">
     <div class="container mt-5 text-center">
@@ -112,7 +116,7 @@ content %}
             id="add-point"
             type="submit"
             style="width: 100%; margin-top: 20px; margin-bottom: 20px"
-            class="btn btn-success"
+            class="btn btn btn-white"
             value="Add Point" />
         </form>
       </div>
