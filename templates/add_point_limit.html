@@ -1,10 +1,10 @@
-{% extends 'header.html' %} {% block title %}Point limit reached{% endblock %}
+{% extends 'header.html' %} {% block title %}Point Limit Reached{% endblock %}
 {% block content %}
-
 <link
   rel="stylesheet"
   type="text/css"
-  href="{{ url_for('static',filename='styles/style.css') }}" />
+  href="{{ url_for('static', filename='styles/style.css') }}" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
   .custom-alert {
     background-color: #fff;
@@ -12,42 +12,39 @@
     border-color: #000;
   }
 </style>
-<body>
-  <div class="container mt-5">
-    <div class="alert custom-alert" role="alert">
-      <h4 class="alert-heading">
-        <i class="bi bi-exclamation-circle-fill text-danger"></i> Marker Input
-        Limit Reached
-      </h4>
 
-      <p>
-        You have reached the maximum number of markers (<strong
-          >{{ postsByUser }}</strong
-        >) you can input for your account. To continue adding markers and
-        enhance your experience, we recommend verifying your account. Verifying
-        your account will unlock the ability to publish more markers.
-      </p>
-
-      <hr />
-      <p class="mb-0">
-        To continue using our marker input feature, please select one of the
-        following options:
-      </p>
-      <div class="d-flex flex-column">
-        <a class="btn btn btn-white mt-3" href="/user_points" role="button">
-          <i class="bi bi-trash"></i> Delete Some Markers
-        </a>
-        <a class="btn btn btn-white mt-3" href="/" role="button">
-          <i class="bi bi-house-fill"></i> Back to Home Page
-        </a>
-        <a href="{{ url_for('send_code') }}" class="btn btn btn-white mt-3">
-          <i class="bi bi-envelope-fill"></i> Verify My Account
-        </a>
-        <button class="btn btn btn-white mt-3" type="button" disabled>
-          <i class="bi bi-arrow-up-circle"></i> Upgrade to Premium
-        </button>
-      </div>
+<div class="container mt-5">
+  <div class="alert custom-alert" role="alert">
+    <h4 class="alert-heading">
+      <i class="bi bi-exclamation-circle-fill text-danger"></i> Marker Input
+      Limit Reached
+    </h4>
+    <p>
+      You have reached the maximum number of markers (<strong
+        >{{ postsByUser }}</strong
+      >) you can input for your account. To continue adding markers and enhance
+      your experience, we recommend verifying your account. Verifying your
+      account will unlock the ability to publish more markers.
+    </p>
+    <hr />
+    <p class="mb-0">
+      To continue using our marker input feature, please select one of the
+      following options:
+    </p>
+    <div class="d-flex flex-column">
+      <a class="btn btn btn-white mt-3" href="/user_points" role="button">
+        <i class="bi bi-trash"></i> Delete Some Markers
+      </a>
+      <a class="btn btn btn-white mt-3" href="/" role="button">
+        <i class="bi bi-house-fill"></i> Back to Home Page
+      </a>
+      <a href="{{ url_for('send_code') }}" class="btn btn btn-white mt-3">
+        <i class="bi bi-envelope-fill"></i> Verify My Account
+      </a>
+      <button class="btn btn btn-white mt-3" type="button" disabled>
+        <i class="bi bi-arrow-up-circle"></i> Upgrade to Premium
+      </button>
     </div>
   </div>
-</body>
+</div>
 {% endblock %}

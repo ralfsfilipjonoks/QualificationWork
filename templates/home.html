@@ -3,6 +3,7 @@
 <html>
   <head>
     <title>Eventus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -47,21 +48,6 @@
       type="text/css"
       href="{{ url_for('static',filename='styles/style.css') }}" />
   </head>
-  <style>
-    /* Define custom styles for the leaflet-control-layers class */
-    .leaflet-control-layers {
-      font-size: 16px; /* Increase the font size */
-      padding: 10px; /* Increase the padding */
-    }
-
-    /* Media query to target phones */
-    @media only screen and (max-width: 600px) {
-      .leaflet-control-layers {
-        font-size: 20px; /* Further increase the font size for phones */
-        padding: 15px; /* Further increase the padding for phones */
-      }
-    }
-  </style>
   <body onload="getDataCount()">
     {% if show_modal %}
     <!-- Bootstrap modal -->

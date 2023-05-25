@@ -103,7 +103,11 @@ def enter_code():
 
         return render_template('enter_code.html')
     else:
-        return redirect(url_for('home'))      
+        return redirect(url_for('home'))
+
+@app.route('/test')
+def test():
+    return render_template('report_marker_exists.html')      
 
 @app.route('/' , methods=['GET', 'POST'])
 def home():
