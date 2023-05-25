@@ -23,7 +23,6 @@ const usernameInput = document.getElementById("username");
 
 function validateUsername() {
   const value = usernameInput.value.trim();
-  const symbolRegex = /[\W_]/; // regular expression for any non-word characters or underscores
 
   if (value.length < 3) {
     usernameInput.setCustomValidity(
@@ -33,8 +32,6 @@ function validateUsername() {
     usernameInput.setCustomValidity(
       "Username must be at most 30 characters long."
     );
-  } else if (symbolRegex.test(value)) {
-    usernameInput.setCustomValidity("Username cannot contain any symbols.");
   } else {
     usernameInput.setCustomValidity("");
   }
@@ -111,7 +108,7 @@ var baseMaps = {
 
 // Go to specific marker when button is pressed
 function goToMarker(latitude, longitude) {
-  x = map.setView([latitude, longitude], 16);
+  x = map.setView([latitude, longitude], 20);
 }
 
 // Point custom icons

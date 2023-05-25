@@ -209,20 +209,32 @@ block content %}
                     <li>All users data.</li>
                     <li>Your selection on markers.</li>
                   </ul>
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn btn-white"
-                      data-dismiss="modal">
-                      <i class="bi bi-x"></i> Cancel
-                    </button>
+                  <div class="container mt-5">
+                    <h1>Account Deletion</h1>
+                    <form action="/delete-user/{{ username }}" method="POST">
+                      <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                          type="password"
+                          class="form-control"
+                          id="password"
+                          name="password"
+                          autocomplete="off"
+                          required />
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn btn-white"
+                          data-dismiss="modal">
+                          <i class="bi bi-x"></i> Cancel
+                        </button>
 
-                    <a
-                      href="/delete-user/{{ username }}"
-                      type="button"
-                      class="btn btn btn-white">
-                      <i class="bi bi-trash"></i> Delete Account
-                    </a>
+                        <button type="submit" class="btn btn btn-white">
+                          <i class="bi bi-trash"></i> Delete Account
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -301,32 +313,68 @@ block content %}
       return true;
     };
 
+    const validatePasswordInput = (input, errorMsgs) => {
+      const value = input.val();
+      const errors = [];
+
+      // Password length must be between 8 and 50 characters.
+      if (value.length < 8 || value.length > 50) {
+        errors.push("Password must be between 8 and 50 characters!");
+      }
+
+      if (errors.length > 0) {
+        input.addClass("is-invalid");
+        errorMsgs.html(
+          `<ul class="mb-0">${errors
+            .map((error) => `<li>${error}</li>`)
+            .join("")}</ul>`
+        );
+        errorMsgs.show();
+        return false;
+      }
+
+      input.removeClass("is-invalid");
+      errorMsgs.hide().text("");
+      return true;
+    };
+
     const createErrorElement = () =>
       $(
         '<div class="alert custom-alert mt-2" role="alert" style="display: none;"></div>'
       );
 
+    const passwordInput = $("#password");
     const nameInput = $("#name");
     const surnameInput = $("#surname");
     const dateInput = $("#dob");
 
+    const passwordErrorElement = createErrorElement();
     const nameErrorElement = createErrorElement();
     const surnameErrorElement = createErrorElement();
     const dateErrorElement = createErrorElement();
 
-    form.append(nameErrorElement, surnameErrorElement, dateErrorElement);
+    form.append(
+      nameErrorElement,
+      surnameErrorElement,
+      dateErrorElement,
+      passwordErrorElement
+    );
 
     nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
     surnameInput.on("blur", () =>
       validateInput(surnameInput, surnameErrorElement)
     );
     dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
+    passwordInput.on("blur", () =>
+      validatePasswordInput(passwordInput, passwordErrorElement)
+    );
 
     form.on("submit", (event) => {
       if (
         !validateInput(nameInput, nameErrorElement) ||
         !validateInput(surnameInput, surnameErrorElement) ||
-        !validateDateInput(dateInput, dateErrorElement)
+        !validateDateInput(dateInput, dateErrorElement) ||
+        !validatePasswordInput(passwordInput, passwordErrorElement)
       ) {
         event.preventDefault();
         return false;

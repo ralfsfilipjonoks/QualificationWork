@@ -159,55 +159,6 @@ const validateDateInput = (input, errorMsgs) => {
   return true;
 };
 
-const createErrorElement = () =>
-  $(
-    '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
-  );
-
-const nameInput = $("#name");
-const surnameInput = $("#surname");
-const dateInput = $("#dateofbirth");
-const usernameInput = $("#username");
-
-const nameErrorElement = createErrorElement();
-const surnameErrorElement = createErrorElement();
-const dateErrorElement = createErrorElement();
-const usernameErrorElement = createErrorElement();
-
-form.append(
-  nameErrorElement,
-  surnameErrorElement,
-  dateErrorElement,
-  usernameErrorElement
-);
-
-nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
-surnameInput.on("blur", () => validateInput(surnameInput, surnameErrorElement));
-dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
-usernameInput.on("blur", () =>
-  validateUsername(usernameInput, usernameErrorElement)
-);
-
-form.on("submit", (event) => {
-  if (
-    !validateInput(nameInput, nameErrorElement) ||
-    !validateInput(surnameInput, surnameErrorElement) ||
-    !validateDateInput(dateInput, dateErrorElement) ||
-    !validateUsername(usernameInput, usernameErrorElement)
-  ) {
-    event.preventDefault();
-    return false;
-  }
-});
-
-const passwordInput = $("#password");
-const repeatPasswordInput = $("#repeatpassword");
-
-const passwordErrorElement = createErrorElement();
-const repeatPasswordErrorElement = createErrorElement();
-
-form.append(passwordErrorElement, repeatPasswordErrorElement);
-
 const validatePasswordInput = (input, errorMsgs) => {
   const value = input.val();
   const errors = [];
@@ -247,17 +198,6 @@ const validatePasswordInput = (input, errorMsgs) => {
   return true;
 };
 
-passwordInput.on("blur", () =>
-  validatePasswordInput(passwordInput, passwordErrorElement)
-);
-repeatPasswordInput.on("blur", () =>
-  validateRepeatPasswordInput(
-    passwordInput,
-    repeatPasswordInput,
-    repeatPasswordErrorElement
-  )
-);
-
 const validateRepeatPasswordInput = (
   passwordInput,
   repeatPasswordInput,
@@ -293,4 +233,68 @@ const counter = document.getElementById("counter");
 inputField.addEventListener("input", function () {
   const inputLength = inputField.value.length;
   counter.textContent = inputLength;
+});
+
+const createErrorElement = () =>
+  $(
+    '<div class="alert alert-danger mt-2" role="alert" style="display: none;"></div>'
+  );
+
+const nameInput = $("#name");
+const surnameInput = $("#surname");
+const dateInput = $("#dateofbirth");
+const usernameInput = $("#username");
+const passwordInput = $("#password");
+const repeatPasswordInput = $("#repeatpassword");
+
+const nameErrorElement = createErrorElement();
+const surnameErrorElement = createErrorElement();
+const dateErrorElement = createErrorElement();
+const usernameErrorElement = createErrorElement();
+const passwordErrorElement = createErrorElement();
+const repeatPasswordErrorElement = createErrorElement();
+
+form.append(
+  nameErrorElement,
+  surnameErrorElement,
+  dateErrorElement,
+  usernameErrorElement,
+  passwordErrorElement,
+  repeatPasswordErrorElement
+);
+form.append(passwordErrorElement, repeatPasswordErrorElement);
+
+nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
+surnameInput.on("blur", () => validateInput(surnameInput, surnameErrorElement));
+dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
+usernameInput.on("blur", () =>
+  validateUsername(usernameInput, usernameErrorElement)
+);
+passwordInput.on("blur", () =>
+  validatePasswordInput(passwordInput, passwordErrorElement)
+);
+repeatPasswordInput.on("blur", () =>
+  validateRepeatPasswordInput(
+    passwordInput,
+    repeatPasswordInput,
+    repeatPasswordErrorElement
+  )
+);
+
+form.on("submit", (event) => {
+  if (
+    !validateInput(nameInput, nameErrorElement) ||
+    !validateInput(surnameInput, surnameErrorElement) ||
+    !validateDateInput(dateInput, dateErrorElement) ||
+    !validateUsername(usernameInput, usernameErrorElement) ||
+    !validatePasswordInput(passwordInput, passwordErrorElement) ||
+    !validateRepeatPasswordInput(
+      passwordInput,
+      repeatPasswordInput,
+      repeatPasswordErrorElement
+    )
+  ) {
+    event.preventDefault();
+    return false;
+  }
 });

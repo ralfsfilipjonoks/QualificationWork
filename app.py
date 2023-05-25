@@ -274,7 +274,7 @@ def register():
         # Insert the user settings document
         user_usettings.insert_one({
             'username': username,
-            'settings': {'posts': []}
+            'settings': {'posts': ["Charity", "Concert", "Warning", "Meetup", "Other", "Road work", "Food festival"]}
         })
         return render_template('redirect.html')
     return render_template('register.html')
@@ -583,6 +583,11 @@ def profile(username):
     else:
         return redirect(url_for('home'))
 
+# FOR TESTING ONLY!
+# @app.route('/test')
+# def test():
+#     return render_template("user_deleted.html")
+
 @app.route('/delete-user/<username>', methods=['DELETE','GET', 'POST'])
 def delete_user(username):
     if 'admin_session' in session:
@@ -590,8 +595,13 @@ def delete_user(username):
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})
+        password = request.form['password']
+        hash_object = hashlib.sha256(password.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
         if user_session_username['username'] != username:
             return "not your account to delete"
+        if hash_hex != user_session_username['password']:
+            return redirect(url_for('usersettings'))
         # Delete user from users collection
         result = user_users.delete_one({'username': user_session_username["username"]})
         if result.deleted_count == 0:
@@ -602,8 +612,7 @@ def delete_user(username):
         user_usettings.delete_one({'username': user_session_username["username"]})
         user_point_report.delete_many({'reporter': user_session_username["username"]})
         session.pop('user_session', None)
-        return redirect(url_for('home'))
-        
+        return render_template('user_deleted.html')   
     else:
         return redirect(url_for('home'))
 

@@ -71,3 +71,8 @@ body,
 .modal-body {
   font-size: 1.2rem;
 }
+.custom-alert {
+  background-color: #fff;
+  color: #000;
+  border-color: #000;
+}
