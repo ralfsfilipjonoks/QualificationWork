@@ -89,3 +89,17 @@ body,
     padding: 15px; /* Further increase the padding for phones */
   }
 }
+
+/* PC version */
+@media (min-width: 992px) {
+  .custom-width {
+    width: 100px;
+  }
+}
+
+/* Mobile version */
+@media (max-width: 991px) {
+  .custom-width {
+    width: 100px;
+  }
+}

@@ -374,7 +374,7 @@ var pointModalButton = L.DomUtil.create(
   "button",
   "btn btn-white btn-icon rounded-pill"
 );
-pointModalButton.innerHTML = '<i class="bi bi-geo-alt"></i> Points';
+pointModalButton.innerHTML = '<i class="bi bi-geo-alt"></i> Markers';
 pointModalButton.setAttribute("data-bs-toggle", "offcanvas");
 pointModalButton.setAttribute("data-bs-target", "#offcanvasScrolling");
 pointModalButton.setAttribute("aria-controls", "offcanvasScrolling");
@@ -428,25 +428,58 @@ fetch("/get_session_info")
   .then((data) => {
     if (data.logged_in) {
       if (data.type == "user") {
-        var userProfileButton = L.DomUtil.create(
-          "button",
-          "btn btn-white rounded-pill"
-        );
+        var userProfileButton = L.DomUtil.create("dropdown");
         userProfileButton.innerHTML =
-          '<i class="bi bi-person"></i> ' + data.username;
+          '<button class="btn btn-white rounded-pill dropdown-toggle" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person"></i> ' +
+          data.username +
+          "</button>" +
+          '<ul class="dropdown-menu" aria-labelledby="userProfileDropdown">' +
+          '<li><button id="profileButton" class="dropdown-item" ><i class="bi bi-person-fill"></i> Profile</button></li>' +
+          '<li><button id="addDropdownPointButton" class="dropdown-item" ><i class="bi bi-plus-circle-fill"></i> Add point</button></li>' +
+          '<li><button id="myMarkerDropdownButton" class="dropdown-item" ><i class="bi bi-flag-fill"></i> My markers</button></li>' +
+          '<li><button id="settingsDropdownButton" class="dropdown-item" ><i class="bi bi-gear-fill"></i> Settings</button></li>' +
+          '<li><button id="logoutDropdownButton" class="dropdown-item" ><i class="bi bi-box-arrow-right"></i> Log out</button></li>' +
+          "</ul>";
+
         userProfileButton.setAttribute("style", "margin-right: 10px");
-        userProfileButton.addEventListener("click", function () {
-          window.location.href = "/profile/" + data.username;
-        });
         var container = document.getElementsByClassName("my-custom-control")[0];
         container.innerHTML = "";
-        container.appendChild(userProfileButton);
-        container.appendChild(addPointButton);
-        container.appendChild(userPointButton);
         container.appendChild(aboutButton);
         container.appendChild(pointModalButton);
-        container.appendChild(logoutButton);
+        container.appendChild(userProfileButton);
+        // container.appendChild(addPointButton);
+        // container.appendChild(userPointButton);
+        // container.appendChild(logoutButton);
       }
+      var profileButton = document.getElementById("profileButton");
+      var addDropdownPointButton = document.getElementById(
+        "addDropdownPointButton"
+      );
+      var myMarkerDropdownButton = document.getElementById(
+        "myMarkerDropdownButton"
+      );
+      var logoutDropdownButton = document.getElementById(
+        "logoutDropdownButton"
+      );
+      var settingsDropdownButton = document.getElementById(
+        "settingsDropdownButton"
+      );
+
+      profileButton.addEventListener("click", function () {
+        window.location.href = "/profile/" + data.username;
+      });
+      addDropdownPointButton.addEventListener("click", function () {
+        window.location.href = "/add_point";
+      });
+      myMarkerDropdownButton.addEventListener("click", function () {
+        window.location.href = "/user_points";
+      });
+      logoutDropdownButton.addEventListener("click", function () {
+        window.location.href = "/logout";
+      });
+      settingsDropdownButton.addEventListener("click", function () {
+        window.location.href = "/user_settings";
+      });
       if (data.type == "admin") {
         var adminButton = L.DomUtil.create(
           "button",
