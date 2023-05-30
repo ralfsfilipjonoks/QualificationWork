@@ -75,7 +75,7 @@ const validateDescription = (input, errorMsgs) => {
   const errors = [];
 
   const regex =
-    /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\|\s\u{0100}-\u{017F}]{10,100}$/u;
+    /^[a-zA-Z0-9_!@#$%^&*()\-\+=\[\]{};:'",.<>\/?\\|\s\u{0100}-\u{017F}]{0,100}$/u;
 
   if (!regex.test(value)) {
     errors.push(`${input.attr("name")} must be between 10 and 100 characters!`);

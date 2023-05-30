@@ -314,68 +314,32 @@ block content %}
       return true;
     };
 
-    const validatePasswordInput = (input, errorMsgs) => {
-      const value = input.val();
-      const errors = [];
-
-      // Password length must be between 8 and 50 characters.
-      if (value.length < 8 || value.length > 50) {
-        errors.push("Password must be between 8 and 50 characters!");
-      }
-
-      if (errors.length > 0) {
-        input.addClass("is-invalid");
-        errorMsgs.html(
-          `<ul class="mb-0">${errors
-            .map((error) => `<li>${error}</li>`)
-            .join("")}</ul>`
-        );
-        errorMsgs.show();
-        return false;
-      }
-
-      input.removeClass("is-invalid");
-      errorMsgs.hide().text("");
-      return true;
-    };
-
     const createErrorElement = () =>
       $(
         '<div class="alert custom-alert mt-2" role="alert" style="display: none;"></div>'
       );
 
-    const passwordInput = $("#password");
     const nameInput = $("#name");
     const surnameInput = $("#surname");
     const dateInput = $("#dob");
 
-    const passwordErrorElement = createErrorElement();
     const nameErrorElement = createErrorElement();
     const surnameErrorElement = createErrorElement();
     const dateErrorElement = createErrorElement();
 
-    form.append(
-      nameErrorElement,
-      surnameErrorElement,
-      dateErrorElement,
-      passwordErrorElement
-    );
+    form.append(nameErrorElement, surnameErrorElement, dateErrorElement);
 
     nameInput.on("blur", () => validateInput(nameInput, nameErrorElement));
     surnameInput.on("blur", () =>
       validateInput(surnameInput, surnameErrorElement)
     );
     dateInput.on("blur", () => validateDateInput(dateInput, dateErrorElement));
-    passwordInput.on("blur", () =>
-      validatePasswordInput(passwordInput, passwordErrorElement)
-    );
 
     form.on("submit", (event) => {
       if (
         !validateInput(nameInput, nameErrorElement) ||
         !validateInput(surnameInput, surnameErrorElement) ||
-        !validateDateInput(dateInput, dateErrorElement) ||
-        !validatePasswordInput(passwordInput, passwordErrorElement)
+        !validateDateInput(dateInput, dateErrorElement)
       ) {
         event.preventDefault();
         return false;

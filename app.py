@@ -107,7 +107,7 @@ def enter_code():
 
 @app.route('/test')
 def test():
-    return render_template('report_marker_exists.html')      
+    return render_template('user_deleted.html')      
 
 @app.route('/' , methods=['GET', 'POST'])
 def home():
@@ -202,13 +202,13 @@ def register():
         hash_hex = hash_object.hexdigest()
         # Input field Validation
         # Checks if name isn't empty or bigger than 30 characters
-        if (name == "" or len(name) > 30):
-            notification = "Name can't be empty or bigger than 30 characters"
+        if (name == "" or len(name) > 20):
+            notification = "Name can't be empty or bigger than 20 characters"
             return render_template('register.html', notification=notification)
         
         # Checks if surname ins't empty or bigger than 30 characters
-        if (surname == "" or len(surname) > 30):
-            notification = "Surname can't be empty or bigger than 30 characters"
+        if (surname == "" or len(surname) > 20):
+            notification = "Surname can't be empty or bigger than 20 characters"
             return render_template('register.html', notification=notification)
 
         # Checks if date isn't empty or after today
@@ -219,7 +219,7 @@ def register():
             return render_template('register.html', notification=notification)
         
         # Checks if username isn't empty or bigger than 30 characters
-        if (username == "" or len(username) < 3 or len(username) > 30):
+        if (username == "" or len(username) < 3 or len(username) > 20):
             notification = "Username can't be empty or less than 3 characters"
             return render_template('register.html', notification=notification)
 
@@ -485,7 +485,10 @@ def usersettings():
 @app.route('/user_settings_data')
 def user_settings_data():
     if 'admin_session' in session:
-        return redirect(url_for('home'))
+        admin_session_id = session['admin_session']
+        admin_session_username = user_admin.find_one({"_id": ObjectId(admin_session_id)})
+        data = usettings.find_one({"username": admin_session_username["username"]})
+        return list(data["settings"]["posts"])
     if 'user_session' in session:
         user_session_id = session['user_session']
         user_session_username = users.find_one({"_id": ObjectId(user_session_id)})

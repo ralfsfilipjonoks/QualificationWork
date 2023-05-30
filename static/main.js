@@ -450,36 +450,35 @@ fetch("/get_session_info")
         // container.appendChild(addPointButton);
         // container.appendChild(userPointButton);
         // container.appendChild(logoutButton);
+        var profileButton = document.getElementById("profileButton");
+        var addDropdownPointButton = document.getElementById(
+          "addDropdownPointButton"
+        );
+        var myMarkerDropdownButton = document.getElementById(
+          "myMarkerDropdownButton"
+        );
+        var logoutDropdownButton = document.getElementById(
+          "logoutDropdownButton"
+        );
+        var settingsDropdownButton = document.getElementById(
+          "settingsDropdownButton"
+        );
+        profileButton.addEventListener("click", function () {
+          window.location.href = "/profile/" + data.username;
+        });
+        addDropdownPointButton.addEventListener("click", function () {
+          window.location.href = "/add_point";
+        });
+        myMarkerDropdownButton.addEventListener("click", function () {
+          window.location.href = "/user_points";
+        });
+        logoutDropdownButton.addEventListener("click", function () {
+          window.location.href = "/logout";
+        });
+        settingsDropdownButton.addEventListener("click", function () {
+          window.location.href = "/user_settings";
+        });
       }
-      var profileButton = document.getElementById("profileButton");
-      var addDropdownPointButton = document.getElementById(
-        "addDropdownPointButton"
-      );
-      var myMarkerDropdownButton = document.getElementById(
-        "myMarkerDropdownButton"
-      );
-      var logoutDropdownButton = document.getElementById(
-        "logoutDropdownButton"
-      );
-      var settingsDropdownButton = document.getElementById(
-        "settingsDropdownButton"
-      );
-
-      profileButton.addEventListener("click", function () {
-        window.location.href = "/profile/" + data.username;
-      });
-      addDropdownPointButton.addEventListener("click", function () {
-        window.location.href = "/add_point";
-      });
-      myMarkerDropdownButton.addEventListener("click", function () {
-        window.location.href = "/user_points";
-      });
-      logoutDropdownButton.addEventListener("click", function () {
-        window.location.href = "/logout";
-      });
-      settingsDropdownButton.addEventListener("click", function () {
-        window.location.href = "/user_settings";
-      });
       if (data.type == "admin") {
         var adminButton = L.DomUtil.create(
           "button",

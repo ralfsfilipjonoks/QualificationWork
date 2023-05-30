@@ -61,7 +61,6 @@ function checkPasswordStrength() {
     passwordStrengthText.innerHTML = "Very Strong";
   }
 }
-
 const form = $("#name").closest("form");
 
 const validateInput = (input, errorMsgs) => {
@@ -227,12 +226,28 @@ const validateRepeatPasswordInput = (
   return true;
 };
 
+// Character counter for input fields for name, surname, username
 const inputField = document.getElementById("name");
+const surnameInputField = document.getElementById("surname");
+const usernameInputField = document.getElementById("username");
+
 const counter = document.getElementById("counter");
+const surnameCounter = document.getElementById("surnameCounter");
+const usernameCounter = document.getElementById("usernameCounter");
 
 inputField.addEventListener("input", function () {
   const inputLength = inputField.value.length;
   counter.textContent = inputLength;
+});
+
+surnameInputField.addEventListener("input", () => {
+  const inputLengths = surnameInputField.value.length;
+  surnameCounter.textContent = `${inputLengths}`;
+});
+
+usernameInputField.addEventListener("input", () => {
+  const inputLength = usernameInputField.value.length;
+  usernameCounter.textContent = `${inputLength}`;
 });
 
 const createErrorElement = () =>
