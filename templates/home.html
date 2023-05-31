@@ -57,7 +57,7 @@
       tabindex="-1"
       role="dialog"
       aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content bg-light text-dark">
           <div class="modal-header bg-dark">
             <h5 class="modal-title text-white" id="myModalLabel">
@@ -78,38 +78,33 @@
               any questions or feedback. Thank you for visiting!
             </p>
           </div>
-          <div class="modal-footer justify-content-center">
-            <div class="row">
-              <div class="col">
-                <button
-                  data-bs-toggle="modal"
-                  data-bs-target="#tutorialModal"
-                  type="button"
-                  class="btn btn btn-white d-flex flex-column align-items-center">
-                  <i class="bi bi-journal-code"></i> Tutorial
-                </button>
-              </div>
-              <div class="col">
-                <button
-                  type="button"
-                  class="btn btn btn-white d-flex flex-column align-items-center"
-                  data-bs-dismiss="modal">
-                  <i class="bi bi-skip-backward"></i> Skip
-                </button>
-              </div>
-              <div class="col">
-                <button
-                  type="button"
-                  class="btn btn btn-white d-flex flex-column align-items-center"
-                  data-bs-dismiss="modal">
-                  <i class="bi bi-geo-alt"></i> Explore
-                </button>
-              </div>
+          <div class="modal-footer justify-content-between">
+            <div class="d-flex justify-content-between w-100">
+              <button
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#tutorialModal"
+                class="btn btn btn-white d-flex flex-column align-items-center">
+                <i class="bi bi-journal-code"></i> Tutorial
+              </button>
+              <button
+                type="button"
+                class="btn btn btn-white d-flex flex-column align-items-center"
+                data-bs-dismiss="modal">
+                <i class="bi bi-skip-backward"></i> Skip
+              </button>
+              <button
+                type="button"
+                class="btn btn btn-white d-flex flex-column align-items-center"
+                data-bs-dismiss="modal">
+                <i class="bi bi-geo-alt"></i> Explore
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     {% endif %}
 
     <!-- Tutorial modal -->

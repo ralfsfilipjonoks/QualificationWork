@@ -52,6 +52,13 @@ mail = Mail(app)
 # dictionary to store verification codes
 verification_codes = {}
 
+def contains_executable_code(input_text):
+    executable_tags = ['<iframe', '<script', '<object', '<embed', '<applet']
+    for tag in executable_tags:
+        if tag in input_text:
+            return True
+    return False
+
 def is_new_user():
     if 'visited' in session:
         return False
@@ -105,9 +112,9 @@ def enter_code():
     else:
         return redirect(url_for('home'))
 
-@app.route('/test')
-def test():
-    return render_template('user_deleted.html')      
+# @app.route('/test')
+# def test():
+#     return render_template('user_deleted.html')      
 
 @app.route('/' , methods=['GET', 'POST'])
 def home():
@@ -413,6 +420,18 @@ def add_point():
         if request.form['username'] != user_session_username['username']:
             notification = 'Can\'t change username!'
             return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+        if contains_executable_code(description):
+            notification = "Invalid input. Executable code not allowed."
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+        if contains_executable_code(pointname):
+            notification = "Invalid input. Executable code not allowed."
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+        if contains_executable_code(pointtype):
+            notification = "Invalid input. Executable code not allowed."
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
+        if contains_executable_code(user):
+            notification = "Invalid input. Executable code not allowed."
+            return render_template('add_point.html', notification=notification, types = allTypes, username = user_session_username['username'])
         else:
             latitude = float(request.form['latitude'])
             longitude = float(request.form['longitude'])
@@ -534,8 +553,20 @@ def edit_point(point_id):
             if len(request.form['name']) > 50:
                 notification = "Post name can't have more than 50 characters"
                 return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
-            if len(request.form['description']) > 250:
-                notification = "Description can't have more than 250 characters"
+            if len(request.form['description']) > 100:
+                notification = "Description can't have more than 100 characters"
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
+            if contains_executable_code(request.form['name']):
+                notification = "Invalid input. Executable code not allowed."
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
+            if contains_executable_code(request.form['description']):
+                notification = "Invalid input. Executable code not allowed."
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
+            if contains_executable_code(request.form['type']):
+                notification = "Invalid input. Executable code not allowed."
+                return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
+            if contains_executable_code(user_session_username['username']):
+                notification = "Invalid input. Executable code not allowed."
                 return render_template('edit_point.html', notification=notification, point=point, username = user_session_username['username'], types = allTypes)
             else:
                 user_points.update_one({'_id': ObjectId(point_id)}, {'$set': {
