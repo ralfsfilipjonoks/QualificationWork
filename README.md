@@ -14,6 +14,6 @@
 
 # Izmantotie ietvari
 
-**Flask** - aizmugursistēma
-**Bootstrap** - priekšsistēma
-**LeafletJS** - priekšsistēmas karte
+- **Flask** - aizmugursistēma
+- **Bootstrap** - priekšsistēma
+- **LeafletJS** - priekšsistēmas karte
