@@ -4,9 +4,9 @@
 
 # Frameworks used
 
-**Flask** - back-end
-**Bootstrap** - front-end
-**LeafletJS**- front-end map
+- **Flask** - back-end
+- **Bootstrap** - front-end
+- **LeafletJS**- front-end map
 
 # Kvalifikācijas darbs
 
